@@ -1,0 +1,624 @@
+---
+title: "proteomics analysis (based on normalized ratio)"
+author: "Siyu Sun"
+date: "5/4/2020"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse=TRUE, comment="##", fig.retina=2, fig.path = "README_figs/README-")
+```
+
+Load packages
+```{r, include = FALSE}
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(tidyverse)
+library(GGally)
+library(ggpubr)
+library(ggrepel)
+library(gridExtra)
+#library(devtools)
+library(ggfortify)
+library(limma)
+library(plotly)
+library(broom)
+library(pheatmap)
+```
+ 
+Read in protein files that was in the master file processed in "Data preperation and QC.Rmd"
+```{r , include = FALSE}
+#set working directory
+#read in protein groups 
+proteinGroups <- read_csv("./data/proteinGroups.csv")
+```
+
+#normalized ratios 
+#add the corresponding attributes for time 0 in each condition
+##build in ratio from Maxquant, normalized
+```{r, echo = FALSE}
+#extract the proteome info
+ratio_normed <- proteinGroups %>% 
+  #select columns that contains the useful information - based on the experiments setups
+  dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("Ratio")) %>%
+  dplyr::select(`Protein IDs`, `Gene names`, `Protein names`, `Fasta headers`, contains("proteome")) %>%
+  dplyr::select(`Protein IDs`, `Gene names`, `Protein names`, `Fasta headers`, contains("normalized")) %>%
+  #remove columns that is not important
+  dplyr::select(-matches("_N_")) %>% 
+  dplyr::select(-contains("variability")) %>%
+  dplyr::select(-contains("count")) %>%
+  dplyr::select(-contains("iso-count")) %>%
+  dplyr::select(-contains("type"))
+
+#extract data for time 0
+T00_P <- ratio_normed %>% dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("T00")) %>% 
+  dplyr::rename(`Ratio M/L normalized proteome_P_T00_R1` = `Ratio M/L normalized proteome_C_T00_R1`,
+         `Ratio M/L normalized proteome_P_T00_R2` = `Ratio M/L normalized proteome_C_T00_R2`,
+         `Ratio M/L normalized proteome_P_T00_R3` = `Ratio M/L normalized proteome_C_T00_R3`,
+         `Ratio H/L normalized proteome_P_T00_R1` = `Ratio H/L normalized proteome_C_T00_R1`,
+         `Ratio H/L normalized proteome_P_T00_R2` = `Ratio H/L normalized proteome_C_T00_R2`,
+         `Ratio H/L normalized proteome_P_T00_R3` = `Ratio H/L normalized proteome_C_T00_R3`,
+         `Ratio H/M normalized proteome_P_T00_R1` = `Ratio H/M normalized proteome_C_T00_R1`,
+         `Ratio H/M normalized proteome_P_T00_R2` = `Ratio H/M normalized proteome_C_T00_R2`,
+         `Ratio H/M normalized proteome_P_T00_R3` = `Ratio H/M normalized proteome_C_T00_R3`)
+
+ratio_normed_add<- dplyr::inner_join(ratio_normed, T00_P, by = c("Protein IDs","Gene names","Protein names","Fasta headers"))
+  
+#reshape the table into a tidy format 
+ratio_normed_tidy <- melt(ratio_normed_add) %>%
+  separate(variable, c("signal","channel","normed","sampleNum"), sep = " ") %>%
+  separate(sampleNum, c("omic","nutrient","samplingTime","replicate"), sep = "_") %>%
+  dplyr::select(-c("signal","omic","normed"))  %>%
+  #select only wild type and ko ratios individually
+  dplyr::filter(channel %in% c("H/L","M/L","H/M"))
+
+#box plot
+ggplot(ratio_normed_tidy, aes(x=samplingTime, y=value, fill = channel)) + 
+  geom_boxplot(position=position_dodge(0.8))+#, outlier.shape = NA) +
+  #
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+  scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_y_log10() +
+  ylab("Ratio")
+
+#summary table
+summary_table <- ratio_normed_tidy %>% 
+  group_by (channel, nutrient, samplingTime, replicate) %>%
+  dplyr::summarize (total = sum (na.omit(value)), mean = mean(na.omit(value)), median = median(na.omit(value)), entries = n())
+
+non_NAs <- ratio_normed_tidy %>% 
+  drop_na() %>%
+  group_by (channel, nutrient, samplingTime, replicate) %>%
+  dplyr::summarize (total = sum (na.omit(value)), mean = mean(na.omit(value)), median = median(na.omit(value)), entries = n())
+
+non_NAs %>%
+  #remove values that is 0
+  ggplot(aes(x=samplingTime,y = entries, col = replicate, fill = replicate, group = replicate)) + 
+  geom_point(aes(x=samplingTime,y = entries, col = replicate, fill = replicate))+
+  geom_line(aes(x=samplingTime,y = entries, col = replicate, fill = replicate))+
+  theme(axis.text.x=element_text(angle=0),legend.position="bottom")+
+  facet_grid(channel ~ nutrient, scales = "free") +
+  scale_color_manual(values=c("#789cff", "#656371", "#ff7369"))+
+  scale_fill_manual(values=c("#789cff", "#656371", "#ff7369")) +
+  theme_classic() +
+  xlab("Hours post nutrient depletion") +
+  ylab("unique proteins identified")
+
+#look at the distribution of proteins 
+ratio_normed_tidy %>%
+  #remove values that is 0
+  ggplot(aes(x=log2(value), col = replicate, fill = replicate)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  geom_density(alpha = 0.3)+
+  theme(axis.text.x=element_text(angle=0),legend.position="bottom")+
+  facet_grid(channel ~ nutrient + samplingTime, scales = "free") +
+  scale_color_manual(values=c("#789cff", "#656371", "#ff7369"))+
+  scale_fill_manual(values=c("#789cff", "#656371", "#ff7369")) +
+  theme_classic() +
+  ggtitle("Ratio distribution")
+
+#coorelation Among Replicates 
+df_spread <- ratio_normed_tidy %>% 
+  spread(key = replicate, value = value) 
+  
+ggscatter(df_spread, x = "R1", y = "R2", alpha = 0.3, merge = TRUE, size=0.8,  col= "channel", shape = "channel", palette = c("#50a3a4", "#fcaf38", "#f95335")) + # Add confidence interval)
+  stat_cor(aes(color = channel), method = "pearson", label.x.npc = "left", label.y.npc = "top", size=2) +
+  facet_grid(nutrient~samplingTime, scale='free') +
+  theme_classic()+
+  scale_y_log10()+
+  scale_x_log10()+
+  xlab("Rep1")+
+  ylab("Rep2")+
+  ggtitle("Scatter plot for Rep1 vs Rep2 (build-in ratio)")
+
+  #coorelation between rep1 and rep3
+ggscatter(df_spread, x = "R1", y = "R3", alpha = .3, size=0.8, cor.coef.size = 0.4,  col= "channel", shape = "channel", palette = c("#50a3a4", "#fcaf38", "#f95335")) + # Add confidence interval)
+    stat_cor(aes(color = channel), method = "pearson", label.x.npc = "left", label.y.npc = "top", size=2)  +
+    facet_grid(nutrient~samplingTime, scale='free') +
+        theme_classic()+
+    scale_y_log10()+
+    scale_x_log10()+
+    ylab("Rep3")+
+    xlab("Rep1")+
+    ggtitle("Scatter plot for Rep1 vs Rep3 (build-in ratio)")
+
+##reversed build-in ratio by genotypes
+##switch H/L to M/L
+rep2_HL_ML <- ratio_normed_tidy %>% 
+  dplyr::filter(channel == "H/L" & replicate == "R2" & nutrient == "P") %>%
+  mutate(channel="M/L")
+##switch M/L to H/L
+rep2_ML_HL <- ratio_normed_tidy %>% 
+  dplyr::filter(channel == "M/L" & replicate == "R2" & nutrient == "P") %>%
+  mutate(channel="H/L")
+rep2_MH_MH <-  ratio_normed_tidy %>% 
+  dplyr::filter(channel == "H/M" & replicate == "R2" & nutrient == "P") %>%
+  mutate(value=1/value)
+##combine all new replicate 2 data
+rep2 <- bind_rows(rep2_HL_ML, rep2_ML_HL,rep2_MH_MH)
+
+#join the revised replicate 2 with the other data from replicate 1&3
+#remove old data
+new_re <- anti_join(ratio_normed_tidy,ratio_normed_tidy %>% dplyr::filter (nutrient == "P" & replicate == "R2"))
+
+ratio_normed_tidy_re <- bind_rows(rep2, new_re) %>%
+  mutate(channel=replace(channel, channel=="M/L", "rim15KO")) %>%
+  mutate(channel=replace(channel, channel=="H/L", "WT")) %>%
+  mutate(channel=replace(channel, channel=="H/M", "WT/rim15KO")) %>%
+  dplyr::rename(genotype = channel)
+  #replace NA values with 1, which assuming there is no changes
+    #mutate(value = if_else(is.na(value), 1, value))
+
+#box plot
+ggplot(ratio_normed_tidy_re, aes(x=genotype, y=log2(value), fill = samplingTime)) + 
+  geom_boxplot(position=position_dodge(0.8))+#, outlier.shape = NA) +
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+    theme(axis.text.x=element_text(angle=0),legend.position="bottom")+
+  #scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  #scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  ylab("Ratio")
+
+#box plot for different genotypes at T00
+ggplot(ratio_normed_tidy_re %>% dplyr::filter(samplingTime == "T00"), aes(x=genotype, y=log2(value), fill = samplingTime)) + 
+  geom_boxplot(position=position_dodge(0.8), outlier.shape = NA) +
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+  theme(axis.text.x=element_text(angle=0),legend.position="bottom")+
+  #scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  #scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  ylab("log2(Ratio)")
+
+#look at the distribution of proteins 
+ratio_normed_tidy_re %>%
+  #remove values that is 0
+  ggplot(aes(x=log2(value), col = replicate, fill = replicate)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  geom_density(alpha = 0.3)+
+  theme(axis.text.x=element_text(angle=0),legend.position="bottom")+
+  facet_grid(genotype ~ nutrient + samplingTime, scales = "free") +
+  scale_color_manual(values=c("#789cff", "#656371", "#ff7369"))+
+  scale_fill_manual(values=c("#789cff", "#656371", "#ff7369")) +
+  theme_classic() +
+  ggtitle("Scatter plot for Rep1 vs Rep3 (build-in ratio)")
+
+#coorelation Among Replicates 
+df_spread <- ratio_normed_tidy_re %>% 
+  spread(key = replicate, value = value) 
+  
+ggscatter(df_spread, x = "R1", y = "R2", alpha = 0.3, merge = TRUE, size=0.8,  col= "genotype", shape = "genotype", palette = c("#50a3a4", "#fcaf38", "#f95335")) + # Add confidence interval)
+  stat_cor(aes(color = genotype), method = "pearson", label.x.npc = "left", label.y.npc = "top", size=2) +
+  facet_grid(nutrient~samplingTime, scale='free') +
+  theme_classic()+
+  scale_y_log10()+
+  scale_x_log10()+
+  xlab("Rep1")+
+  ylab("Rep2")+
+  ggtitle("Scatter plot for Rep1 vs Rep2 (build-in ratio)")
+
+  #coorelation between rep1 and rep3
+  ggscatter(df_spread, x = "R1", y = "R3", alpha = .3, size=0.8, cor.coef.size = 0.4,  col= "genotype", shape = "genotype", palette = c("#50a3a4", "#fcaf38", "#f95335")) + # Add confidence interval)
+    stat_cor(aes(color = genotype), method = "pearson", label.x.npc = "left", label.y.npc = "top", size=2)  +
+    facet_grid(nutrient~samplingTime, scale='free') +
+        theme_classic()+
+    scale_y_log10()+
+    scale_x_log10()+
+    ylab("Rep3")+
+    xlab("Rep1")+
+    ggtitle("Scatter plot for Rep1 vs Rep3 (build-in ratio)")
+  
+#prepare tables for statistical analysis
+ratio_normed_core <- ratio_normed_tidy_re  %>%
+  #drop_na("value") %>%
+  #filter(genotype %in% c("rim15KO","WT")) %>%
+  group_by(`Gene names`, samplingTime, replicate, genotype) %>%
+  dplyr::mutate(nutrient_number = n()) %>%
+  dplyr::filter(nutrient_number == 2) %>%
+  group_by(`Gene names`, nutrient, samplingTime, replicate) %>%
+  dplyr::mutate(genotype_number = n()) %>%
+  dplyr::filter(genotype_number==3) %>%
+  group_by(`Gene names`, nutrient, samplingTime, genotype) %>%
+  dplyr::mutate(rep_numner = n()) %>%
+  dplyr::filter(rep_numner == 3) %>%
+  group_by(`Gene names`, nutrient, replicate, genotype) %>%
+  dplyr::mutate(time_number = n()) %>%
+  dplyr::filter(time_number == 4)
+
+#heatmap of core data
+df <- ratio_normed_core %>% 
+  select(nutrient, `Gene names`, genotype, replicate, samplingTime, value) %>%
+  unite(cond, nutrient, genotype, samplingTime, replicate) %>%
+  spread(key = cond, value = value)
+
+#heatmap
+annotation_col <- names(df)[-1] %>% as.tibble() %>%
+  separate(value, c("nutrient","genotype","samplingTime","rep"), sep = "_", remove = FALSE) %>%
+  column_to_rownames(var = "value")
+library(RColorBrewer)
+breaksList = seq(-0.07, 0.07, by = 0.0001)
+
+pdf("./plots/ratio_normed_heat_all.pdf", width = 13, height = 13)
+pheatmap(df[,-1] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row", 
+                   annotation_col = annotation_col)
+dev.off()
+
+pdf("./plots/ratio_normed_heat_light.pdf", width = 10, height = 8)
+pheatmap(df[,c(2:25,38:61)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row", 
+                   annotation_col = annotation_col)
+dev.off()
+
+#look at C sample alone
+pheatmap(df[,c(2:25)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row", 
+                   annotation_col = annotation_col)
+
+#look at P sample alone
+pheatmap(df[,c(38:61)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row", 
+                   annotation_col = annotation_col)
+#PCA overtime
+#the column number here is determined by the conditions + replicates + mutant libraries
+  dz <- data.frame(t(df[,c(2:25,38:61)] %>% drop_na()))
+  dz[,ncol(dz)+1] <- rownames(dz)
+  colnames(dz)[ncol(dz)] <- "condition"
+  dz <- dz %>% 
+    separate(condition, c("nutrient", "genotype",  "samplingTime", "rep"), sep = "_", remove = FALSE) %>%
+    unite(cond, nutrient, genotype, samplingTime, remove = FALSE)
+  dim(dz)
+  l<-length(dz)-6
+  
+pdf("./plots/ratio_normed_PCA_time.pdf",width=7,height=5)
+
+#the numbers in the range here is subject to the strains left after pre-filtering steps
+autoplot(prcomp(dz[,c(1:l)], scale = T), data = dz, colour = 'genotype', size = 3) +
+  #theme_classic() +
+  theme(legend.position = "bottom") +
+  facet_grid(nutrient~samplingTime)+
+  scale_color_manual(values=c("#00AFBB","#E7B800"))+#"#6ec3c1" ,"#335120","#9dcc5f", "#0d5f8a")) +
+  scale_fill_manual(values=c("#00AFBB","#E7B800")) #"#bfbdbd",
+dev.off()
+
+#3D PCA plot
+#compute PCA
+df<-dz[,c(1:l)]
+rownames(df) <- rownames(dz)
+res.pca <- prcomp(df, scale = T)
+
+summary(res.pca)
+pca <- data.frame(res.pca$x)
+
+plot_ly(x=pca$PC1, y=pca$PC2, z=pca$PC3, type="scatter3d",color=dz$cond)
+
+#reshape the core dataset for perseus 
+perseus <- ratio_normed_tidy_re %>% 
+  select(`Protein IDs`,`Protein names`,`Gene names`,`Fasta headers`, genotype,nutrient,samplingTime,replicate,value) %>%
+  unite(cond, genotype, nutrient, samplingTime, replicate) %>%
+  spread(key = cond, value = value)
+
+#replace NA value in Genenames column with protein names
+perseus$`Gene names` <- ifelse(is.na(perseus$`Gene names`), perseus$`Protein names`, perseus$`Gene names`) 
+
+write_csv(perseus,"./tables/normed_ratio_perseus.csv")
+```
+
+#Overall, we observed less differential expression between genotypes from PCA plot. Dan suggest a k-means (2-means) cluetering to visualize the data
+#kmeans clustering of protein groups
+```{r, echo = FALSE}
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+pGroups <- na.omit(perseus)
+#set the Gene names as Row names
+pGroups <- pGroups %>% 
+  select(-c(`Protein IDs`,`Protein names`,`Fasta headers`)) %>% 
+  melt() %>%
+  separate(variable, c("genotype","nutrient","time","repliate")) %>%
+  unite(names, `Gene names`,genotype)
+
+#look at one condition @ one timepoint
+C <- pGroups %>%
+  dplyr::filter(nutrient == "C", time == "T30") %>%
+  select(-c("nutrient","time")) %>%
+  spread(key=repliate, value = value)
+
+rownames(C) <- C$names
+C <- C %>% select(-names)
+df <- scale(C)
+head(df)
+
+plot_ly(x=C$R1, y=C$R2, z=C$R3, type="scatter3d",color=C$genotype)
+
+#plot_ly(x=T00_C$R1, y=T00_C$R2, z=T00_C$R3, type="scatter3d",color=T00_C$genotype)
+
+#distance <- get_dist(df)
+#fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+set.seed(12345)
+kmeansClust <- kmeans(C,centers=3)
+
+#total variance before 
+wss <- (nrow(C)-1)*sum(apply(C,2,var))
+
+#finding the best value of K
+for (i in 2:15) wss[i] <- sum(kmeans(C,centers=i)$withinss)
+
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+     ylab="Within groups sum of squares")
+
+k2 <- kmeans(df, centers =2)
+str(k2)
+
+fviz_cluster(k2, data = df)
+
+df_k2_T30_C <- data.frame(k2$cluster)
+df_k2_T30_C$name <- rownames(df_k2_T30_C)
+tb <- df_k2_T30_C %>%
+  separate(name , c("gene","genotype"), sep = "_") %>%
+  group_by(`k2.cluster`, genotype) %>%
+  summarize(n())
+
+tb
+  
+```
+
+#normalize every data point in relative to time 0
+##look at the logFC for both protein
+```{r, echo = FALSE, fig.width=8, fig.height=5}
+#read in pre-processed datafile
+proteinG<-read_csv("./tables/normed_ratio_perseus.csv")
+#proteinG[is.na(proteinG)] <- 0 # maybe optional
+
+proteinG_tidy <- melt(proteinG) %>%
+  separate(variable, c("genotype", "nutrient", "samplingTime", "replicate"), sep = "_")
+
+#calculate the profile of each protein
+relative_pG <- proteinG_tidy %>% unite(cond, genotype, nutrient, replicate) %>%
+  spread(key = samplingTime, value = value) %>%
+  mutate(`T00/T00` = T00-T00, `T06/T00` = T06-T00, `T16/T00` = T16-T00, `T30/T00` = T30-T00) %>%
+  melt() %>%
+  separate(cond, c("genotype","nutrient","replicate"), sep = "_") 
+
+relative_pG%>%
+  #dplyr::filter(nutrient == "P") %>%
+  dplyr::filter(variable %in% c("T00/T00","T06/T00","T16/T00","T30/T00")) %>%
+  dplyr::filter(replicate == "R3") %>%
+  ggplot(aes(x=variable, y=value, group=`Protein names`, color=`Protein names`)) +
+  facet_grid(genotype~nutrient)+
+  geom_line(size=0.3,alpha=0.5)+
+  ylab(expression(log[2]*" (normalized expression) ")) +
+  theme_bw(base_size=10) +
+  ylim(-3,3) +
+  theme_classic()+
+  ggtitle("Dynamics for each protein group") +  
+  theme(panel.grid.major = element_blank(), panel.grid.minor =element_blank(),legend.position="none") +
+  xlab("Hours post inoculation")
+
+#drop na function
+delete.na <- function(DF, n=0) {DF[rowSums(is.na(DF)) <= n,]}
+
+#t-test between samples 
+pG_reshape <- relative_pG %>% 
+  dplyr::rename(time = variable) %>%
+  dplyr::filter(time %in% c("T00","T06","T16","T30")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, time) %>%
+  unite(cond, genotype, replicate) %>%
+  spread(key = cond, value = value) 
+
+pG_filtered <- delete.na(pG_reshape,2)
+  
+#run t-test and log2FC
+ttest_pG <- pG_filtered %>%
+  melt() %>%
+  separate(variable, c("genotype","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, time) %>%
+  summarise_each(funs(t.test(.[genotype == "WT"], .[genotype == "rim15KO"], var.equal=TRUE)$p.value), pvalue = value) 
+
+ttest_pG$qvalue <- p.adjust(ttest_pG$pvalue,method="BH") 
+
+log2FC_pG <- pG_filtered %>%
+  melt() %>%
+  separate(variable, c("genotype","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, time) %>%
+  summarise_each(funs(mean(.[genotype=="WT"], na.rm=TRUE)-mean(.[genotype == "rim15KO"], na.rm=TRUE)), log2FC = value)
+
+logFC_ttest_pG <-left_join(ttest_pG, log2FC_pG, by = c( "Protein IDs","Protein names","Gene names","Fasta headers", "nutrient","time"))
+write_csv(logFC_ttest_pG,"./tables/DE_proteins_byGenotype.csv")
+
+```
+
+```{r}
+logFC_ttest_pG <- read_csv("./tables/DE_proteins_byGenotype.csv")
+
+lable = logFC_ttest_pG %>% filter( nutrient == "P" & abs(log2FC) > 1 & pvalue < 0.05)
+logFC_ttest_pG %>% dplyr::filter(nutrient == "P") %>%
+  mutate(trend = case_when(log2FC > 1 & pvalue < 0.05 ~ "Up in WT",
+                           log2FC < - 1 & pvalue < 0.05 ~ "Up in RIM15ko",
+                           log2FC < 1 | log2FC > -1 | pvalue > 0.05 ~ "non sig")) %>%
+  ggplot(aes(x=time, y =log2FC), color = trend) +
+  geom_jitter(aes(x=time, y =log2FC, color = trend), alpha = 1, size = 0.8) +
+  geom_boxplot(outlier.shape = NA, fill = NA) +
+  scale_colour_manual(values = c("#cccccc","#00afbb","#e7b800")) + 
+  theme_classic(base_size = 20) +
+  xlab("") +
+  ylab(expression(Log[2]*" (WT / rim15Δ)")) +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  ggtitle("Phosphorous starvation") + 
+  geom_label_repel(data = lable, aes(label = `Gene names`)) +
+  theme(legend.position="none")
+ggsave("./plots/proteinGroups_box_P.pdf",width = 7, height = 7,  useDingbats=FALSE)
+
+lable = logFC_ttest_pG %>% filter( nutrient == "C" & abs(log2FC) > 1 & pvalue < 0.05)
+logFC_ttest_pG %>% dplyr::filter(nutrient == "C") %>%
+  mutate(trend = case_when(log2FC > 1 & pvalue < 0.05 ~ "Up in WT",
+                           log2FC < - 1 & pvalue < 0.05 ~ "Up in RIM15ko",
+                           log2FC < 1 | log2FC > -1 | pvalue > 0.05 ~ "non sig")) %>%
+  ggplot(aes(x=time, y =log2FC), color = trend) +
+  geom_jitter(aes(x=time, y =log2FC, color = trend), alpha = 1, size = 0.8) +
+  geom_boxplot(outlier.shape = NA, fill = NA) +
+  scale_colour_manual(values = c("#cccccc","#00afbb","#e7b800")) + 
+  theme_classic(base_size = 20) +
+  xlab("") +
+  ylab(expression(Log[2]*" (WT / rim15Δ)")) +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  ggtitle("Carbon starvation") + 
+  geom_label_repel(data = lable, aes(label = `Gene names`)) +
+  theme(legend.position="none")
+ggsave("./plots/proteinGroups_box_C.pdf",width = 7, height = 7,  useDingbats=FALSE)
+
+lable = logFC_ttest_pG %>% filter( nutrient == "C", abs(log2FC) > 1, pvalue < 0.05)
+ggplot(data=logFC_ttest_pG %>% dplyr::filter(nutrient == "C"), aes(x=log2FC, y =-log10(pvalue))) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, nutrient == "C", qvalue > 0.05), alpha = 1/6, size = 0.8) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, nutrient == "C", log2FC < -1, pvalue < 0.05), alpha = 1, size = 1.5,  color = c("#00afbb")) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, nutrient == "C", log2FC > 1, pvalue < 0.05), alpha = 1, size = 1.5, color = 
+c("#e7b800")) +
+  theme_classic() +
+  coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (WT / rim15Δ)")) +
+  ylab(expression(-Log[10]* "(pvalue)")) +
+  xlim(-7,7) +
+    geom_label_repel(data = lable, aes(label = `Gene names`)) +
+  #ylim(0,2) +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(~time)+
+  theme(legend.position="none")
+ggsave("./plots/proteinGroups_volcano_C.pdf",width = 7, height = 4,  useDingbats=FALSE)
+
+
+lable = logFC_ttest_pG %>% filter( nutrient == "P", abs(log2FC) > 1, pvalue < 0.05)
+ggplot(data=logFC_ttest_pG %>% dplyr::filter(nutrient == "C"), aes(x=log2FC, y =-log10(pvalue))) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, nutrient == "C", qvalue > 0.05), alpha = 1/6, size = 0.8) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, nutrient == "C", log2FC < -1, pvalue < 0.05), alpha = 1, size = 1.5,  color = c("#00afbb")) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, nutrient == "C", log2FC > 1, pvalue < 0.05), alpha = 1, size = 1.5, color = 
+c("#e7b800")) +
+  theme_classic() +
+  coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (WT / rim15Δ)")) +
+  ylab(expression(-Log[10]* "(pvalue)")) +
+  xlim(-7,7) +
+    geom_label_repel(data = lable, aes(label = `Gene names`)) +
+  #ylim(0,2) +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(~time)+
+  theme(legend.position="none")
+ggsave("./plots/proteinGroups_volcano_C.pdf",width = 7, height = 4,  useDingbats=FALSE)
+
+protein_sum_genotype <- logFC_ttest_pG %>% 
+   mutate(FC = case_when(log2FC > 1 & qvalue < 0.05 ~ "UP in WT", 
+                         log2FC < -1 & qvalue < 0.05 ~ "UP in rim15KO",
+                         qvalue > 0.05 ~ "neutral")) %>%
+  group_by(nutrient,time,FC) %>%
+  dplyr::summarise(count = n()) %>%
+  filter(FC != "neutral")
+
+protein_sum_genotype %>%
+  transform(nutrient=factor(nutrient,levels=c("C","P"))) %>% 
+  transform(FC=factor(FC,levels=c("UP in WT","UP in rim15KO"))) %>% 
+  ggplot(aes(x=time, y=count, fill=FC)) +
+  facet_wrap(~nutrient)+
+  scale_fill_manual(values=c('#e7b800','#00afbb')) +
+  geom_bar(stat="identity") +
+  xlab("Hours post nutrient limitation") +
+  ylab("Number of proteins (p.adj < 0.05)")
+```
+
+#Now, let's see what are the differentially expressed proteins between conditions overtime for each genotype
+```{r , echo = FALSE}
+#read in pre-processed datafile
+proteinG<-read_csv("./tables/normed_ratio_perseus.csv")
+
+proteinG_tidy <- melt(proteinG) %>%
+  separate(variable, c("genotype", "nutrient", "samplingTime", "replicate"), sep = "_")
+
+#drop na function
+delete.na <- function(DF, n=0) {DF[rowSums(is.na(DF)) <= n,]}
+
+#t-test between samples 
+pG_reshape <- proteinG_tidy %>% 
+  dplyr::rename(time = samplingTime) %>%
+  dplyr::filter(time %in% c("T00","T06","T16","T30")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`,genotype, time) %>%
+  unite(cond, nutrient, replicate) %>%
+  spread(key = cond, value = value) 
+
+pG_reshape_filtered <- delete.na(pG_reshape,2)
+  
+#run t-test and log2FC
+ttest_pG <- pG_reshape_filtered %>%
+  melt() %>%
+  separate(variable, c("nutrient","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`,genotype, time) %>%
+  summarise_each(funs(t.test(.[nutrient == "C"], .[nutrient == "P"], var.equal=TRUE)$p.value), pvalue = value) 
+
+ttest_pG$qvalue <- p.adjust(ttest_pG$pvalue,method="BH") 
+
+log2FC_pG <- pG_reshape_filtered %>%
+  melt() %>%
+  separate(variable, c("nutrient","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, genotype, time) %>%
+  summarise_each(funs(mean(.[nutrient=="C"], na.rm=TRUE)-mean(.[nutrient == "P"], na.rm=TRUE)), log2FC = value)
+
+logFC_ttest_pG <-left_join(ttest_pG, log2FC_pG, by = c( "Protein IDs","Protein names","Gene names","Fasta headers","time","genotype")) %>%
+  dplyr::filter(genotype %in% c("WT","rim15KO"))
+
+ggplot(data=logFC_ttest_pG, aes(x=log2FC, y =-log10(qvalue))) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG,  qvalue > 0.05), alpha = 1/6, size = 0.8) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, log2FC < -1, qvalue < 0.05), alpha = 1, size = 1.5,  color = c("#00afbb")) +
+  geom_point(data=dplyr::filter(logFC_ttest_pG, log2FC > 1, qvalue < 0.05), alpha = 1, size = 1.5, color = 
+c("#e7b800")) +
+  theme_classic() +
+  #coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (C / P)")) +
+  ylab(expression(-Log[10]* "(qvalue)")) +
+  xlim(-10,10) +
+  #ylim(0,2) +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(genotype~time)+
+  theme(legend.position="none")
+ggsave("./plots/pGroups_volcano_nutrient.pdf",width = 7, height = 4,  useDingbats=FALSE)
+
+protein_sum_nutrient <- logFC_ttest_pG %>% 
+   mutate(FC = case_when(log2FC > 0 & qvalue < 0.05 ~ "UP in C", 
+                         log2FC < 0 & qvalue < 0.05 ~ "UP in P",
+                         qvalue > 0.05 ~ "neutral")) %>%
+  group_by(genotype,time,FC) %>%
+  dplyr::summarise(count = n()) %>%
+  filter(FC != "neutral")
+
+protein_sum_nutrient %>%
+  transform(genotype=factor(genotype,levels=c("WT","rim15KO"))) %>% 
+  ggplot(aes(x=time, y=count, fill=FC)) +
+  facet_wrap(~genotype)+
+  scale_fill_manual(values=c('orange','purple')) +
+  geom_bar(stat="identity") +
+  xlab("Hours post nutrient limitation") +
+  ylab("Number of proteins (p.adj < 0.05)")
+```
+
+
+
+

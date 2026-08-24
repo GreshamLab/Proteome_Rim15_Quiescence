@@ -1,0 +1,297 @@
+---
+title: "Figure 1"
+author: "Siyu Sun"
+date: "9/9/2020"
+output: html_document
+---
+
+#Load essential packages
+```{r,cache=TRUE}
+library(ggplot2)
+library(tidyverse)
+library(reshape2)
+library(gplots) 
+library(ggrepel)
+library(ggformula)
+library(mosaicData)
+library(tidyverse)
+library(tidyr)
+library(readr)
+library(cowplot)
+library(scales)
+library(broom)
+library(dplyr)
+```
+
+#read in protein groups that have been converted into .csv
+#no biological replicate on 190621, cells were cultured with C (0.06%), N, P supplemented with natural version of lys and arg with the expected concentration. 
+
+#Fig1A
+##this data only contains cells cultured in heavy and medium aa supplimented medium, with 0.1mM of Arg and Lys
+```{r}
+growth_long <- read_csv("./growth_long.csv")
+
+df <- growth_long
+model_rr <- df %>%
+  #remove the redundance readings for cell counts
+  #select(-rep_sub) %>%
+  #unite(rep_rep, rep, rep_sub) %>%
+  group_by(strain, nutrient) %>%
+  nest() %>%
+  #fit gc
+  mutate(pr.model = map(data, ~SummarizeGrowth(.$time, .$counts))) %>%
+  mutate(predict = map(pr.model, ~predict(.$model))) %>%
+  select(-pr.model) %>%
+  #unnest the tibble and combine the predicted data with raw reading
+  unnest(cols = c(data, predict))
+
+#plot growth curve for the whole growth stage
+model_rr %>%
+  ggplot(aes(x = time, y = counts, col=strain)) +
+  geom_point(aes(shape = as.character(replicate)), size = 1.5) +
+  geom_line(aes(y=predict, col = strain), size = 1.5) +
+  facet_wrap(~nutrient, scale = "free") +
+  scale_color_manual(values=c("#00afbb", "#e7b800")) +
+  scale_fill_manual(values=c("#00afbb", "#e7b800")) +
+  scale_y_log10() +
+  theme_classic(base_size = 18) +
+  theme(legend.position="bottom")+
+  labs(x="Hours post nutrient removal", y = "log10 (cell counts/ml)")
+ggsave("gc_rr_long_model.pdf",width = 10, height = 4) 
+
+#growth rate difference between wt and rim15 under different environmental condition
+summarized <- df %>%
+  #select(-rep_sub) %>%
+  group_by(strain, time, nutrient) %>%
+  summarize(ave = mean(counts), sd = sd(counts)) 
+
+#plot for the short timeframe
+summarized %>%
+  ggplot(aes(x = time, y = ave, col=strain)) +
+  geom_line(size = 1.5) +
+  geom_point(aes(shape = strain), size = 1) +
+  geom_errorbar(aes(ymin = ave - sd, ymax = ave + sd, col = strain), width = 1, size = 1)+
+  scale_color_manual(values=c("#00afbb", "#e7b800")) +
+  scale_fill_manual(values=c("#00afbb", "#e7b800")) +
+  facet_wrap(~nutrient, scale = "free") +
+  #scale_y_continuous(trans = "log10", limits = c(1,100)) +
+  scale_y_log10() +
+  theme_classic(base_size = 18)+
+  theme(legend.position="bottom")+
+  labs(x="Hours post nutrient removal", y = "log10 (cell counts/ml)")
+ggsave("Fig1A.pdf",width = 12, height = 4.5) 
+```
+
+#Fig1B
+## viability
+```{r}
+df<- read_csv("./viability.csv")
+#convert the viability percentage into numeric for plotting
+df$viability = round(as.numeric(gsub("[\\%,]", "", df$viability)),digits = 1)
+
+#plot viability difference between wt and rim15 under each condtion
+#caculate the viability in relative to T0:
+df_rela <- df %>% 
+  select(strain, time, nutrient, replicate, viability) %>%
+  dplyr::filter(strain %in% c("wt","rim15")) %>%
+  spread(key = time, value = viability) %>%
+  dplyr::mutate(`0` = 100) %>%
+  #dplyr::filter(Media !="SILAC_L") %>%
+  dplyr::mutate(T0 = `0`/`0`,T6 = `6`/`0`,T16 = `16`/`0`,T30 = `30`/`0`,T168 = `168`/`0`,T264 = `264`/`0`) %>%
+  melt(key = "replicate") %>%
+  dplyr::filter(strain %in% c("wt","rim15")) %>%
+  #dplyr::filter(variable %in% c("T0","T6","T16","T30","T168", "T264")) %>%
+  mutate(variable = gsub("[^0-9.-]", "", variable)) %>%
+  #dplyr::filter(SamplingTime %in% c("0","9","20","46")) %>%
+  dplyr::select(strain, nutrient, variable, value) %>%
+  #dplyr::filter(Media != "SILAC_L") %>%
+  dplyr::rename(time = variable) %>%
+  #dplyr::mutate(nutrient = case_when(
+  #   nutrient == "C(0.01%)+L" ~ "C", 
+  #   nutrient == "N-dep+L" ~ "N",
+  #   nutrient == "P-dep+L" ~ "P")) %>%
+  dplyr::mutate(time = as.numeric(time)) 
+
+combine <- left_join(df, df_rela , by = c("strain", "time","nutrient")) %>%
+  drop_na()
+
+combine$strain <- factor(combine$strain, levels = c("wt","rim15"))
+
+combine <- combine %>%
+  group_by(strain, time, nutrient) %>%
+  summarise(gc.mean = mean(counts),gc.sd = sd(counts), via.mean = mean(value), via.sd = sd(value))
+
+scaleFactor <- max(combine$gc.mean) / max(combine$via.mean)
+
+ggplot(df, aes(x=time, y = viability, color = strain, group = strain)) +
+  geom_point(aes(y=viability, group=strain, color=strain, 
+                 shape = "circle"), size = 2) +
+  geom_smooth(aes(y=viability , alpha = 0.3, group=strain, color=strain, linetype = "solid"), stat="lm", se=F, formula = y ~ x, size = 1.5) +
+  stat_cor(aes(group=strain, color=strain), label.y = 25, size = 5) +
+  stat_regline_equation(aes(group=strain, color=strain), label.y = 20, size = 5) +#this means at 30th unit regresion line equation will be shown
+  #stat_poly_eq(formula = y ~ x, 
+   #            aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
+    #           parse = TRUE, size = 5) +   
+  scale_y_continuous(name="Viability")+
+  theme_classic(base_size = 18) +
+  scale_color_manual(values=c("#00afbb", "#e7b800")) +
+  scale_fill_manual(values=c("#00afbb", "#e7b800")) +
+  facet_wrap(~nutrient, scale = "free") +
+  theme(legend.position="bottom")
+ggsave("Fig1B.pdf",width = 12, height = 4.5) 
+```
+
+#Fig1C
+##Bud index and gc for short time frame
+```{r}
+budex <- read_csv("./budindex_short.csv")
+growth <- read_csv("./growth_short.csv")
+#caculate the mean and std
+mu <- budex %>%
+  group_by(strain, time, nutrient) %>%
+  summarize(mean = mean (`bud index`), ste = sd(`bud index`)/sqrt(length(`bud index`)))
+
+#Combine growth and index data into the same table and show them on the same plot
+combine <- left_join(mu, growth %>% rename(time = SamplingTime), by = c("strain", "time","nutrient"))
+combine$strain <- factor(combine$strain, levels = c("wt","rim15"))
+
+scaleFactor <- max(combine$cellcounts) / max(combine$mean)
+
+ggplot(combine, aes(x=time)) +
+  geom_point(aes(y=cellcounts, group=strain, color=strain, shape = "circle") , size = 2) +
+  geom_point(aes(y=mean * scaleFactor, group=strain, color=strain,alpha = 0.3, shape = "trangle"),size = 2) + 
+  geom_line(aes(y=cellcounts, group=strain, color=strain, linetype = "dashed"), size = 1.5) +
+  geom_line(aes(y=mean * scaleFactor, group=strain, color=strain, linetype = "solid"), size = 1.5) +
+  geom_errorbar(aes(ymin=mean * scaleFactor - ste*scaleFactor, ymax=mean * scaleFactor + ste*scaleFactor, color=strain), width=.1, size = 1, position=position_dodge(0.1)) +
+  scale_y_continuous(name="Cell concnetraion (solid line)", sec.axis=sec_axis(~./scaleFactor, name="Bud index (dashed line)")) + #trans = "log10", 
+  geom_vline(xintercept = c(0,6,16,30), linetype = "dotted", size = 0.7) +
+  scale_color_manual(values=c("#e7b800", "#00afbb")) +
+  scale_fill_manual(values=c("#e7b800", "#00afbb")) +
+  facet_grid(~nutrient, scale = "free") +
+  #theme_classic(base_size = 18, ) +
+  theme_grey(base_size = 18) +
+  theme(
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.y.left=element_text(color="blue"),
+    axis.text.y.left=element_text(color="blue"),
+    axis.title.y.right=element_text(color="red"),
+    axis.text.y.right=element_text(color="red"),
+    legend.position="bottom"
+  )
+ggsave("Fig1C.pdf",width = 12, height = 4.5)  
+```
+
+
+#Fig1D
+##incorperation efficiency between prototrophic wt and lysarg auxothrope
+```{r}
+
+wt_M <- read_csv("./proteinGroups_pro_auxo_M.csv") %>%
+  #only keep the protein id columns and columns with column names contain "proteome" and "Intensity"
+  dplyr::select(`Protein IDs`, contains("Intensity")) %>%
+  dplyr::select(`Protein IDs`, contains(c("4","5"))) %>%
+  #remove rows with all 0 readings in every column
+  filter_at(vars(-`Protein IDs`), any_vars(. != 0)) 
+
+wt_H <- read_csv("./proteinGroups_pro_auxo_H.csv") %>%
+  #only keep the protein id columns and columns with column names contain "proteome" and "Intensity"
+  dplyr::select(`Protein IDs`, contains("Intensity")) %>%
+  dplyr::select(`Protein IDs`, contains(c("4","5"))) %>%
+  #remove rows with all 0 readings in every column
+  filter_at(vars(-`Protein IDs`), any_vars(. != 0))
+
+
+```
+
+##incoperation efficiency if rim15
+```{r}
+#read in rim15KO data
+protein_rim15 <- read_csv("./proteinGroups_rim15_HM.csv")
+
+df <- protein_rim15 %>%
+  #only keep the protein id columns and columns with column names contain "proteome" and "Intensity"
+  dplyr::select(`Protein IDs`, contains("Intensity")) %>%
+  dplyr::select(`Protein IDs`, contains(c("1","2"))) %>%
+  #remove rows with all 0 readings in every column
+  filter_at(vars(-`Protein IDs`), any_vars(. != 0)) 
+
+#reshape the table
+df_rs <- df %>%
+  melt() %>%
+  separate(variable, c("signal","channel","sampleNum"), sep = " ") %>%
+  drop_na()
+  
+#replace NA values in sample Num with corresponding channel %>%
+df_rs$sampleNum[is.na(df_rs$sampleNum)] <- df_rs$channel[is.na(df_rs$sampleNum)]
+
+df_rs <- df_rs %>% 
+  #replace channel by total if channel is 1 or 2
+  dplyr::mutate(channel = ifelse(channel %in% c(1,2), "total", channel)) %>%
+  #replace sample number 1 by rim15-M and sample number 2 by rim15-H
+  dplyr::mutate(sampleNum = ifelse(sampleNum == 1, "rim15-M", "rim15-H")) %>%
+  #add 1 to the intensity of each protein for later log transformation 
+  dplyr::mutate(value = value + 1) %>%
+  dplyr::select(-signal) 
+
+#look at the ratio of total intensity for each channel
+summed_channel_wise <- df_rs %>%
+  filter(channel != "total") %>%
+  dplyr::group_by(channel, sampleNum) %>%
+  dplyr::summarize(summed = sum(value), mean = mean(value))
+
+summed_sample_wise <- summed_channel_wise %>%
+  dplyr::group_by(sampleNum) %>%
+  dplyr::summarize(total = sum(summed))
+
+summary_tb <- left_join(summed_channel_wise,summed_sample_wise, by = "sampleNum") %>%
+  mutate(fraction = summed/total)
+
+#make a barplot for the total incoperation efficiency in each sample
+total_bar <- ggplot(summary_tb, aes(fill=channel, y=fraction, x=sampleNum)) + 
+  geom_bar(stat="identity") +
+  scale_color_manual(values=c("#4b006e", "#e5a3ff", "#ae00ff"))+
+  scale_fill_manual(values=c("#4b006e", "#e5a3ff", "#ae00ff")) +
+  #facet_wrap(~sampleNum, scale = "free") +
+  coord_polar("y", start=0) +
+  theme(legend.position="bottom")+
+  theme_bw(base_size = 9) +
+  xlab("") +
+  ylab("")
+
+#select heavy labeled samples
+df_H <- df %>%
+  dplyr::select(`Protein IDs`, contains(c("2"))) %>%
+  mutate(`rim15-H` = `Intensity H 2`/`Intensity 2`) %>%
+  drop_na() %>%
+  select(`Protein IDs`,`rim15-H`) 
+
+df_M <- df %>%
+  dplyr::select(`Protein IDs`, contains(c("1"))) %>%
+  mutate(`rim15-M` = `Intensity M 1`/`Intensity 1`) %>%
+  drop_na() %>%
+  select(`Protein IDs`,`rim15-M`)
+
+#combine medium and heavy samples
+frac<-left_join(df_M,df_H, by = "Protein IDs")
+
+p <- frac %>% 
+  dplyr::select(`rim15-M`, `rim15-H`) %>%
+  melt() %>%
+  ggplot(aes(x=value, col= variable, fill=variable))+
+  theme_bw(base_size=6)+
+  theme(axis.text.x=element_text(angle=90, size=6), panel.grid.major = element_blank())+
+  #geom_vline(x=0.98, linetype="dashed")+
+  geom_density(alpha = 0.7)+
+  xlim(0.95,1)+
+  scale_color_manual(values=c("#ae00ff", "#4b006e"))+
+  scale_fill_manual(values=c("#ae00ff", "#4b006e"))+
+  labs(x="% of labeled proteins", y = "Density")+
+  theme_classic(base_size = 22)
+
+ggdraw(p + theme_half_open(11)) +
+  draw_plot(total_bar, .05, .15, 0.7, 0.65) 
+
+ggsave("./incoperation_rim15.pdf", width=7,height=5)
+```

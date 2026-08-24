@@ -1,0 +1,663 @@
+---
+title: "R Notebook"
+output: 
+  html_document: 
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. 
+
+* Load libraries
+```{r, include=FALSE, echo = FALSE}
+library(dplyr)
+library(qvalue)
+library(ggplot2)
+library(reshape2)
+library(tidyverse)
+library(GGally)
+library(ggpubr)
+library(ggrepel)
+library(gridExtra)
+library(devtools)
+library(ggfortify)
+library(limma)
+library(plotly)
+library(broom)
+library(pheatmap)
+library(psych)  
+library(RColorBrewer)
+```
+
+* Read in tables 
+```{r, echo = FALSE}
+proteinGroups <- read_csv("./data/proteinGroups.csv")
+head(proteinGroups)
+dim(proteinGroups)
+```
+
+## Proteomic data preperation
+* This code extract the information from proteinGroup file generated in MaxQuant and put them in a tidy format
+  * intensity
+  * ratio
+  * normalized_ratio
+  * Run Anders & Huber, 2010 method to get normalized intensity for each protein
+```{r, echo = FALSE}
+#extract the protome info
+intensity <- proteinGroups %>%
+  dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("proteome")) %>%
+  dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("Intensity")) %>%
+  #remove nitrogen sample for downstream analysis
+  dplyr::select(-matches("_N_"))
+
+#extract data for time 0
+T00_P <- intensity %>% dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("T00")) %>% 
+  rename(`Intensity proteome_P_T00_R1` = `Intensity proteome_C_T00_R1`,
+         `Intensity proteome_P_T00_R2` = `Intensity proteome_C_T00_R2`,
+         `Intensity proteome_P_T00_R3` = `Intensity proteome_C_T00_R3`,
+         `Intensity L proteome_P_T00_R1` = `Intensity L proteome_C_T00_R1`,
+         `Intensity L proteome_P_T00_R2` = `Intensity L proteome_C_T00_R2`,
+         `Intensity L proteome_P_T00_R3` = `Intensity L proteome_C_T00_R3`,
+         `Intensity M proteome_P_T00_R1` = `Intensity M proteome_C_T00_R1`,
+         `Intensity M proteome_P_T00_R2` = `Intensity M proteome_C_T00_R2`,
+         `Intensity M proteome_P_T00_R3` = `Intensity M proteome_C_T00_R3`,
+         `Intensity H proteome_P_T00_R1` = `Intensity H proteome_C_T00_R1`,
+         `Intensity H proteome_P_T00_R2` = `Intensity H proteome_C_T00_R2`,
+         `Intensity H proteome_P_T00_R3` = `Intensity H proteome_C_T00_R3`)
+
+intensity<- left_join(intensity, T00_P)
+
+intensity_tidy <- intensity %>% 
+  dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, matches(" H | M | L ")) %>%
+  melt() %>%
+  separate(variable, c("signal","channel","sampleNum"), sep = " ") %>%
+  separate(sampleNum, c("omic","nutrient","samplingTime","replicate"), sep = "_") %>%
+  dplyr::select(-c("signal","omic")) 
+
+#reverse the channel information for replicate 2
+rep2_H_M <- intensity_tidy %>%
+  dplyr::filter(replicate == "R2" & channel == "H") %>% 
+  mutate(channel = "M")
+
+rep2_M_H <- intensity_tidy %>%
+  dplyr::filter(replicate == "R2" & channel == "M") %>% 
+  mutate(channel = "H")
+
+rep2_L <- intensity_tidy %>%
+  dplyr::filter(replicate == "R2" & channel == "L")
+
+#replace the channles into corresponding genotypes
+intensity_tidy_re <- bind_rows(intensity_tidy %>% dplyr::filter(replicate != "R2"),rep2_H_M, rep2_M_H, rep2_L) %>%
+  mutate(channel=replace(channel, channel=="M", "rim15KO")) %>%
+  mutate(channel=replace(channel, channel=="H", "WT")) %>%
+  mutate(channel=replace(channel, channel=="L","spike-in")) %>%
+  rename(genotype = channel)
+
+##remove nitrogen samples for size factor estimation
+intensity_L_geoMean <- intensity_tidy_re %>%
+  dplyr::filter(genotype == "spike-in") %>%
+  group_by(`Protein IDs`, `Gene names`, `Protein names`, `Fasta headers`) %>%
+  summarize(ref = geometric.mean(value)) #%>%
+  #drop_na()
+
+#filter out proteins whose genometric mean across all samples are smaller than 10000
+#intensity_L_geoMean_filtered <- intensity_L_geoMean %>% filter(ref > 10000)
+
+intensity_L_geoMean_ratio2ref <- right_join(intensity_tidy_re, intensity_L_geoMean) %>%
+  #divide each intensity/protein group by its geometric mean
+  mutate(ratio2ref = value / ref)
+
+size_factor <- intensity_L_geoMean_ratio2ref %>%
+  #estimate the size factor for each condition
+  group_by(nutrient, samplingTime, replicate, genotype) %>%
+  summarize(sizeFactor = median (ratio2ref , na.rm = TRUE))
+
+intensity_L_geoMean_normed <- left_join(intensity_L_geoMean_ratio2ref, size_factor, by = c("nutrient","samplingTime","replicate","genotype")) %>%
+  mutate (normed_intensity = value/sizeFactor) %>%
+  rename (intensity = value) %>%
+  select (-c("ref","ratio2ref","sizeFactor")) %>%
+  filter(genotype != "spike-in")
+
+#extract the ratio info
+ratio <- proteinGroups %>% 
+  #select columns that contains the useful information - based on the experiments setups
+  dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("Ratio")) %>%
+  dplyr::select(`Protein IDs`, `Gene names`, `Protein names`, `Fasta headers`, contains("proteome")) %>%
+  #remove columns that is not important
+  dplyr::select(-matches("_N_")) %>% 
+  dplyr::select(-contains("variability")) %>%
+  dplyr::select(-contains("normalized")) %>%
+  dplyr::select(-contains("count")) %>%
+  dplyr::select(-contains("iso-count")) %>%
+  dplyr::select(-contains("type"))
+
+#extract data for time 0
+T00_P <- ratio %>% dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("T00")) %>% 
+  dplyr::rename(`Ratio M/L proteome_P_T00_R1` = `Ratio M/L proteome_C_T00_R1`,
+         `Ratio M/L proteome_P_T00_R2` = `Ratio M/L proteome_C_T00_R2`,
+         `Ratio M/L proteome_P_T00_R3` = `Ratio M/L proteome_C_T00_R3`,
+         `Ratio H/L proteome_P_T00_R1` = `Ratio H/L proteome_C_T00_R1`,
+         `Ratio H/L proteome_P_T00_R2` = `Ratio H/L proteome_C_T00_R2`,
+         `Ratio H/L proteome_P_T00_R3` = `Ratio H/L proteome_C_T00_R3`,
+         `Ratio H/M proteome_P_T00_R1` = `Ratio H/M proteome_C_T00_R1`,
+         `Ratio H/M proteome_P_T00_R2` = `Ratio H/M proteome_C_T00_R2`,
+         `Ratio H/M proteome_P_T00_R3` = `Ratio H/M proteome_C_T00_R3`)
+
+ratio_add<- dplyr::inner_join(ratio, T00_P, by = c("Protein IDs","Gene names","Protein names","Fasta headers"))
+  
+#reshape the table into a tidy format 
+ratio_tidy <- melt(ratio_add) %>%
+  separate(variable, c("signal","channel","sampleNum"), sep = " ") %>%
+  separate(sampleNum, c("omic","nutrient","samplingTime","replicate"), sep = "_") %>%
+  dplyr::select(-c("signal","omic"))  %>%
+  rename(ratio = value) %>%
+  #select only wild type and ko ratios individually
+  dplyr::filter(channel %in% c("H/L","M/L"))
+
+##reversed build-in ratio by genotypes
+##switch H/L to M/L
+rep2_HL_ML <- ratio_tidy %>% 
+  dplyr::filter(channel == "H/L" & replicate == "R2" & nutrient == "P") %>%
+  mutate(channel="M/L")
+##switch M/L to H/L
+rep2_ML_HL <- ratio_tidy %>% 
+  dplyr::filter(channel == "M/L" & replicate == "R2" & nutrient == "P") %>%
+  mutate(channel="H/L")
+
+##combine all new replicate 2 data
+rep2 <- bind_rows(rep2_HL_ML, rep2_ML_HL)
+
+#join the revised replicate 2 with the other data from replicate 1&3
+#remove old data
+new_re <- anti_join(ratio_tidy , ratio_tidy %>% dplyr::filter (nutrient == "P" & replicate == "R2"))
+
+ratio_tidy_re <- bind_rows(rep2, new_re) %>%
+  mutate(channel=replace(channel, channel=="M/L", "rim15KO")) %>%
+  mutate(channel=replace(channel, channel=="H/L", "WT")) %>%
+  dplyr::rename(genotype = channel) 
+
+#extract the proteome info
+ratio_normed <- proteinGroups %>% 
+  #select columns that contains the useful information - based on the experiments setups
+  dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("Ratio")) %>%
+  dplyr::select(`Protein IDs`, `Gene names`, `Protein names`, `Fasta headers`, contains("proteome")) %>%
+  dplyr::select(`Protein IDs`, `Gene names`, `Protein names`, `Fasta headers`, contains("normalized")) %>%
+  #remove columns that is not important
+  dplyr::select(-matches("_N_")) %>% 
+  dplyr::select(-contains("variability")) %>%
+  dplyr::select(-contains("count")) %>%
+  dplyr::select(-contains("iso-count")) %>%
+  dplyr::select(-contains("type"))
+
+#extract data for time 0
+T00_P <- ratio_normed %>% dplyr::select(`Protein IDs`, `Gene names`,`Protein names`, `Fasta headers`, contains("T00")) %>% 
+  dplyr::rename(`Ratio M/L normalized proteome_P_T00_R1` = `Ratio M/L normalized proteome_C_T00_R1`,
+         `Ratio M/L normalized proteome_P_T00_R2` = `Ratio M/L normalized proteome_C_T00_R2`,
+         `Ratio M/L normalized proteome_P_T00_R3` = `Ratio M/L normalized proteome_C_T00_R3`,
+         `Ratio H/L normalized proteome_P_T00_R1` = `Ratio H/L normalized proteome_C_T00_R1`,
+         `Ratio H/L normalized proteome_P_T00_R2` = `Ratio H/L normalized proteome_C_T00_R2`,
+         `Ratio H/L normalized proteome_P_T00_R3` = `Ratio H/L normalized proteome_C_T00_R3`,
+         `Ratio H/M normalized proteome_P_T00_R1` = `Ratio H/M normalized proteome_C_T00_R1`,
+         `Ratio H/M normalized proteome_P_T00_R2` = `Ratio H/M normalized proteome_C_T00_R2`,
+         `Ratio H/M normalized proteome_P_T00_R3` = `Ratio H/M normalized proteome_C_T00_R3`)
+
+ratio_normed_add<- dplyr::inner_join(ratio_normed, T00_P, by = c("Protein IDs","Gene names","Protein names","Fasta headers"))
+
+#reshape the table into a tidy format 
+ratio_normed_tidy <- melt(ratio_normed_add) %>%
+  separate(variable, c("signal","channel","normed","sampleNum"), sep = " ") %>%
+  separate(sampleNum, c("omic","nutrient","samplingTime","replicate"), sep = "_") %>%
+  dplyr::select(-c("signal","omic", "normed"))  %>%
+  rename(normed_ratio = value) %>%
+  #select only wild type and ko ratios individually
+  dplyr::filter(channel %in% c("H/L","M/L"))
+
+##reversed build-in ratio by genotypes
+##switch H/L to M/L
+rep2_HL_ML <- ratio_normed_tidy %>% 
+  dplyr::filter(channel == "H/L" & replicate == "R2" & nutrient == "P") %>%
+  mutate(channel="M/L")
+##switch M/L to H/L
+rep2_ML_HL <- ratio_normed_tidy %>% 
+  dplyr::filter(channel == "M/L" & replicate == "R2" & nutrient == "P") %>%
+  mutate(channel="H/L")
+
+##combine all new replicate 2 data
+rep2_normed <- bind_rows(rep2_HL_ML, rep2_ML_HL)
+
+#join the revised replicate 2 with the other data from replicate 1&3
+#remove old data
+new_normed_re <- anti_join(ratio_normed_tidy,ratio_normed_tidy %>% dplyr::filter (nutrient == "P" & replicate == "R2"))
+
+ratio_normed_tidy_re <- bind_rows(rep2_normed, new_normed_re) %>%
+  mutate(channel=replace(channel, channel=="M/L", "rim15KO")) %>%
+  mutate(channel=replace(channel, channel=="H/L", "WT")) %>%
+  dplyr::rename(genotype = channel)
+
+ratio_all<- left_join(ratio_normed_tidy_re, ratio_tidy_re)
+
+master <- left_join(intensity_L_geoMean_normed,ratio_all) %>%
+  melt() %>%
+  rename(data = variable)
+
+dim(master)
+head(master)
+write_csv(master, "./tables/master_protein.csv")
+```
+
+# Box plot of data distribution
+```{r, echo = FALSE}
+ggplot(master %>% filter(data == "intensity"), aes(x=samplingTime, y=value, fill = genotype)) + 
+  geom_boxplot(position=position_dodge(0.8))+#, outlier.shape = NA) +
+  #
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+  scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_y_log10() +
+  ylab("Intensity")
+
+ggplot(master %>% filter(data == "normed_intensity"), aes(x=samplingTime, y=value, fill = genotype)) + 
+  geom_boxplot(position=position_dodge(0.8))+#, outlier.shape = NA) +
+  #
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+  scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_y_log10() +
+  ylab("Normalized intensity")
+
+ggplot(master %>% filter(data == "ratio"), aes(x=samplingTime, y=value, fill = genotype)) + 
+  geom_boxplot(position=position_dodge(0.8))+#, outlier.shape = NA) +
+  #
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+  scale_y_log10() +
+  scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  ylab("Ratio")
+
+ggplot(master %>% filter(data == "normed_ratio"), aes(x=samplingTime, y=value, fill = genotype)) + 
+  geom_boxplot(position=position_dodge(0.8))+#, outlier.shape = NA) +
+  #
+  facet_grid(nutrient~replicate) +
+  theme_classic() +
+  scale_y_log10() +
+  scale_color_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  scale_fill_manual(values=c("#13b1f0","#e7c100","#eb5534"))+
+  ylab("Normalized ratio")
+```
+
+# Principal component analysis for each type of data
+```{r, echo = FALSE, fig.height=5, fig.width=8}
+#heatmap of core data
+for (i in c("intensity","normed_intensity","ratio","normed_ratio")) {
+  df <- master %>% 
+    filter(data == i) %>%
+    select(`Protein IDs`, `Gene names`, genotype, nutrient, replicate, samplingTime, value) %>%
+    filter(!is.na(value)) %>%
+    filter(is.finite(value)) %>%
+    filter(value > 0 ) %>%
+    unite(cond, nutrient, genotype, samplingTime, replicate) %>%
+    spread(key = cond, value = value) 
+
+  annotation_col <- names(df)[-c(1:2)] %>% as.tibble() %>%
+    separate(value, c("nutrient","genotype","samplingTime","rep"), sep = "_", remove = FALSE) %>%
+    column_to_rownames(var = "value")
+
+  breaksList = seq(-0.07, 0.07, by = 0.0001)
+#make heatmaps
+  pheatmap(log2(df[,-c(1:2)]) %>% drop_na(), 
+           colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+           cluster_cols = T, scale = "row", 
+           annotation_col = annotation_col, main = paste0("Log2(",i,")"))
+  
+  #the column number here is determined by the conditions + replicates + mutant libraries
+  dz <- data.frame(t(log2(df[,-c(1:2)]) %>% drop_na()))
+  dz[,ncol(dz)+1] <- rownames(dz)
+  colnames(dz)[ncol(dz)] <- "condition"
+  
+  dz <- dz %>% 
+    separate(condition, c("nutrient", "genotype",  "samplingTime", "rep"), sep = "_", remove = FALSE) %>%
+    unite(cond, nutrient, genotype, samplingTime, remove = FALSE)
+  dim(dz)
+  l<-length(dz)-6
+  
+  print(autoplot(prcomp(dz[,c(1:l)], scale = T), data = dz, colour = 'genotype', shape = "rep",size = 3) +
+  theme_classic() +
+  theme(legend.position = "bottom") +
+  facet_grid(nutrient~samplingTime)+
+  scale_color_manual(values=c("#00AFBB","#E7B800"))+#"#6ec3c1" ,"#335120","#9dcc5f", "#0d5f8a")) +
+  ggtitle(paste0("Log2(",i,")"))+
+  scale_fill_manual(values=c("#00AFBB","#E7B800"))) #"#bfbdbd",
+}
+```
+
+# t.test 
+```{r, echo = FALSE}
+#drop na function
+delete.na <- function(DF, n=0) {DF[rowSums(is.na(DF)) <= n,]}
+
+#t-test between genotypes 
+pG_reshape <- master %>% 
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, data, nutrient, samplingTime) %>%
+  unite(cond, genotype, replicate) %>%
+  spread(key = cond, value = value) 
+
+#remove the rows whoes has more than 2 NA values
+pG_filtered <- delete.na(pG_reshape,2)
+  
+#run t-test and log2FC between genotypes for each timepoint
+ttest_pG <- pG_filtered %>%
+  melt() %>%
+  separate(variable, c("genotype","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, samplingTime, data) %>%
+  summarise_each(funs(t.test(.[genotype == "WT"], .[genotype == "rim15KO"], var.equal=TRUE)$p.value), pvalue = value) 
+
+ttest_pG$qvalue <- p.adjust(ttest_pG$pvalue,method="BH") 
+
+log2FC_pG <- pG_filtered %>%
+  melt() %>%
+  separate(variable, c("genotype","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, samplingTime, data) %>%
+  summarise_each(funs(mean(.[genotype=="WT"], na.rm=TRUE)/mean(.[genotype == "rim15KO"], na.rm=TRUE)), meanDF = value) %>%
+  mutate(log2FC = log2(meanDF))
+
+logFC_ttest_pG <-left_join(ttest_pG, log2FC_pG) %>% 
+  #remove na values in log2FC
+  filter(!is.na(meanDF)) 
+
+write_csv(logFC_ttest_pG,"./tables/DE_proteins_byGenotype.csv")
+
+carbon <- logFC_ttest_pG %>% filter(nutrient == "C") 
+
+ggplot(carbon, aes(x=log2FC, y =-log10(qvalue))) +
+  geom_point(data = filter(carbon, qvalue > 0.05), alpha = 1/6, size = 0.8, col = "grey") +
+  geom_point(data = filter(carbon, log2FC > 0, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "yellow") +
+  geom_point(data = filter(carbon, log2FC < 0, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "blue") +
+  theme_classic() +
+ # coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (WT / rim15Δ)")) +
+  ylab(expression(-Log[10]* "(qvalue)")) +
+  #xlim(-2.5,6.5) +
+  #ylim(0,2) +
+      ggtitle("carbon starvation") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(samplingTime~data, scale = "free")+
+  theme(legend.position="none")
+ggsave("./plots/protein_volcano_carbon.pdf",width = 7, height = 4,  useDingbats=FALSE)
+
+Pi <- logFC_ttest_pG %>% filter(nutrient == "P") 
+
+ggplot(Pi, aes(x=log2FC, y =-log10(qvalue))) +
+  geom_point(data = filter(Pi, qvalue > 0.05), alpha = 1/6, size = 0.8, col = "grey") +
+  geom_point(data = filter(Pi, log2FC > 0, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "#e7b800") +
+  geom_point(data = filter(Pi, log2FC < 0, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "#00afbb") +
+  theme_classic() +
+ # coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (WT / rim15Δ)")) +
+  ylab(expression(-Log[10]* "(qvalue)")) +
+    ggtitle("phosphorous starvation") +
+  #xlim(-2.5,6.5) +
+  #ylim(0,2) +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(samplingTime~data, scale = "free")+
+  theme(legend.position="none")
+ggsave("./plots/protein_volcano_phosphorous.pdf",width = 7, height = 4,  useDingbats=FALSE)
+
+#t.test for DE protein between nutrient 
+pG_reshape <- master %>% 
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, data, nutrient, samplingTime) %>%
+  unite(cond, nutrient, replicate) %>%
+  spread(key = cond, value = value) 
+
+#remove the rows whoes has more than 2 NA values
+pG_filtered <- delete.na(pG_reshape,2)
+
+ttest_pG <- pG_filtered %>%
+  melt() %>%
+  separate(variable, c("nutrient","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, genotype, samplingTime, data) %>%
+  summarise_each(funs(t.test(.[nutrient == "C"], .[nutrient == "P"], var.equal=TRUE)$p.value), pvalue = value) 
+
+ttest_pG$qvalue <- p.adjust(ttest_pG$pvalue,method="BH") 
+
+log2FC_pG <- pG_filtered %>%
+  melt() %>%
+  separate(variable, c("nutrient","replicate")) %>%
+  group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, genotype, samplingTime, data) %>%
+  summarise_each(funs(mean(.[nutrient=="C"], na.rm=TRUE)/mean(.[nutrient == "P"], na.rm=TRUE)), meanDF = value) %>%
+  mutate(log2FC = log2(meanDF))
+
+logFC_ttest_pG <-left_join(ttest_pG, log2FC_pG) %>% 
+  #remove na values in log2FC
+  filter(!is.na(meanDF)) 
+
+write_csv(logFC_ttest_pG,"./tables/DE_proteins_byNutrient.csv")
+
+wt <- logFC_ttest_pG %>% filter(genotype == "WT") 
+
+ggplot(wt, aes(x=log2FC, y =-log10(qvalue))) +
+  geom_point(data = filter(wt, qvalue > 0.05), alpha = 1/6, size = 0.8, col = "grey") +
+  geom_point(data = filter(wt, log2FC > 0, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "#e7b800") +
+  geom_point(data = filter(wt, log2FC < 0, qvalue < 0.05), alpha = 1.2, size = 1.5, col = "#00afbb") +
+  theme_classic() +
+ # coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (carbon / phosphorous)")) +
+  ylab(expression(-Log[10]* "(qvalue)")) +
+  #xlim(-2.5,6.5) +
+  #ylim(0,2) +
+    ggtitle("wt") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(samplingTime~data, scale = "free")+
+  theme(legend.position="none")
+ggsave("./plots/protein_volcano_wt.pdf",width = 7, height = 4,  useDingbats=FALSE)
+
+rim15 <- logFC_ttest_pG %>% filter(genotype == "rim15KO") 
+
+ggplot(rim15, aes(x=log2FC, y =-log10(qvalue))) +
+  geom_point(alpha = 1/6, size = 0.8, col = "grey") +
+  geom_point(data = filter(rim15, qvalue > 0.05), alpha = 1/6, size = 0.8, col = "grey") +
+  geom_point(data = filter(rim15, log2FC > 1, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "#e7b800") +
+  geom_point(data = filter(rim15, log2FC < -1, qvalue < 0.05), alpha = 1/2, size = 1.5, col = "#00afbb") +
+  theme_classic() +
+ # coord_fixed(ratio = 6) +
+  xlab(expression(Log[2]*" (carbon / phosphorous)")) +
+  ylab(expression(-Log[10]* "(qvalue)")) +
+  #xlim(-2.5,6.5) +
+  #ylim(0,2) +
+  ggtitle("rim15") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black")) +
+  facet_grid(samplingTime~data, scale = "free")+
+  theme(legend.position="none")
+ggsave("./plots/protein_volcano_rim15.pdf",width = 7, height = 4,  useDingbats=FALSE)
+```
+
+## two-way ANOVA - genotype wise
+```{r, echo = FALSE, eval = FALSE}
+#keep the table with descent measurements
+genotype_matched <- master %>%
+  melt() %>%
+  rename(data = variable) %>%
+  #remove na values
+  dplyr::filter(!is.na(value)) %>% 
+  #remove infinite values
+  dplyr::filter(is.finite(value)) %>% 
+  #remove 0 values, wich will be a problem for later log based transformation
+  dplyr::filter(value > 0) %>%
+  group_by(`Protein IDs`,`Gene names`, samplingTime, replicate, genotype, data) %>%
+  mutate(nutrient_number = n()) %>%
+  filter(nutrient_number == 2) %>%
+  group_by(`Protein IDs`,`Gene names`, nutrient, samplingTime, replicate, data) %>%
+  mutate(genotype_number = n()) %>%
+  filter(genotype_number == 2) %>%
+  group_by(`Protein IDs`,`Gene names`, nutrient, samplingTime, genotype, data) %>%
+  mutate(rep_numner = n()) %>%
+  filter(rep_numner == 3) %>%
+  group_by(`Protein IDs`,`Gene names`, nutrient, replicate, genotype, data) %>%
+  mutate(time_number = n()) %>%
+  filter(time_number == 4) 
+
+#ancova_genotype <- genotype_matched %>% 
+#  #convert samplingTime to numerics
+#  mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>%
+#  mutate(samplingTime = as.numeric(samplingTime)) %>%
+#  dplyr::group_by(nutrient, `Gene names`,`Protein IDs`, data) %>%
+#  do(tidy(lm(log2(value) ~ samplingTime * genotype, .))) %>% 
+#  dplyr::filter(!is.na(p.value)) 
+
+#add q-value
+#ancova_genotype$qvalue <- qvalue(ancova_genotype$p.value, fdr.level=0.05, pi0.method="bootstrap")$qvalues
+
+#write_csv(ancova_genotype, "./tables/anova_genotype.csv")
+```
+
+# Two-way ANOVA - genotype wise - summary of model fitting
+```{r, echo=FALSE}
+ancova_genotype <- read_csv("./tables/anova_genotype.csv")
+#check the distribution of statistics
+ancova_genotype %>% 
+  ggplot(aes(x=p.value, col = nutrient, fill = nutrient, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("pvalue")
+
+#check the distribution of coefficient
+ancova_genotype %>% 
+  ggplot(aes(x=estimate, col = nutrient, fill = nutrient, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("Coefficient")
+
+#check the distribution of qvalue
+ancova_genotype %>% 
+  ggplot(aes(x=qvalue, col = nutrient, fill = nutrient, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom")+
+  ggtitle("p.adj (FDR = 0.05)")
+
+#two-way ANOVA - genotype wise - look at the significantly differently expressed proteins
+sig_genotype <- ancova_genotype %>% filter(term == "samplingTime:genotypeWT" & qvalue < 0.05)
+dim(sig_genotype)
+head(sig_genotype)
+```
+
+# two-way ANOVA - nutrient wise 
+```{r , echo = FALSE, eval = FALSE}
+#ancova_nutrient <- genotype_matched %>% 
+#  mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>%
+#  mutate(samplingTime = as.numeric(samplingTime)) %>%
+#  dplyr::group_by(genotype, `Gene names`,`Protein IDs`, data) %>%
+#  do(tidy(lm(log2(value) ~ samplingTime * nutrient, .))) %>% 
+#  dplyr::filter(!is.na(p.value)) #%>%
+
+#add q-value
+#ancova_nutrient$qvalue <- qvalue(ancova_nutrient$p.value, fdr.level=0.05, pi0.method="bootstrap")$qvalues
+
+#write_csv(ancova_nutrient, "./tables/anova_nutrient.csv")
+```
+
+# Two-way ANOVA - nutrient wise - summary of model fitting
+```{r, echo = FALSE}
+ancova_nutrient <- read_csv("./tables/anova_nutrient.csv")
+#check the distribution of statistics
+ancova_nutrient %>% 
+  ggplot(aes(x=p.value, col = genotype, fill = genotype, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid(data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("pvalue")
+
+#check the distribution of coefficient
+ancova_nutrient %>% 
+  ggplot(aes(x=estimate, col = genotype, fill = genotype, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("Coefficient")
+
+#check the distribution of q-value
+ancova_nutrient %>% 
+  ggplot(aes(x=qvalue, col = genotype, fill = genotype, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom")+
+  ggtitle("p.adj (FDR = 0.05)")
+
+#look at the significantly differently expressed proteins
+sig_nutrient <- ancova_nutrient %>% filter(term == "samplingTime:nutrientP" & qvalue < 0.05)
+dim(sig_nutrient)
+head(sig_nutrient)
+```
+
+##Three way ANCOVA
+```{r, eval = FALSE, echo = FALSE}
+#three way anova using samplingTime, genotype and replicate as variables 
+#ancova_geno_nutrient <- genotype_matched %>% 
+ # mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>%
+#  mutate(samplingTime = as.numeric(samplingTime)) %>%
+#  dplyr::group_by(`Protein IDs`,`Gene names`, data) %>%
+#  do(tidy(aov(log2(value) ~ samplingTime * genotype * nutrient, .))) %>% 
+#  dplyr::filter(!is.na(p.value))
+
+#add q-value
+#ancova_geno_nutrient$qvalue <- qvalue(ancova_geno_nutrient$p.value, fdr.level=0.05, pi0.method="bootstrap")$qvalues 
+
+#write_csv(ancova_geno_nutrient, "./tables/anova_genotype_nutrient.csv")
+```
+
+# Three way ANCOVA - summary of model fitting
+```{r, echo = FALSE}
+ancova_geno_nutrient <- read_csv("./tables/anova_genotype_nutrient.csv")
+#check the distribution of statistics
+ancova_geno_nutrient %>% 
+  ggplot(aes(x=p.value, col = "#ff7369", alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..), col = "#ff7369", position="identity", alpha=0.1)+
+  facet_grid(data ~ term) +
+   theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("pvalue")
+
+#check the distribution of coefficient
+ancova_geno_nutrient %>% 
+  ggplot(aes(x=sumsq, col = "#ff7369", alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..), col = "#ff7369", position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("sum of square root")
+
+#check the distribution of qvalue
+ancova_geno_nutrient %>% 
+  ggplot(aes(x=qvalue, col = "#ff7369", alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..), col = "#ff7369", position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  theme_classic2() +
+  theme(legend.position = "bottom")+
+  ggtitle("p.adj (FDR = 0.05)")
+
+#look at the significantly differently expressed proteins
+sig_3way <- ancova_geno_nutrient %>% filter(term == "samplingTime:genotype:nutrient" & qvalue < 0.05)
+dim(sig_3way)
+head(sig_3way)
+```
