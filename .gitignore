@@ -19,3 +19,6 @@ Icon?
 
 # Oversized regenerable intermediate (142 MB > GitHub limit); rebuilt by 01_data_preparation_qc.Rmd
 tables/master_protein.csv
+
+# Published third-party supplements (local copies; see data/published/README.md)
+data/published/*/

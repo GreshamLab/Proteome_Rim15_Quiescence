@@ -1,0 +1,27 @@
+---
+title: "Intensity-gated GEM diffusion reanalysis (R2.9)"
+output: html_document
+---
+
+**BLOCKED: needs the GEM trajectory data with per-particle intensities
+(the Fig 6D source data — request from Siyu).**
+
+Reviewer 2: larger (aggregated) GEM particles diffuse more slowly by
+Stokes-Einstein, so "decreased diffusion" cannot be claimed without comparing
+like-sized particles. Plan:
+
+1. From proliferating-cell GEM data, define the intensity window consistent
+   with monomeric 40 nm-GEMs (single-particle intensity distribution).
+2. Restrict MSD / Deff analysis to trajectories within the monomer window.
+3. Recompute Deff(100 ms) and anomalous exponent alpha for WT vs rim15KO in
+   the monomer population -> `revision3/output/gem_monomer_deff.pdf`.
+
+Text outcome depends on the result: if the Deff difference persists among
+monomers, the mobility claim holds for size-matched particles; if not,
+conclusions are restricted to aggregation/confinement. Either way, soften
+"decreased particle diffusion" language throughout to "reduced effective
+mobility / increased confinement".
+
+```{r session}
+sessionInfo()
+```

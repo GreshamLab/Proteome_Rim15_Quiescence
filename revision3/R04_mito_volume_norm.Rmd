@@ -1,0 +1,24 @@
+---
+title: "Mitochondrial volume normalized to cell volume (R2.8)"
+output: html_document
+---
+
+**BLOCKED: needs the cellpose segmentation masks and MitoGraph per-cell output
+(not in the Drive project folder or this repo — request from Siyu).**
+
+Reviewer 2: rim15KO quiescent cells are smaller, so mitochondrial volume must
+be expressed per cell volume. Plan:
+
+1. From each cellpose mask, extract area and major/minor axis lengths.
+2. Estimate cell volume under an explicit geometric assumption (prolate
+   ellipsoid from major/minor axes, or sphere from equivalent radius) — state
+   the assumption in Methods; an estimate is acceptable, a claim of exact
+   volume is not.
+3. mito volume (MitoGraph) / cell volume per cell; replot Fig 5B-style panels
+   and re-run the same paired test -> `revision3/output/mito_volume_per_cellvol.pdf`.
+   Expectation (reviewer agrees): reduced mitochondrial content in rim15KO
+   persists after normalization.
+
+```{r session}
+sessionInfo()
+```

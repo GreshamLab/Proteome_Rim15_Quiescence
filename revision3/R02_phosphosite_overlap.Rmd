@@ -1,0 +1,55 @@
+---
+title: "Cross-dataset comparison of Rim15-dependent phosphosites (R1.3 / R2.5)"
+output: html_document
+---
+
+Both reviewers asked for a quantitative overlap of our Rim15-dependent
+phosphosites with published Rim15 / PP2A-Cdc55 / quiescence phosphoproteomes:
+an UpSet plot (plus optional 3-set Venn) and a supplementary membership table.
+
+Datasets (supplement files in `data/published/`, kept locally / gitignored;
+sources listed in `data/published/README.md`):
+
+- **This study** — significant sites from `tables/DE_pSites_byGenotype.csv`
+  (site key already `GENE_position`, e.g. `STE2_329`).
+- **Li et al. 2019** (`data/published/li2019/`) — Rim15-dependent sites.
+- **Dokladal et al. 2021** (`data/published/dokladal2021/`) — TORC1/Rim15 axis.
+- **Baro et al. 2018** (`data/published/baro2018/`) — PP2A-Cdc55.
+- **Plank et al. 2020** (`data/published/plank2020/`) — quiescence phospho.
+
+Harmonization plan (the error-prone step is residue numbering — different
+studies used different reference proteomes; verify a handful of well-known
+sites, e.g. Igo1 S64, by hand before trusting the overlap):
+
+1. Map every protein to its SGD systematic ORF name (use org.Sc.sgd.db or the
+   SGD alias table); site key = `ORF_residueLetter_position`.
+2. Compute overlap at two resolutions: (i) protein-level, (ii) exact-site-level.
+3. UpSet plot (UpSetR) + full membership table
+   -> `revision3/output/phosphosite_overlap_upset.pdf`,
+   `revision3/output/phosphosite_membership.csv`.
+4. Define the consensus set (sites in >= 2 published datasets + ours) and the
+   novel set (ours only); these numbers feed the Discussion rewrite.
+
+```{r setup, message=FALSE}
+library(tidyverse)
+library(readxl)
+# library(UpSetR)
+# library(org.Sc.sgd.db)
+
+dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+
+# --- This study: significant Rim15-dependent sites --------------------------
+ours <- read_csv("./tables/DE_pSites_byGenotype.csv") %>%
+  filter(qvalue <= 0.05) %>%
+  distinct(`Gene names`, pSite)
+
+# --- TODO: identify the site-level table within each supplement -------------
+# Inspect sheets first, e.g.:
+# excel_sheets("./data/published/li2019/mmc2.xlsx")
+# Each dataset needs: gene/ORF, residue letter, position, and the study's
+# significance call for Rim15- (or Cdc55-) dependence.
+```
+
+```{r session}
+sessionInfo()
+```

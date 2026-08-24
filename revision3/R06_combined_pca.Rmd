@@ -1,0 +1,85 @@
+---
+title: "Combined-genotype PCA of the proteome (reviewer point R2.6)"
+output: html_document
+---
+
+Reviewer 2 noted that in the per-genotype PCA (Fig S2C) PC2 appears to separate
+replicates on carbon, with one WT carbon replicate offset, and asked whether
+genotype separates more than replicate scatter when WT and rim15KO are analyzed
+together. Here we run PCA on the pooled WT + rim15KO normalized SILAC ratios,
+color by genotype / nutrient / time / replicate, and check sensitivity of the
+conclusions to the suspect WT carbon replicate.
+
+```{r setup, message=FALSE}
+library(tidyverse)
+
+ratios <- read_csv("./tables/normed_ratio_perseus.csv")
+
+dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r prepare-matrix}
+# Sample columns are named genotype_nutrient_time_replicate, e.g. WT_C_T06_R2.
+sample_cols <- grep("^(WT|rim15KO)_", names(ratios), value = TRUE)
+
+# Matrix: samples in rows (like observations), proteins in columns.
+# Keep proteins quantified in every sample so PCA needs no imputation
+# (mirrors the complete-case approach used in the per-genotype PCA).
+mat <- ratios %>%
+  select(`Protein IDs`, all_of(sample_cols)) %>%
+  column_to_rownames("Protein IDs") %>%
+  as.matrix()
+
+complete <- mat[rowSums(is.na(mat)) == 0, , drop = FALSE]
+message(nrow(complete), " proteins complete across all ", ncol(complete), " samples")
+
+# log2 the ratios before PCA
+pca_in <- t(log2(complete))
+
+meta <- tibble(sample = rownames(pca_in)) %>%
+  separate(sample, into = c("genotype", "nutrient", "time", "replicate"),
+           sep = "_", remove = FALSE)
+```
+
+```{r pca}
+pc <- prcomp(pca_in, center = TRUE, scale. = FALSE)
+var_expl <- 100 * pc$sdev^2 / sum(pc$sdev^2)
+
+scores <- as_tibble(pc$x[, 1:4], rownames = "sample") %>% left_join(meta, by = "sample")
+
+plot_pca <- function(color_by) {
+  ggplot(scores, aes(PC1, PC2, color = .data[[color_by]], shape = genotype)) +
+    geom_point(size = 3) +
+    labs(x = sprintf("PC1 (%.1f%%)", var_expl[1]),
+         y = sprintf("PC2 (%.1f%%)", var_expl[2]),
+         color = color_by) +
+    theme_bw()
+}
+
+p <- cowplot::plot_grid(plot_pca("genotype"), plot_pca("nutrient"),
+                        plot_pca("time"), plot_pca("replicate"), nrow = 2)
+p
+ggsave("./revision3/output/combined_pca.pdf", p, width = 10, height = 8)
+
+# Which PC captures genotype? Correlate PCs with genotype indicator.
+scores %>%
+  mutate(gt = as.numeric(genotype == "WT")) %>%
+  summarise(across(starts_with("PC"), ~ cor(.x, gt))) %>%
+  pivot_longer(everything(), names_to = "PC", values_to = "cor_with_genotype") %>%
+  arrange(desc(abs(cor_with_genotype)))
+```
+
+```{r outlier-sensitivity}
+# Identify the offset WT carbon replicate on PC2 (per Fig S2C), then re-run the
+# PCA without that replicate and confirm the genotype/nutrient/time structure
+# is unchanged.
+scores %>% filter(genotype == "WT", nutrient == "C") %>%
+  select(sample, PC1, PC2) %>% arrange(PC2)
+
+# TODO once the outlier sample is identified from the table above:
+# drop it, re-run prcomp, and compare loadings/score structure.
+```
+
+```{r session}
+sessionInfo()
+```

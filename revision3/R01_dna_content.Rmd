@@ -1,0 +1,28 @@
+---
+title: "DNA-content reanalysis: gating, histograms, 1N-fraction ANOVA (R1.2 / R2.1)"
+output: html_document
+---
+
+**BLOCKED: needs the FCS files and the original CytoExploreR gating session
+(not in the Drive project folder or this repo — request from Siyu).**
+
+Both reviewers rejected the "no significant difference in DNA content" claim.
+Plan (concede kinetics, keep terminal-arrest claim):
+
+1. Document the singlet gate and the 1N/2N model (CytoExploreR fit) and the
+   proliferating-cell control anchoring the 1N and 2N peaks -> Methods text.
+2. Export representative WT and rim15KO histograms at 0/6/16/30 h for each
+   starvation -> grid figure `revision3/output/dna_content_histograms.pdf`
+   (new supplementary figure).
+3. Two-way ANOVA (time x genotype) on the 1N-fraction trajectories per
+   condition — same approach as the survival analysis — reporting the genotype
+   term with CI and effect size -> `revision3/output/dna_1N_anova.csv`.
+   Frame as characterizing a real, modest kinetic difference (delayed, less
+   synchronous G1 arrest in rim15KO, largest on carbon), not a null result.
+
+The lab's cnvflow repo (GreshamLab/cnvflow) has the CytoExploreR workflow
+conventions to reuse.
+
+```{r session}
+sessionInfo()
+```

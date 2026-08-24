@@ -1,0 +1,52 @@
+---
+title: "Reconciling the mitochondrial proteome and imaging phenotypes (R2.7)"
+output: html_document
+---
+
+Reviewer 2 asked us to reconcile two statements: rim15KO shows *increased*
+relative abundance of mitochondrial proteins under carbon starvation, yet
+*fails to expand* mitochondrial volume. The reconciliation to demonstrate:
+SILAC ratios are relative not absolute; mitochondrial coverage is partial and
+abundance-biased; and the increase is confined to a specific functional subset
+(carriers / metabolic enzymes), not the membrane-biogenesis program.
+
+Deliverables: coverage numbers (n detected / n annotated, overall and per
+subcompartment), WT vs rim15KO plots by subcompartment/functional class, and a
+supplementary table of per-class log2(rim15KO/WT).
+
+```{r setup, message=FALSE}
+library(tidyverse)
+
+dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+
+# Detected proteome (tidy long format, both genotypes)
+prot <- read_csv("./tables/master_tidy_protein.csv")
+```
+
+```{r mito-reference}
+# Reference mitochondrial proteome with subcompartment annotation:
+# Morgenstern et al. 2017 (Cell Rep 19:2836) high-confidence mito proteome,
+# Supplementary Table S1 - includes subcompartment (matrix, IM, OM, IMS)
+# and functional class. Download once into data/published/:
+#   https://www.cell.com/cms/10.1016/j.celrep.2017.06.014/attachment/…/mmc2.xlsx
+# Fallback: GO:0005739 annotation from org.Sc.sgd.db.
+#
+# TODO: load reference, join to detected proteins by ORF.
+# Classes to assign per the response plan: matrix, inner membrane (OXPHOS
+# I-V), outer membrane, IMS, mitoribosome, TCA, carriers/SLC25, TIM/TOM
+# import, MICOS/biogenesis.
+```
+
+```{r coverage-and-classes}
+# 1. Coverage: n detected / n reference, overall + per subcompartment
+#    -> revision3/output/mito_coverage_table.csv  (feeds "[N] of [M]" in the
+#       response letter and Results).
+# 2. Per-class WT vs rim15KO trajectories (carbon and phosphorus):
+#    -> revision3/output/mito_by_class.pdf
+# 3. Per-class log2(rim15KO/WT) summary table
+#    -> revision3/output/mito_class_log2fc.csv
+```
+
+```{r session}
+sessionInfo()
+```
