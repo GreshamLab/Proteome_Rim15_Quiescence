@@ -16,3 +16,6 @@ output/wgcna/filtered_TOM_*.RData
 # macOS junk
 .DS_Store
 Icon?
+
+# Oversized regenerable intermediate (142 MB > GitHub limit); rebuilt by 01_data_preparation_qc.Rmd
+tables/master_protein.csv
