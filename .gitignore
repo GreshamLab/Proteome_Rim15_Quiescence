@@ -1,4 +1,18 @@
+# R session artifacts
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# Knitted output (regenerable from the .Rmd sources)
+*.html
+*.nb.html
+*_files/
+*_cache/
+
+# WGCNA topological-overlap-matrix caches (large, regenerable)
+output/wgcna/filtered_TOM_*.RData
+
+# macOS junk
+.DS_Store
+Icon?

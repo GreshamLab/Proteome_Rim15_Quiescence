@@ -194,7 +194,7 @@ bwnet = blockwiseModules(datExpr, power = softPower, #corType = "biweight",
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
                        saveTOMs = TRUE,
-                       saveTOMFileBase = paste0("filtered_TOM_ratio",nutri,gt), 
+                       saveTOMFileBase = paste0("./output/wgcna/filtered_TOM_ratio",nutri,gt), 
                        verbose = 3)
 
 #bwnet$colors
@@ -206,13 +206,13 @@ moduleColors = labels2colors(bwnet$colors)
 MEs = bwnet$MEs;
 geneTree = bwnet$dendrograms[[1]];
 save(MEs, moduleLabels, moduleColors, geneTree, 
-     file = paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+     file = paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 ```
 
 ### Kegg annotation and visualization
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 #load saved co-expression clusters.
-load(paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+load(paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 
 table <- as.data.frame(moduleLabels) 
 table$`Protein IDs`<- names(moduleLabels)
@@ -231,7 +231,7 @@ breaksList = seq(-0.07, 0.07, by = 0.0001)
 annotation <- data.frame(rownames(MEs)) %>% separate(`rownames.MEs.`, c("nutrient", "genotype", "time", "replicate"))
 rownames(annotation) <- rownames(MEs)
 #make heatmaps
-pdf(paste0("./ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
+pdf(paste0("./output/wgcna/ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
 #remove module 0 which has unsigned genes
 mes <- MEs #%>% dplyr::select(-`ME0`)
 pheatmap(mes, #labels_row = F,
@@ -346,7 +346,7 @@ rownames(df) <- tmp$Description
 order <- order(df[, "2"],df[,"1"])
 tmp2<-df[order, c(1:2)]
 #
-pdf(file=paste0("kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
+pdf(file=paste0("./output/wgcna/kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
 heatmap.2(as.matrix(tmp2), Rowv = FALSE, Colv=FALSE,trace="none", na.color = "white", scale="none", col = my_palette, breaks=breaks,margins = c(2,26),cexRow=0.7,cexCol=1,keysize=1.3,sepcolor="grey", sepwidth=c(0.05,0.05),colsep=1:ncol(tmp2),
            rowsep=1:nrow(tmp2))
 dev.off()
@@ -423,7 +423,7 @@ modules <- unique(tmp4$moduleLabels)
     theme(panel.grid.major = element_blank(), panel.grid.minor =element_blank(),legend.position="bottom")+
     xlab("Hours post inoculation")
   
-ggsave(paste0("./",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
+ggsave(paste0("./output/wgcna/",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
 ```
 
 ## rim15 -Carbon
@@ -509,7 +509,7 @@ bwnet = blockwiseModules(datExpr, power = softPower, #corType = "biweight",
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
                        saveTOMs = TRUE,
-                       saveTOMFileBase = paste0("filtered_TOM_ratio",nutri,gt), 
+                       saveTOMFileBase = paste0("./output/wgcna/filtered_TOM_ratio",nutri,gt), 
                        verbose = 3)
 
 #bwnet$colors
@@ -521,13 +521,13 @@ moduleColors = labels2colors(bwnet$colors)
 MEs = bwnet$MEs;
 geneTree = bwnet$dendrograms[[1]];
 save(MEs, moduleLabels, moduleColors, geneTree, 
-     file = paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+     file = paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 ```
 
 ### Kegg annotation and visualization
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 #load saved co-expression clusters.
-load(paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+load(paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 
 table <- as.data.frame(moduleLabels) 
 table$`Protein IDs`<- names(moduleLabels)
@@ -546,7 +546,7 @@ breaksList = seq(-0.07, 0.07, by = 0.0001)
 annotation <- data.frame(rownames(MEs)) %>% separate(`rownames.MEs.`, c("nutrient", "genotype", "time", "replicate"))
 rownames(annotation) <- rownames(MEs)
 #make heatmaps
-pdf(paste0("./ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
+pdf(paste0("./output/wgcna/ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
 #remove module 0 which has unsigned genes
 mes <- MEs #%>% dplyr::select(-`ME0`)
 pheatmap(mes, #labels_row = F,
@@ -661,7 +661,7 @@ rownames(df) <- tmp$Description
 order <- order(df[, "2"],df[,"1"])
 tmp2<-df[order, c(1:2)]
 #
-pdf(file=paste0("kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
+pdf(file=paste0("./output/wgcna/kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
 heatmap.2(as.matrix(tmp2), Rowv = FALSE, Colv=FALSE,trace="none", na.color = "white", scale="none", col = my_palette, breaks=breaks,margins = c(2,26),cexRow=0.7,cexCol=1,keysize=1.3,sepcolor="grey", sepwidth=c(0.05,0.05),colsep=1:ncol(tmp2),
            rowsep=1:nrow(tmp2))
 dev.off()
@@ -738,7 +738,7 @@ modules <- unique(tmp4$moduleLabels)
     theme(panel.grid.major = element_blank(), panel.grid.minor =element_blank(),legend.position="bottom")+
     xlab("Hours post inoculation")
   
-ggsave(paste0("./",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
+ggsave(paste0("./output/wgcna/",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
 ```
 
 ## WT -Pi
@@ -824,7 +824,7 @@ bwnet = blockwiseModules(datExpr, power = softPower, #corType = "biweight",
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
                        saveTOMs = TRUE,
-                       saveTOMFileBase = paste0("filtered_TOM_ratio",nutri,gt), 
+                       saveTOMFileBase = paste0("./output/wgcna/filtered_TOM_ratio",nutri,gt), 
                        verbose = 3)
 
 #bwnet$colors
@@ -836,13 +836,13 @@ moduleColors = labels2colors(bwnet$colors)
 MEs = bwnet$MEs;
 geneTree = bwnet$dendrograms[[1]];
 save(MEs, moduleLabels, moduleColors, geneTree, 
-     file = paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+     file = paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 ```
 
 ### Kegg annotation and visualization
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 #load saved co-expression clusters.
-load(paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+load(paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 
 table <- as.data.frame(moduleLabels) 
 table$`Protein IDs`<- names(moduleLabels)
@@ -861,7 +861,7 @@ breaksList = seq(-0.07, 0.07, by = 0.0001)
 annotation <- data.frame(rownames(MEs)) %>% separate(`rownames.MEs.`, c("nutrient", "genotype", "time", "replicate"))
 rownames(annotation) <- rownames(MEs)
 #make heatmaps
-pdf(paste0("./ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
+pdf(paste0("./output/wgcna/ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
 #remove module 0 which has unsigned genes
 mes <- MEs #%>% dplyr::select(-`ME0`)
 pheatmap(mes, #labels_row = F,
@@ -976,7 +976,7 @@ rownames(df) <- tmp$Description
 order <- order(df[, "2"],df[,"1"])
 tmp2<-df[order, c(1:2)]
 #
-pdf(file=paste0("kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
+pdf(file=paste0("./output/wgcna/kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
 heatmap.2(as.matrix(tmp2), Rowv = FALSE, Colv=FALSE,trace="none", na.color = "white", scale="none", col = my_palette, breaks=breaks,margins = c(2,26),cexRow=0.7,cexCol=1,keysize=1.3,sepcolor="grey", sepwidth=c(0.05,0.05),colsep=1:ncol(tmp2),
            rowsep=1:nrow(tmp2))
 dev.off()
@@ -1053,7 +1053,7 @@ modules <- unique(tmp4$moduleLabels)
     theme(panel.grid.major = element_blank(), panel.grid.minor =element_blank(),legend.position="bottom")+
     xlab("Hours post inoculation")
   
-ggsave(paste0("./",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
+ggsave(paste0("./output/wgcna/",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
 ```
 
 ## rim15KO -Pi
@@ -1139,7 +1139,7 @@ bwnet = blockwiseModules(datExpr, power = softPower, #corType = "biweight",
                        reassignThreshold = 0, mergeCutHeight = 0.25,
                        numericLabels = TRUE, pamRespectsDendro = FALSE,
                        saveTOMs = TRUE,
-                       saveTOMFileBase = paste0("filtered_TOM_ratio",nutri,gt), 
+                       saveTOMFileBase = paste0("./output/wgcna/filtered_TOM_ratio",nutri,gt), 
                        verbose = 3)
 #bwnet$colors
 # open a graphics window
@@ -1150,13 +1150,13 @@ moduleColors = labels2colors(bwnet$colors)
 MEs = bwnet$MEs;
 geneTree = bwnet$dendrograms[[1]];
 save(MEs, moduleLabels, moduleColors, geneTree, 
-     file = paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+     file = paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 ```
 
 ### Kegg annotation and visualization
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 #load saved co-expression clusters.
-load(paste0(nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
+load(paste0("./output/wgcna/",nutri,"_",gt,"_ratio_networkConstruction-auto.RData"))
 
 table <- as.data.frame(moduleLabels) 
 table$`Protein IDs`<- names(moduleLabels)
@@ -1175,7 +1175,7 @@ breaksList = seq(-0.07, 0.07, by = 0.0001)
 annotation <- data.frame(rownames(MEs)) %>% separate(`rownames.MEs.`, c("nutrient", "genotype", "time", "replicate"))
 rownames(annotation) <- rownames(MEs)
 #make heatmaps
-pdf(paste0("./ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
+pdf(paste0("./output/wgcna/ME_",nutri,"_",gt,"_ratio.pdf"), width = 4, height =5)
 #remove module 0 which has unsigned genes
 mes <- MEs #%>% dplyr::select(-`ME0`)
 pheatmap(mes, #labels_row = F,
@@ -1290,7 +1290,7 @@ rownames(df) <- tmp$Description
 order <- order(df[, "2"],df[,"1"])
 tmp2<-df[order, c(1:2)]
 #
-pdf(file=paste0("kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
+pdf(file=paste0("./output/wgcna/kegg_map_",nutri,"_",gt,"_","ratio(n>",n_count,").pdf"),width = 7, height =6)
 heatmap.2(as.matrix(tmp2), Rowv = FALSE, Colv=FALSE,trace="none", na.color = "white", scale="none", col = my_palette, breaks=breaks,margins = c(2,26),cexRow=0.7,cexCol=1,keysize=1.3,sepcolor="grey", sepwidth=c(0.05,0.05),colsep=1:ncol(tmp2),
            rowsep=1:nrow(tmp2))
 dev.off()
@@ -1367,7 +1367,7 @@ modules <- unique(tmp4$moduleLabels)
     theme(panel.grid.major = element_blank(), panel.grid.minor =element_blank(),legend.position="bottom")+
     xlab("Hours post inoculation")
   
-ggsave(paste0("./",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
+ggsave(paste0("./output/wgcna/",nutri,"_",gt,"_","WPM_dynamic(cor>0.7).pdf"), width = 7, height = 4.5)
 ```
 
 ## Consensus motif in -C and -Pi for WT

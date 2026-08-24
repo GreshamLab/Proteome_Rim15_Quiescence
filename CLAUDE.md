@@ -35,16 +35,17 @@ Base: `/Users/david/Library/CloudStorage/GoogleDrive-dg107@nyu.edu/My Drive/Gres
   folder; text revisions are delivered as a change-list (old → new text) that
   David pastes into Docs with Suggesting mode on. Do not edit the Docs directly.
 
-## Script → figure map (to be completed during tidy)
+## Script → figure map (renamed during 2026 tidy; see README for old names)
 
-- `Figure 1/Figure1.Rmd` — growth curves, bud index, viability (Fig 1).
-- `Data preperation and QC.Rmd` — SILAC ratio prep, normalization, QC, PCA (Fig S2).
-- `Proteom analysis.Rmd` / `Proteom analysis - ANOVA.Rmd` / `ANCOVA analysis.Rmd`
-  — differential protein abundance (Figs 2–3).
-- `pSites analysis.Rmd` — phosphosite analysis, motif enrichment (Fig 4).
-- `Pro-phospho combined.Rmd` — combined proteome/phospho analyses.
-- `Single protein check.Rmd` — per-protein inspection utility.
-- WGCNA outputs: `*_networkConstruction-auto.RData`, `ME_*.pdf`, `*_WPM_dynamic*.pdf`.
+- `figure1/Figure1.Rmd` — growth curves, bud index, viability (Fig 1); run from figure1/.
+- `01_data_preparation_qc.Rmd` — SILAC ratio prep, normalization, QC, PCA (Fig S2).
+- `02_protein_anova_wgcna.Rmd` — ANOVA + WGCNA modules (outputs in output/wgcna/).
+- `03_ancova_analysis.Rmd`, `04_protein_de_go_analysis.Rmd` — differential
+  protein abundance, GO/KEGG (Figs 2–3).
+- `05_psites_analysis.Rmd` — phosphosite analysis, motif enrichment (Fig 4).
+- `06_pro_phospho_combined.Rmd` — combined proteome/phospho analyses.
+- `07_single_protein_check.Rmd` — per-protein inspection utility.
+- All root Rmds expect the repo root as working directory.
 
 ## Third-revision analysis checklist (reviewer-required; recipes in response plan)
 
