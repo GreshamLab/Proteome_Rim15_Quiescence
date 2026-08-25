@@ -22,3 +22,11 @@ tables/master_protein.csv
 
 # Published third-party supplements (local copies; see data/published/README.md)
 data/published/*/
+
+# Large raw data — not committed (regenerable or too large for GitHub)
+data/Flow cytometry data/
+data/mitochondrial proteome/
+data/published/UP000002311_559292.fasta
+
+# Student working file archived to rescue/V2_Plot_Design.Rmd (leading / = root only)
+/V2_Plot_Design.Rmd

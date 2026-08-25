@@ -1,27 +1,527 @@
 ---
-title: "DNA-content reanalysis: gating, histograms, 1N-fraction ANOVA (R1.2 / R2.1)"
+title: "DNA-content and cell-size reanalysis: gating, histograms, 1N-fraction ANOVA (R1.2 / R2.1)"
 output: html_document
 ---
 
-**BLOCKED: needs the FCS files and the original CytoExploreR gating session
-(not in the Drive project folder or this repo — request from Siyu).**
+Reviewers R1 and R2 both questioned the "no significant difference in DNA content"
+claim. The reanalysis strategy (from `Sun_et_al_response_plan.docx`) is to concede
+on kinetics while defending the terminal phenotype: both WT and rim15Δ ultimately
+arrest as unbudded 1N cells, but rim15Δ delays and desynchronizes G1 arrest.
 
-Both reviewers rejected the "no significant difference in DNA content" claim.
-Plan (concede kinetics, keep terminal-arrest claim):
+This script is the production version derived from `rescue/V2_Plot_Design.Rmd`
+(written by Ozan Berk Imir, January 2026). It runs from the repo root
+(`knit_root_dir = getwd()`).
 
-1. Document the singlet gate and the 1N/2N model (CytoExploreR fit) and the
-   proliferating-cell control anchoring the 1N and 2N peaks -> Methods text.
-2. Export representative WT and rim15KO histograms at 0/6/16/30 h for each
-   starvation -> grid figure `revision3/output/dna_content_histograms.pdf`
-   (new supplementary figure).
-3. Two-way ANOVA (time x genotype) on the 1N-fraction trajectories per
-   condition — same approach as the survival analysis — reporting the genotype
-   term with CI and effect size -> `revision3/output/dna_1N_anova.csv`.
-   Frame as characterizing a real, modest kinetic difference (delayed, less
-   synchronous G1 arrest in rim15KO, largest on carbon), not a null result.
+**Prerequisites — not yet in repo; must be committed before this renders:**
+- `revision3/cytek_gating_OzanImir_20260115_v2.csv` — CytoExploreR gating template
+- `revision3/Vignette-Experiment-Details.csv` — per-file metadata (Strain / Media / Time / Bio_rep / Sample_type)
 
-The lab's cnvflow repo (GreshamLab/cnvflow) has the CytoExploreR workflow
-conventions to reuse.
+Both files must be obtained from Ozan Berk Imir and committed to `revision3/`.
+
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(cowplot)
+library(scales)
+library(broom)
+library(cytolib)
+library(flowCore)
+library(flowWorkspace)
+library(openCyto)
+library(CytoExploreR)
+
+dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+
+# --- Path constants (all relative to repo root) ---
+fcs_path        <- "./data/Flow cytometry data/"
+gating_template <- "./revision3/cytek_gating_OzanImir_20260115_v2.csv"
+exp_details_csv <- "./revision3/Vignette-Experiment-Details.csv"
+out_dir         <- "./revision3/output/"
+
+# Strain labels and colour palette used throughout
+STRAIN_LABELS <- c("DGY1" = "WT", "RIM15Δ0" = "rim15δ")
+STRAIN_COLORS <- c("WT" = "#E69F00", "rim15δ" = "#56B4E9")
+
+# Helper: timepoint label grob (used in distribution pages)
+tp_label_grob <- function(tp) {
+  ggplot() +
+    annotate("text", x = 0.5, y = 0.5, label = paste0(tp, "h"),
+             size = 5, hjust = 0.5, vjust = 0.5) +
+    theme_void()
+}
+
+# Helper: extract a channel from a named population as a data frame
+channel_df <- function(gs, idx, parent, channel) {
+  if (length(idx) == 0) return(NULL)
+  cf <- gh_pop_get_data(gs[[idx]], parent, inverse.transform = TRUE)
+  ff <- cytoframe_to_flowFrame(cf)
+  m  <- exprs(ff)
+  df <- data.frame(value = m[, channel])
+  df[is.finite(df$value) & df$value > 0, , drop = FALSE]
+}
+
+# Helper: density plot for one sample (parameterised for FSC-A and B2-A)
+plot_channel_density <- function(gs, idx, channel, parent, fill, xlim_vals) {
+  df <- channel_df(gs, idx, parent, channel)
+  if (is.null(df) || nrow(df) == 0) return(ggplot() + theme_void())
+  ggplot(df, aes(x = value)) +
+    geom_density(fill = fill, color = "black", alpha = 0.6) +
+    scale_x_continuous(limits = xlim_vals) +
+    labs(x = channel, y = "Density") +
+    theme_minimal() +
+    theme(axis.title  = element_text(size = 8),
+          axis.text   = element_text(size = 7),
+          plot.margin = margin(5, 5, 5, 5, "pt"))
+}
+```
+
+# Load FCS data and apply gating
+
+```{r load-data, message=FALSE, warning=FALSE}
+# cyto_setup() expects the Experiment-Details CSV to be in the *working directory*.
+# Copy it there if needed (the original lives in revision3/).
+details_basename <- basename(exp_details_csv)
+if (!file.exists(details_basename))
+  file.copy(exp_details_csv, ".")
+
+my_gs <- cyto_setup(path = fcs_path, restrict = TRUE, select = "fcs")
+
+# Arcsinh transforms: B2-A (SYTOX Green, DNA) cofactor=150;
+#                     FSC/SSC (size/complexity) cofactor=500
+sytox_trans   <- cyto_transformer_arcsinh(my_gs, channels = "B2-A",    cofactor = 150)
+fsc_ssc_trans <- cyto_transformer_arcsinh(my_gs,
+                   channels = c("FSC-A","FSC-H","SSC-A","SSC-H"), cofactor = 500)
+combined_trans <- cyto_transformer_combine(sytox_trans, fsc_ssc_trans)
+gs <- cyto_transform(my_gs, trans = combined_trans)
+
+# Apply Ozan's pre-drawn gating template
+cyto_gatingTemplate_apply(gs, gatingTemplate = gating_template)
+
+# Show per-file metadata as a sanity check
+cyto_details(gs)
+```
+
+# Control QC — haploid DGY1 vs diploid DGY3 {.tabset}
+
+Confirms staining and instrument consistency: haploid 1N/2N peaks coincide with
+diploid 2N/4N peaks at the same B2-A position; diploid cells are larger (FSC-A).
+
+```{r control-qc}
+# Sample indices as used in V2; adjust if gating-set order changes after reload.
+# DGY1 (haploid) SYTOX+: rows 97–99; Unstained: rows 7,9,11
+# DGY3 (diploid) SYTOX+: rows 94–96; Unstained: rows 4,6,8
+cyto_plot(gs[97:99,],      channels = "B2-A",  parent = "root",
+          xlim = c(10e3, 10e5), title = NA)
+p1 <- recordPlot()
+cyto_plot(gs[c(7,9,11),],  channels = "FSC-A", parent = "root",
+          xlim = c(10e3, 10e7), title = NA)
+p2 <- recordPlot()
+cyto_plot(gs[94:96,],      channels = "B2-A",  parent = "root",
+          xlim = c(10e3, 10e5), title = NA)
+p3 <- recordPlot()
+cyto_plot(gs[c(4,6,8),],   channels = "FSC-A", parent = "root",
+          xlim = c(10e3, 10e7), title = NA)
+p4 <- recordPlot()
+
+ctrl_page <- plot_grid(p1, p2, p3, p4, labels = c("A","B","C","D"),
+                       ncol = 2, nrow = 2)
+pdf(file.path(out_dir, "dna_control_qc.pdf"), width = 8, height = 8)
+print(ctrl_page)
+dev.off()
+ctrl_page
+rm(p1, p2, p3, p4, ctrl_page)
+```
+
+# Distribution overview (all samples)
+
+One page per strain × media combination, 5 rows (timepoints) × 3 columns (replicates).
+
+```{r distributions, fig.height=12, fig.width=10}
+gs_meta <- pData(gs)
+
+for (sample_type in c("Size_control", "DNA_content")) {
+  channel    <- if (sample_type == "Size_control") "FSC-A" else "B2-A"
+  parent     <- if (sample_type == "Size_control") "Unstained" else "SYTOX+"
+  fill_color <- if (sample_type == "Size_control") "steelblue" else "coral"
+  xlim_vals  <- if (sample_type == "Size_control") c(0, 2e6) else c(0, 1e5)
+  label_sfx  <- if (sample_type == "Size_control") "FSC-A (Cell Size)" else "B2-A (DNA Content)"
+  file_pfx   <- if (sample_type == "Size_control") "distr_FSC" else "distr_B2A"
+
+  combos <- gs_meta %>%
+    filter(Sample_type == sample_type) %>%
+    distinct(Strain, Media) %>%
+    arrange(Strain, Media)
+
+  timepoints <- c(0, 6, 16, 30, 46)
+
+  for (i in seq_len(nrow(combos))) {
+    strain <- combos$Strain[i]
+    media  <- combos$Media[i]
+
+    row_plots <- lapply(timepoints, function(tp) {
+      col_plots <- lapply(1:3, function(rep) {
+        idx <- which(gs_meta$Strain == strain & gs_meta$Media == media &
+                     gs_meta$Time == tp     & gs_meta$Bio_rep == rep &
+                     gs_meta$Sample_type == sample_type)
+        plot_channel_density(gs, idx, channel, parent, fill_color, xlim_vals)
+      })
+      plot_grid(tp_label_grob(tp),
+                plot_grid(plotlist = col_plots, ncol = 3),
+                ncol = 2, rel_widths = c(0.08, 0.92))
+    })
+
+    page_title <- ggdraw() +
+      draw_label(paste0(strain, " | Media: ", media, " | ", label_sfx),
+                 fontface = "bold")
+    page <- plot_grid(page_title, plot_grid(plotlist = row_plots, ncol = 1),
+                      ncol = 1, rel_heights = c(0.05, 0.95))
+    ggsave(file.path(out_dir, sprintf("%s_%s_%s.pdf", file_pfx, strain, media)),
+           page, width = 10, height = 12)
+    print(page)
+  }
+}
+```
+
+# Representative histograms (reviewer requirement R1.2 / R2.1)
+
+One SYTOX-Green density plot per genotype × condition × timepoint (T0/6/16/30 h),
+with vertical lines at the 1N and 2N gate boundaries taken from the gating template.
+Three pages (one per condition), 8 panels per page (2 genotypes × 4 timepoints).
+
+```{r representative-histograms}
+gt <- read_csv(gating_template, show_col_types = FALSE)
+
+# Extract 1N and 2N gate boundaries (interval gate stored as min/max columns)
+get_1d_bounds <- function(alias_name) {
+  row <- gt %>% filter(alias == alias_name)
+  if (nrow(row) == 0) return(NULL)
+  tryCatch(as.numeric(c(row$min, row$max)), error = function(e) NULL)
+}
+g1n <- get_1d_bounds("1n")
+g2n <- get_1d_bounds("2n")
+
+conditions  <- c("C", "N", "P")
+cond_names  <- c("Carbon", "Nitrogen", "Phosphorus")
+strains_exp <- c("DGY1", "RIM15Δ0")
+tp_paper    <- c(0, 6, 16, 30)
+
+pdf(file.path(out_dir, "dna_content_histograms.pdf"), width = 14, height = 8)
+for (ci in seq_along(conditions)) {
+  panel_list <- list()
+  for (sn in strains_exp) {
+    for (tp in tp_paper) {
+      idx_all <- which(gs_meta$Strain == sn & gs_meta$Media == conditions[ci] &
+                       gs_meta$Time == tp & gs_meta$Sample_type == "DNA_content")
+      df_all <- map_dfr(seq_along(idx_all), function(k) {
+        df <- channel_df(gs, idx_all[k], "SYTOX+", "B2-A")
+        if (!is.null(df)) mutate(df, rep = k) else NULL
+      })
+      strain_label <- ifelse(sn == "DGY1", "WT", "rim15δ")
+
+      p <- if (!is.null(df_all) && nrow(df_all) > 0) {
+        base <- ggplot(df_all, aes(x = value, group = rep)) +
+          geom_density(fill = "coral", color = "black", alpha = 0.25) +
+          scale_x_continuous(limits = c(0, 1e5)) +
+          labs(x = "B2-A (SYTOX Green)", y = "Density",
+               title = paste0(strain_label, ", ", cond_names[ci], ", T", tp, "h")) +
+          theme_cowplot(font_size = 9) +
+          theme(plot.title = element_text(size = 8))
+        if (!is.null(g1n))
+          base <- base + geom_vline(xintercept = g1n, color = "steelblue",
+                                    linetype = "dashed", linewidth = 0.5)
+        if (!is.null(g2n))
+          base <- base + geom_vline(xintercept = g2n, color = "tomato",
+                                    linetype = "dashed", linewidth = 0.5)
+        base
+      } else {
+        ggplot() + theme_void()
+      }
+      panel_list <- c(panel_list, list(p))
+    }
+  }
+
+  page_title <- ggdraw() +
+    draw_label(paste0("SYTOX Green (DNA content) — ", cond_names[ci], " starvation"),
+               fontface = "bold")
+  page <- plot_grid(page_title,
+                    plot_grid(plotlist = panel_list, ncol = 4, nrow = 2),
+                    ncol = 1, rel_heights = c(0.06, 0.94))
+  print(page)
+}
+dev.off()
+message("Saved: ", file.path(out_dir, "dna_content_histograms.pdf"))
+```
+
+# 1N-fraction over time
+
+```{r one-n-fraction}
+gs_meta <- pData(gs)
+
+# Collect per-replicate 1N%
+raw_1n <- map_dfr(seq_along(gs), function(i) {
+  md <- gs_meta[i, ]
+  if (is.na(md$Sample_type) || md$Sample_type != "DNA_content") return(NULL)
+  if (is.na(md$Strain) || is.na(md$Media)) return(NULL)
+  sytox_n <- gh_pop_get_stats(gs[[i]], nodes = "SYTOX+")$count[1]
+  one_n   <- gh_pop_get_stats(gs[[i]], nodes = "1n")$count[1]
+  tibble(Strain  = md$Strain, Media = md$Media,
+         Time    = as.integer(md$Time), Bio_rep = md$Bio_rep,
+         pct_1n  = if (sytox_n > 0) (one_n / sytox_n) * 100 else NA_real_)
+})
+
+write_csv(raw_1n, file.path(out_dir, "dna_1n_per_replicate.csv"))
+
+raw_1n <- raw_1n %>%
+  filter(Strain != "DGY3") %>%
+  mutate(Strain = recode(Strain, "DGY1" = "WT", "RIM15Δ0" = "rim15δ"))
+
+dna_summary <- raw_1n %>%
+  group_by(Strain, Media, Time) %>%
+  summarise(mean_pct = mean(pct_1n, na.rm = TRUE),
+            sem_pct  = sd(pct_1n, na.rm = TRUE) / sqrt(sum(!is.na(pct_1n))),
+            .groups  = "drop")
+write_csv(dna_summary, file.path(out_dir, "dna_1n_percent_summary.csv"))
+
+# T0 control overlay (Control-medium T0 samples, overlaid as reference points
+# on each condition panel — these are the baseline before starvation begins)
+t0_ctrl <- dna_summary %>%
+  filter(Time == 0, Media == "Control") %>%
+  select(Strain, Time, mean_pct, sem_pct)
+
+plot_dna <- function(media_code, media_label) {
+  dat <- dna_summary %>% filter(Media == media_code)
+  # Control-medium T0 is added as an explicit baseline overlay (not connected by a line
+  # to the starvation time series because it is a different medium)
+  dat_with_ctrl <- bind_rows(dat, mutate(t0_ctrl, Media = media_code)) %>%
+    mutate(Time = factor(Time, levels = c(0, 6, 16, 30, 46)))
+  ggplot(dat_with_ctrl, aes(x = Time, y = mean_pct, color = Strain, group = Strain)) +
+    geom_line(linewidth = 1) +
+    geom_errorbar(aes(ymin = mean_pct - sem_pct, ymax = mean_pct + sem_pct),
+                  width = 0.2, linewidth = 0.7) +
+    scale_color_manual(values = STRAIN_COLORS) +
+    ylim(0, 100) +
+    labs(title = paste(media_label, "starvation"), x = "Time (h)",
+         y = "Cells in G1 (1N, %)") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 12), legend.position = "right")
+}
+
+p_dna <- plot_grid(plot_dna("C","Carbon"), plot_dna("N","Nitrogen"),
+                   plot_dna("P","Phosphorus"), ncol = 3)
+ggsave(file.path(out_dir, "dna_1n_percent.pdf"), p_dna, width = 16, height = 5)
+print(p_dna)
+```
+
+# Cell size (median FSC-A) over time
+
+```{r cell-size}
+raw_fsc <- map_dfr(seq_along(gs), function(i) {
+  md <- gs_meta[i, ]
+  if (is.na(md$Sample_type) || md$Sample_type != "Size_control") return(NULL)
+  if (is.na(md$Strain) || md$Strain == "DGY3") return(NULL)
+  df <- channel_df(gs, i, "Unstained", "FSC-A")
+  if (is.null(df) || nrow(df) == 0) return(NULL)
+  tibble(Strain     = md$Strain, Media = md$Media,
+         Time       = as.integer(md$Time), Bio_rep = md$Bio_rep,
+         median_fsc = median(df$value, na.rm = TRUE))
+}) %>%
+  mutate(Strain = recode(Strain, "DGY1" = "WT", "RIM15Δ0" = "rim15δ"))
+
+size_summary <- raw_fsc %>%
+  group_by(Strain, Media, Time) %>%
+  summarise(mean_fsc = mean(median_fsc, na.rm = TRUE),
+            sem_fsc  = sd(median_fsc, na.rm = TRUE) / sqrt(n()),
+            .groups  = "drop")
+write_csv(size_summary, file.path(out_dir, "cellsize_summary.csv"))
+
+plot_size <- function(media_code, media_label) {
+  dat <- size_summary %>% filter(Media == media_code) %>%
+    mutate(Time = factor(Time, levels = c(0, 6, 16, 30, 46)))
+  ggplot(dat, aes(x = Time, y = mean_fsc, color = Strain, group = Strain)) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 3) +
+    geom_errorbar(aes(ymin = mean_fsc - sem_fsc, ymax = mean_fsc + sem_fsc),
+                  width = 0.2, linewidth = 0.7) +
+    scale_color_manual(values = STRAIN_COLORS) +
+    labs(title = paste(media_label, "starvation"), x = "Time (h)",
+         y = "Median FSC-A (cell size)") +
+    theme_cowplot() +
+    theme(plot.title = element_text(size = 12), legend.position = "right")
+}
+
+p_size <- plot_grid(plot_size("C","Carbon"), plot_size("N","Nitrogen"),
+                    plot_size("P","Phosphorus"), ncol = 3)
+ggsave(file.path(out_dir, "cellsize_fsc.pdf"), p_size, width = 16, height = 5)
+print(p_size)
+```
+
+# Combined dual-axis panel (paper figure)
+
+```{r combined-panel}
+# DNA summary: use T0-Control rows as the T0 baseline in all three condition panels
+dna_plot_df <- raw_1n %>%
+  group_by(Strain, Media, Time) %>%
+  summarise(mean_dna = mean(pct_1n, na.rm = TRUE),
+            sem_dna  = sd(pct_1n, na.rm = TRUE) / sqrt(sum(!is.na(pct_1n))),
+            .groups  = "drop")
+
+t0_dna <- dna_plot_df %>%
+  filter(Time == 0, Media == "Control") %>%
+  select(Strain, Time, mean_dna, sem_dna)
+
+# Size summary: T0 from C/N/P media (Size_control at T=0 exists for each medium)
+size_plot_df <- raw_fsc %>%
+  group_by(Strain, Media, Time) %>%
+  summarise(mean_size = mean(median_fsc, na.rm = TRUE),
+            sem_size  = sd(median_fsc, na.rm = TRUE) / sqrt(n()),
+            .groups   = "drop")
+
+final_df <- map_dfr(c("C","N","P"), function(m) {
+  dna_m <- dna_plot_df %>% filter(Media == m, Time > 0)
+  siz_m <- size_plot_df %>% filter(Media == m, Time > 0)
+  t0_s  <- size_plot_df %>% filter(Media == m, Time == 0)
+  t0_row <- t0_s %>% left_join(t0_dna %>% select(-Media), by = c("Strain","Time"))
+  bind_rows(
+    left_join(dna_m, siz_m, by = c("Strain","Media","Time")),
+    mutate(t0_row, Media = m)
+  )
+}) %>% arrange(Media, Strain, Time)
+
+# Dual-axis: map FSC-A range to [0, 100] primary axis
+s_min <- min(final_df$mean_size, na.rm = TRUE) * 0.95
+s_max <- max(final_df$mean_size, na.rm = TRUE) * 1.05
+s_rng <- s_max - s_min
+to_prim     <- function(x) ((x - s_min) / s_rng) * 100
+sem_to_prim <- function(s) (s / s_rng) * 100
+
+make_dual <- function(m, lab) {
+  pd <- final_df %>% filter(Media == m)
+  ggplot(pd, aes(x = Time, color = Strain, group = Strain)) +
+    geom_line(aes(y = mean_dna), linewidth = 1.2, linetype = "solid") +
+    geom_errorbar(aes(ymin = mean_dna - sem_dna, ymax = mean_dna + sem_dna),
+                  width = 1.5, linewidth = 0.7, alpha = 0.7) +
+    geom_line(aes(y = to_prim(mean_size)), linewidth = 1, linetype = "dashed") +
+    geom_errorbar(aes(y    = to_prim(mean_size),
+                      ymin = to_prim(mean_size) - sem_to_prim(sem_size),
+                      ymax = to_prim(mean_size) + sem_to_prim(sem_size)),
+                  width = 1.5, linewidth = 0.7, linetype = "dashed", alpha = 0.7) +
+    scale_y_continuous(
+      name     = "1n DNA (%) (solid lines)",
+      sec.axis = sec_axis(~ . * (s_rng / 100) + s_min,
+                          name   = "Median FSC-A (dashed lines)",
+                          labels = label_scientific())) +
+    coord_cartesian(ylim = c(0, 100)) +
+    scale_color_manual(values = STRAIN_COLORS) +
+    labs(title = lab, x = "Time (hours)") +
+    theme_cowplot() +
+    theme(axis.title.y.left  = element_text(color = "blue", size = 10),
+          axis.title.y.right = element_text(color = "red",  size = 10),
+          legend.position    = "none",
+          panel.grid.major.x = element_line(color = "grey90", linetype = "dotted"))
+}
+
+make_dna_only <- function(m, lab) {
+  pd <- final_df %>% filter(Media == m)
+  ggplot(pd, aes(x = Time, y = mean_dna, color = Strain, group = Strain)) +
+    geom_line(linewidth = 1.2) +
+    geom_errorbar(aes(ymin = mean_dna - sem_dna, ymax = mean_dna + sem_dna),
+                  width = 0.3, linewidth = 0.7, alpha = 0.7) +
+    coord_cartesian(ylim = c(0, 100)) +
+    scale_color_manual(values = STRAIN_COLORS) +
+    labs(title = lab, x = "Time (hours)", y = "1n DNA (%)") +
+    theme_cowplot() +
+    theme(legend.position    = "none",
+          panel.grid.major.x = element_line(color = "grey90", linetype = "dotted"))
+}
+
+make_size_only <- function(m, lab) {
+  pd <- final_df %>% filter(Media == m)
+  ggplot(pd, aes(x = Time, y = mean_size, color = Strain, group = Strain)) +
+    geom_line(linewidth = 1, linetype = "dashed") +
+    geom_errorbar(aes(ymin = mean_size - sem_size, ymax = mean_size + sem_size),
+                  width = 0.3, linewidth = 0.7, linetype = "dashed", alpha = 0.6) +
+    scale_y_continuous(labels = label_scientific()) +
+    scale_color_manual(values = STRAIN_COLORS) +
+    labs(title = lab, x = "Time (hours)", y = "Median FSC-A (cell size)") +
+    theme_cowplot() +
+    theme(legend.position    = "none",
+          panel.grid.major.x = element_line(color = "grey90", linetype = "dotted"))
+}
+
+media_args <- list(list("C","Carbon"), list("N","Nitrogen"), list("P","Phosphorus"))
+
+plots_dual <- lapply(media_args, function(a) make_dual(a[[1]], a[[2]]))
+plots_dna  <- lapply(media_args, function(a) make_dna_only(a[[1]], a[[2]]))
+plots_size <- lapply(media_args, function(a) make_size_only(a[[1]], a[[2]]))
+
+get_legend_below <- function(p) get_legend(p + theme(legend.position = "bottom") +
+                                             labs(color = "Genotype"))
+
+assemble <- function(plist, ratio = c(1, 0.12)) {
+  plot_grid(plot_grid(plotlist = plist, ncol = 3, align = "h"),
+            get_legend_below(plist[[1]]), ncol = 1, rel_heights = ratio)
+}
+
+panel_combined <- assemble(plots_dual, c(1, 0.1))
+panel_dna      <- assemble(plots_dna)
+panel_size     <- assemble(plots_size)
+
+ggsave(file.path(out_dir, "fig1_dna_size_combined.pdf"), panel_combined, width = 16, height = 6)
+ggsave(file.path(out_dir, "fig1_dna_only.pdf"),          panel_dna,      width = 16, height = 6)
+ggsave(file.path(out_dir, "fig1_size_only.pdf"),          panel_size,     width = 16, height = 6)
+
+print(panel_combined)
+print(panel_dna)
+print(panel_size)
+```
+
+# Two-way ANOVA: time × genotype on 1N-fraction (reviewer requirement R1.2 / R2.1)
+
+For each starvation condition (C, N, P): `lm(pct_1n ~ time_factor * genotype)` on
+the per-replicate values (T0/6/16/30 h, to match proteomics timepoints). We report
+the genotype term (main effect, averaged over time) and the time × genotype
+interaction. Per the response-plan strategy, results are framed as a kinetic
+difference — delayed and less-synchronous G1 arrest in rim15Δ — not a terminal
+phenotype.
+
+```{r anova}
+anova_input <- raw_1n %>%
+  filter(Media %in% c("C","N","P"), Time %in% c(0, 6, 16, 30)) %>%
+  mutate(time_f   = factor(Time, levels = c(0, 6, 16, 30)),
+         genotype = factor(Strain, levels = c("WT", "rim15δ")))
+
+anova_results <- anova_input %>%
+  group_by(Media) %>%
+  group_modify(~ {
+    fit     <- lm(pct_1n ~ time_f * genotype, data = .x)
+    aov_tbl <- tidy(anova(fit)) %>% mutate(table = "anova")
+    lm_tbl  <- tidy(fit, conf.int = TRUE) %>% mutate(table = "lm_coefs")
+    bind_rows(aov_tbl, lm_tbl)
+  }) %>%
+  ungroup()
+
+write_csv(anova_results, file.path(out_dir, "dna_1N_anova.csv"))
+
+cat("=== Two-way ANOVA: 1N% ~ time × genotype per condition ===\n")
+cat("(WT is the reference level; time as factor with levels 0/6/16/30 h)\n\n")
+
+cat("--- ANOVA table ---\n")
+anova_results %>%
+  filter(table == "anova") %>%
+  select(Media, term, sumsq, meansq, statistic, p.value) %>%
+  print(n = 30)
+
+cat("\n--- Genotype main effect (rim15δ vs WT) ---\n")
+anova_results %>%
+  filter(table == "lm_coefs", grepl("genotype", term), !grepl(":", term)) %>%
+  select(Media, term, estimate, conf.low, conf.high, p.value) %>%
+  print()
+
+cat("\n--- Time × Genotype interaction terms ---\n")
+anova_results %>%
+  filter(table == "lm_coefs", grepl(":", term)) %>%
+  select(Media, term, estimate, conf.low, conf.high, p.value) %>%
+  print(n = 20)
+```
 
 ```{r session}
 sessionInfo()
