@@ -35,7 +35,7 @@ protein_long <- tmp %>%
                 ratio      = normalized_ratio) %>%
   mutate(
     gene     = str_extract(gene_raw, "^[^;]+"),   # first gene in protein group
-    genotype = recode(genotype, "rim15KO" = "rim15δ"),
+    genotype = recode(genotype, "rim15KO" = "rim15Δ"),
     time_h   = as.integer(str_extract(time, "\\d+"))
   ) %>%
   dplyr::select(gene, protein_id, genotype, nutrient, time_h, replicate, ratio) %>%
@@ -89,7 +89,7 @@ psite_long <- tmp %>%
            sep   = "_",
            extra = "drop") %>%
   mutate(
-    genotype = recode(genotype, "rim15KO" = "rim15δ"),
+    genotype = recode(genotype, "rim15KO" = "rim15Δ"),
     time_h   = as.integer(str_extract(time, "\\d+"))
   ) %>%
   dplyr::select(psite, gene, genotype, nutrient, time_h, replicate, ratio) %>%

@@ -24,7 +24,7 @@ GO_SETS    <- gene_universe$go_gene_sets
 
 TIME_ORDER   <- c(0L, 6L, 16L, 30L)
 NUTRIENTS    <- c("C" = "Carbon (−C)", "P" = "Phosphorus (−P)")
-GENO_COLORS  <- c("WT" = "#E69F00", "rim15δ" = "#56B4E9")
+GENO_COLORS  <- c("WT" = "#E69F00", "rim15Δ" = "#56B4E9")
 SIG_COLORS   <- c("Up in WT" = "#E69F00", "Down in WT" = "#56B4E9", "n.s." = "#CCCCCC")
 
 # ── Helper functions ──────────────────────────────────────────────────────────
@@ -32,6 +32,24 @@ SIG_COLORS   <- c("Up in WT" = "#E69F00", "Down in WT" = "#56B4E9", "n.s." = "#C
 #' Build a plotly time-series for protein abundance.
 #' d: filtered slice of protein_long (columns: gene, genotype, nutrient, time_h, ratio)
 #' show_reps: overlay individual replicate points if TRUE
+# ggplotly duplicates legend entries when there are multiple facets (one entry
+# per facet×color instead of one per color).  This function hides all but the
+# first trace with each legend name so only "WT" and "rim15Δ" appear.
+dedup_legend <- function(pl) {
+  seen <- character(0)
+  for (i in seq_along(pl$x$data)) {
+    nm <- pl$x$data[[i]]$name
+    if (!is.null(nm) && nchar(nm) > 0) {
+      if (nm %in% seen) {
+        pl$x$data[[i]]$showlegend <- FALSE
+      } else {
+        seen <- c(seen, nm)
+      }
+    }
+  }
+  pl
+}
+
 make_timeseries <- function(d, show_reps = FALSE) {
   summ <- d %>%
     group_by(gene, genotype, nutrient, time_h) %>%
@@ -73,7 +91,7 @@ make_timeseries <- function(d, show_reps = FALSE) {
                  size = 1.5, alpha = 0.5, shape = 1, inherit.aes = FALSE)
   }
 
-  ggplotly(p, tooltip = "text") %>%
+  dedup_legend(ggplotly(p, tooltip = "text")) %>%
     layout(legend = list(orientation = "h", y = -0.18))
 }
 
@@ -109,7 +127,7 @@ make_psite_timeseries <- function(d) {
     theme(strip.background = element_rect(fill = "#f2f2f2"),
           legend.position  = "bottom")
 
-  ggplotly(p, tooltip = "text") %>%
+  dedup_legend(ggplotly(p, tooltip = "text")) %>%
     layout(legend = list(orientation = "h", y = -0.18))
 }
 
@@ -146,6 +164,8 @@ ui <- page_navbar(
           selected = "all"
         ),
         checkboxInput("show_reps", "Show individual replicates", value = FALSE),
+        actionButton("clear_genes", "Clear all genes",
+                     class = "btn-sm btn-outline-danger w-100 mt-2"),
         hr(),
         downloadButton("dl_prot", "Download protein data",  class = "btn-sm w-100"),
         downloadButton("dl_psite", "Download pSite data",   class = "btn-sm w-100 mt-1")
@@ -216,8 +236,8 @@ ui <- page_navbar(
         ),
         checkboxGroupInput(
           "hm_genotypes", "Genotypes",
-          choices  = c("WT", "rim15δ"),
-          selected = c("WT", "rim15δ")
+          choices  = c("WT", "rim15Δ"),
+          selected = c("WT", "rim15Δ")
         ),
         checkboxInput("hm_cluster_rows", "Cluster genes (rows)",     value = TRUE),
         checkboxInput("hm_cluster_cols", "Cluster conditions (cols)", value = FALSE)
@@ -242,7 +262,7 @@ ui <- page_navbar(
       h4("Experimental design"),
       tags$ul(
         tags$li("Quantitative SILAC proteomics and phosphoproteomics"),
-        tags$li("Genotypes: wild-type (WT) and ", tags$em("rim15δ")),
+        tags$li("Genotypes: wild-type (WT) and ", tags$em("rim15Δ")),
         tags$li("Starvation conditions: carbon (", tags$em("−C"),
                 ") and phosphorus (", tags$em("−P"), ")"),
         tags$li("Time-course: 0 / 6 / 16 / 30 h post-starvation, 3 biological replicates"),
@@ -280,6 +300,13 @@ server <- function(input, output, session) {
   updateSelectizeInput(session, "go_term",  choices = GO_SETS$TERM, server = TRUE)
 
   # ── Tab 1: Gene Browser ──────────────────────────────────────────────────
+
+  observeEvent(input$clear_genes, {
+    updateSelectizeInput(session, "genes",
+                         choices  = ALL_GENES,
+                         selected = character(0),
+                         server   = TRUE)
+  })
 
   # Reactive gene-filtered slices
   prot_data <- reactive({
@@ -352,7 +379,7 @@ server <- function(input, output, session) {
                     `p-value` = pvalue, `q-value` = qvalue, `log2FC` = log2FC) %>%
       mutate(across(where(is.numeric), ~ signif(.x, 3))) %>%
       datatable(
-        caption  = "Differential protein abundance (WT vs rim15δ)",
+        caption  = "Differential protein abundance (WT vs rim15Δ)",
         rownames = FALSE,
         options  = list(pageLength = 8, scrollX = TRUE, dom = "tip")
       )
@@ -367,7 +394,7 @@ server <- function(input, output, session) {
                     `log2FC` = log2FC) %>%
       mutate(across(where(is.numeric), ~ signif(.x, 3))) %>%
       datatable(
-        caption  = "Differential phosphorylation (WT vs rim15δ)",
+        caption  = "Differential phosphorylation (WT vs rim15Δ)",
         rownames = FALSE,
         options  = list(pageLength = 8, scrollX = TRUE, dom = "tip")
       )
@@ -469,7 +496,7 @@ server <- function(input, output, session) {
                    line = list(dash = "dot", color = "grey60", width = 1),
                    showlegend = FALSE, inherit = FALSE) %>%
       layout(
-        xaxis  = list(title = "log₂ fold-change (WT / rim15δ)"),
+        xaxis  = list(title = "log₂ fold-change (WT / rim15Δ)"),
         yaxis  = list(title = "-log₁₀(q-value)", range = c(0, max_y)),
         legend = list(orientation = "h", y = -0.12)
       )
