@@ -30,3 +30,6 @@ data/published/UP000002311_559292.fasta
 
 # Student working file archived to rescue/V2_Plot_Design.Rmd (leading / = root only)
 /V2_Plot_Design.Rmd
+
+# Shiny app preprocessed data (regenerable via Rscript shiny/prep_data.R)
+shiny/data/
