@@ -32,18 +32,23 @@ SIG_COLORS   <- c("Up in WT" = "#E69F00", "Down in WT" = "#56B4E9", "n.s." = "#C
 #' Build a plotly time-series for protein abundance.
 #' d: filtered slice of protein_long (columns: gene, genotype, nutrient, time_h, ratio)
 #' show_reps: overlay individual replicate points if TRUE
-# ggplotly duplicates legend entries when there are multiple facets (one entry
-# per facet×color instead of one per color).  This function hides all but the
-# first trace with each legend name so only "WT" and "rim15Δ" appear.
+# ggplotly creates one trace per facet×color, so a 3-gene plot produces six
+# legend entries like "WT", "(WT,2)", "(WT,3)" instead of just "WT".
+# Ribbon traces get names like "(rim15Δ,1)" even for a single gene.
+# This function normalises names by stripping the "(name,n)" wrapper, then
+# keeps showlegend=TRUE only for the first trace with each clean name.
 dedup_legend <- function(pl) {
   seen <- character(0)
   for (i in seq_along(pl$x$data)) {
     nm <- pl$x$data[[i]]$name
     if (!is.null(nm) && nchar(nm) > 0) {
-      if (nm %in% seen) {
+      # Strip ggplotly's "(name,n)" facet suffix → bare genotype name
+      clean <- sub("^\\((.+),\\d+\\)$", "\\1", nm)
+      if (clean %in% seen) {
         pl$x$data[[i]]$showlegend <- FALSE
       } else {
-        seen <- c(seen, nm)
+        seen <- c(seen, clean)
+        pl$x$data[[i]]$name <- clean   # tidy the displayed label too
       }
     }
   }
@@ -70,7 +75,8 @@ make_timeseries <- function(d, show_reps = FALSE) {
               aes(x = time_h, y = mean_l2r, color = genotype, fill = genotype,
                   group = interaction(gene, genotype, nutrient),
                   text = hover_text)) +
-    geom_ribbon(aes(ymin = ymin, ymax = ymax), alpha = 0.2, color = NA) +
+    geom_ribbon(aes(ymin = ymin, ymax = ymax), alpha = 0.2, color = NA,
+                show.legend = FALSE) +
     geom_line() +
     geom_point(size = 2.5) +
     scale_color_manual(values = GENO_COLORS) +
