@@ -12,11 +12,13 @@ This script is the production version derived from `rescue/V2_Plot_Design.Rmd`
 (written by Ozan Berk Imir, January 2026). It runs from the repo root
 (`knit_root_dir = getwd()`).
 
-**Prerequisites — not yet in repo; must be committed before this renders:**
-- `revision3/cytek_gating_OzanImir_20260115_v2.csv` — CytoExploreR gating template
-- `revision3/Vignette-Experiment-Details.csv` — per-file metadata (Strain / Media / Time / Bio_rep / Sample_type)
+**Prerequisite data files (committed to `revision3/`):**
+- `revision3/flow_gating_template.csv` — CytoExploreR polygon gate definitions
+  (original: `cytek_gating_OzanImir_20260115_v2.csv`, received from Ozan Berk Imir)
+- `revision3/flow_sample_metadata.csv` — per-FCS-file metadata (Strain / Media / Time / Bio_rep / Sample_type)
+  (original: `Vignette-Experiment-Details.csv`)
 
-Both files must be obtained from Ozan Berk Imir and committed to `revision3/`.
+Raw FCS files (177 files, 745 MB) are in `data/Flow cytometry data/` (gitignored).
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -33,13 +35,14 @@ dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
 
 # --- Path constants (all relative to repo root) ---
 fcs_path        <- "./data/Flow cytometry data/"
-gating_template <- "./revision3/cytek_gating_OzanImir_20260115_v2.csv"
-exp_details_csv <- "./revision3/Vignette-Experiment-Details.csv"
+gating_template <- "./revision3/flow_gating_template.csv"
+exp_details_csv <- "./revision3/flow_sample_metadata.csv"
 out_dir         <- "./revision3/output/"
 
 # Strain labels and colour palette used throughout
-STRAIN_LABELS <- c("DGY1" = "WT", "RIM15Δ0" = "rim15δ")
-STRAIN_COLORS <- c("WT" = "#E69F00", "rim15δ" = "#56B4E9")
+# Metadata uses "WT" directly (not DGY1); only RIM15Δ0 needs recoding
+STRAIN_LABELS <- c("WT" = "WT", "RIM15Δ0" = "rim15Δ")
+STRAIN_COLORS <- c("WT" = "#E69F00", "rim15Δ" = "#56B4E9")
 
 # Helper: timepoint label grob (used in distribution pages)
 tp_label_grob <- function(tp) {
@@ -77,11 +80,10 @@ plot_channel_density <- function(gs, idx, channel, parent, fill, xlim_vals) {
 # Load FCS data and apply gating
 
 ```{r load-data, message=FALSE, warning=FALSE}
-# cyto_setup() expects the Experiment-Details CSV to be in the *working directory*.
-# Copy it there if needed (the original lives in revision3/).
-details_basename <- basename(exp_details_csv)
-if (!file.exists(details_basename))
-  file.copy(exp_details_csv, ".")
+# cyto_setup() looks for "Experiment-Details.csv" in the working directory.
+# Copy our stored metadata there under that canonical name.
+if (!file.exists("Experiment-Details.csv"))
+  file.copy(exp_details_csv, "Experiment-Details.csv")
 
 my_gs <- cyto_setup(path = fcs_path, restrict = TRUE, select = "fcs")
 
@@ -100,14 +102,14 @@ cyto_gatingTemplate_apply(gs, gatingTemplate = gating_template)
 cyto_details(gs)
 ```
 
-# Control QC — haploid DGY1 vs diploid DGY3 {.tabset}
+# Control QC — haploid WT vs diploid DGY3 {.tabset}
 
 Confirms staining and instrument consistency: haploid 1N/2N peaks coincide with
 diploid 2N/4N peaks at the same B2-A position; diploid cells are larger (FSC-A).
 
 ```{r control-qc}
 # Sample indices as used in V2; adjust if gating-set order changes after reload.
-# DGY1 (haploid) SYTOX+: rows 97–99; Unstained: rows 7,9,11
+# WT (haploid) SYTOX+: rows 97–99; Unstained: rows 7,9,11
 # DGY3 (diploid) SYTOX+: rows 94–96; Unstained: rows 4,6,8
 cyto_plot(gs[97:99,],      channels = "B2-A",  parent = "root",
           xlim = c(10e3, 10e5), title = NA)
@@ -201,7 +203,7 @@ g2n <- get_1d_bounds("2n")
 
 conditions  <- c("C", "N", "P")
 cond_names  <- c("Carbon", "Nitrogen", "Phosphorus")
-strains_exp <- c("DGY1", "RIM15Δ0")
+strains_exp <- c("WT", "RIM15Δ0")
 tp_paper    <- c(0, 6, 16, 30)
 
 pdf(file.path(out_dir, "dna_content_histograms.pdf"), width = 14, height = 8)
@@ -215,7 +217,7 @@ for (ci in seq_along(conditions)) {
         df <- channel_df(gs, idx_all[k], "SYTOX+", "B2-A")
         if (!is.null(df)) mutate(df, rep = k) else NULL
       })
-      strain_label <- ifelse(sn == "DGY1", "WT", "rim15δ")
+      strain_label <- recode(sn, "RIM15Δ0" = "rim15Δ", "WT" = "WT")
 
       p <- if (!is.null(df_all) && nrow(df_all) > 0) {
         base <- ggplot(df_all, aes(x = value, group = rep)) +
@@ -272,7 +274,7 @@ write_csv(raw_1n, file.path(out_dir, "dna_1n_per_replicate.csv"))
 
 raw_1n <- raw_1n %>%
   filter(Strain != "DGY3") %>%
-  mutate(Strain = recode(Strain, "DGY1" = "WT", "RIM15Δ0" = "rim15δ"))
+  mutate(Strain = recode(Strain, "RIM15Δ0" = "rim15Δ"))
 
 dna_summary <- raw_1n %>%
   group_by(Strain, Media, Time) %>%
@@ -324,7 +326,7 @@ raw_fsc <- map_dfr(seq_along(gs), function(i) {
          Time       = as.integer(md$Time), Bio_rep = md$Bio_rep,
          median_fsc = median(df$value, na.rm = TRUE))
 }) %>%
-  mutate(Strain = recode(Strain, "DGY1" = "WT", "RIM15Δ0" = "rim15δ"))
+  mutate(Strain = recode(Strain, "RIM15Δ0" = "rim15Δ"))
 
 size_summary <- raw_fsc %>%
   group_by(Strain, Media, Time) %>%
@@ -487,7 +489,7 @@ phenotype.
 anova_input <- raw_1n %>%
   filter(Media %in% c("C","N","P"), Time %in% c(0, 6, 16, 30)) %>%
   mutate(time_f   = factor(Time, levels = c(0, 6, 16, 30)),
-         genotype = factor(Strain, levels = c("WT", "rim15δ")))
+         genotype = factor(Strain, levels = c("WT", "rim15Δ")))   # WT = reference level
 
 anova_results <- anova_input %>%
   group_by(Media) %>%
@@ -510,7 +512,7 @@ anova_results %>%
   select(Media, term, sumsq, meansq, statistic, p.value) %>%
   print(n = 30)
 
-cat("\n--- Genotype main effect (rim15δ vs WT) ---\n")
+cat("\n--- Genotype main effect (rim15Δ vs WT, positive = lower in rim15Δ) ---\n")
 anova_results %>%
   filter(table == "lm_coefs", grepl("genotype", term), !grepl(":", term)) %>%
   select(Media, term, estimate, conf.low, conf.high, p.value) %>%
