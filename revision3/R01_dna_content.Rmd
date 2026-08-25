@@ -23,7 +23,8 @@ Raw FCS files (177 files, 745 MB) are in `data/Flow cytometry data/` (gitignored
 ```{r install-dependencies, eval=FALSE}
 # Run this chunk once to install the flow cytometry packages.
 # cytolib / flowCore / flowWorkspace / openCyto are on Bioconductor (not CRAN).
-# CytoExploreR is on GitHub.
+# CytoExploreR and its dependency superheat are on GitHub.
+
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
@@ -37,6 +38,9 @@ BiocManager::install(c(
 if (!requireNamespace("remotes", quietly = TRUE))
   install.packages("remotes")
 
+# superheat is a CytoExploreR dependency not reliably available on CRAN;
+# install from GitHub first, then CytoExploreR
+remotes::install_github("rlbarter/superheat")
 remotes::install_github("DillonHammill/CytoExploreR")
 ```
 
@@ -440,7 +444,7 @@ make_dual <- function(m, lab) {
           legend.position    = "none",
           panel.grid.major.x = element_line(color = "grey90", linetype = "dotted"))
 }
-
+a
 make_dna_only <- function(m, lab) {
   pd <- final_df %>% filter(Media == m)
   ggplot(pd, aes(x = Time, y = mean_dna, color = Strain, group = Strain)) +
