@@ -20,6 +20,26 @@ This script is the production version derived from `rescue/V2_Plot_Design.Rmd`
 
 Raw FCS files (177 files, 745 MB) are in `data/Flow cytometry data/` (gitignored).
 
+```{r install-dependencies, eval=FALSE}
+# Run this chunk once to install the flow cytometry packages.
+# cytolib / flowCore / flowWorkspace / openCyto are on Bioconductor (not CRAN).
+# CytoExploreR is on GitHub.
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+
+BiocManager::install(c(
+  "cytolib",
+  "flowCore",
+  "flowWorkspace",
+  "openCyto"
+))
+
+if (!requireNamespace("remotes", quietly = TRUE))
+  install.packages("remotes")
+
+remotes::install_github("DillonHammill/CytoExploreR")
+```
+
 ```{r setup, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(cowplot)
