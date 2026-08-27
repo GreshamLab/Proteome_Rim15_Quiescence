@@ -66,14 +66,22 @@ repository root as working directory. Outputs go to `revision3/output/`.
 | `R03_mito_reconciliation.Rmd` | R2.7 | `tables/master_tidy_protein.csv`, Morgenstern 2017 reference list | `revision3/output/mito_coverage_table.csv`, `revision3/output/mito_by_class.pdf` |
 | `R06_combined_pca.Rmd` | R2.6 | `tables/master_tidy_protein.csv` | `revision3/output/combined_pca.pdf` |
 
-### Supplemental tables (`tables/supplemental/`)
+### Supplemental tables
 
-| File | Contents |
-|---|---|
-| `S5_normalized_protein_ratios.csv` | Normalized SILAC ratios for 1,276 proteins × 74 samples (WT + rim15Δ, C + P starvation, 0/6/16/30 h, 3 replicates) |
-| `S6_normalized_phosphosite_ratios.csv` | Normalized SILAC ratios for 5,056 phosphosites × 53 columns (full matrix) |
-| `S7_ancova_results.csv` | ANCOVA results (genotype, nutrient, and genotype × nutrient models combined) |
-| `S8_wgcna_module_membership.csv` | WGCNA module assignments for 927 proteins across 4 networks (C/P × WT/rim15Δ) |
+Tables S1–S4 are in the journal submission package (`PLoS Genetics 3rd
+Submission/Supplemental Information/` on Google Drive); S5–S8 are generated
+by `make_supplemental_tables.R` and live in `tables/supplemental/`.
+
+| Table | File | Contents |
+|---|---|---|
+| S1 | `Table S1.csv` | All protein SILAC quantification data in long format: intensity, normalized intensity, ratio, and normalized ratio for WT, rim15Δ, and spike-in across C/N/P starvation, timepoints 0/6/16/30 h, and all replicates (551,664 rows) |
+| S2 | `Table S2.csv` | All phosphosite SILAC quantification data in long format: pSite ID, sequence window, genotype, nutrient, timepoint, replicate, and ratio value (106,200 rows) |
+| S3 | `Table S3.xlsx` | The 11 proteins upregulated in carbon starvation (p.adj < 0.05) that are also genetically required for quiescence survival (p.adj < 0.05); columns: ORF, gene name, function |
+| S4 | `Table S4.xlsx` | The 13 proteins upregulated in phosphorus starvation (p.adj < 0.05) that are also genetically required for quiescence survival; columns: ORF, gene name, function |
+| S5 | `tables/supplemental/S5_normalized_protein_ratios.csv` | Normalized SILAC ratios for 1,276 proteins × 74 samples (WT + rim15Δ, C + P starvation, 0/6/16/30 h, 3 replicates), wide format |
+| S6 | `tables/supplemental/S6_normalized_phosphosite_ratios.csv` | Normalized SILAC ratios for 5,056 phosphosites × 53 columns (full matrix), wide format |
+| S7 | `tables/supplemental/S7_ancova_results.csv` | ANCOVA results for genotype, nutrient, and genotype × nutrient models combined |
+| S8 | `tables/supplemental/S8_wgcna_module_membership.csv` | WGCNA module assignments for 927 proteins across 4 networks (C/P × WT/rim15Δ) |
 
 Former script names (pre-2026 tidy): `Data preperation and QC.Rmd`,
 `Proteom analysis - ANOVA.Rmd`, `ANCOVA analysis.Rmd`, `Proteom analysis.Rmd`,
