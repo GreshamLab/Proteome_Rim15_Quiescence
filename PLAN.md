@@ -51,10 +51,7 @@ Saccharomyces cerevisiae cells" (PLOS Genetics, PGENETICS-D-25-01150R1)
 | R01 | `revision3/R01_dna_content.Rmd` | R1.2 / R2.1 | done | |
 | R02 | `revision3/R02_phosphosite_overlap.Rmd` | R1.3 / R2.5 | done | |
 | R03 | `revision3/R03_mito_reconciliation.Rmd` | R2.7 | done | |
-| R04 | `revision3/R04_mito_volume_norm.Rmd` | R2.8 | blocked | needs cellpose + MitoGraph from Siyu |
-| R05 | `revision3/R05_gem_monomer_gated.Rmd` | R2.9 | blocked | needs GEM trajectory data from Siyu |
 | R06 | `revision3/R06_combined_pca.Rmd` | R2.6 | done | |
-| R07 | `revision3/R07_source_data_deposition.md` | R2.12 | not started | BioImage Archive upload checklist |
 ## Other tasks
 
 - [ ] Shiny app deployment (NYU Research Computing)
