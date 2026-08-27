@@ -1,7 +1,12 @@
 ---
-title: "linearnility check for protein and pSites"
+title: "07 — Single-protein inspection (RETIRED)"
 output: html_notebook
 ---
+
+**Status: RETIRED.** Exploratory utility for inspecting individual protein
+trajectories. Not part of the reproducible pipeline; uses hard-coded gene names
+and depends on objects defined in other scripts. Use `07_single_protein_check.Rmd`
+interactively if needed, but do not include in automated runs.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse=TRUE, comment="##", fig.retina=2, fig.path = "README_figs/README-")

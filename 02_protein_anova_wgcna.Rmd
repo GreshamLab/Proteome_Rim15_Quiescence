@@ -1,11 +1,20 @@
 ---
-title: "Proteomics analysis (based on normalized intensity)"
-author: "Siyu Sun"
-date: "5/4/2020"
-output: 
+title: "02 — Protein ANOVA and WGCNA co-expression modules"
+output:
   html_document:
     keep_md: true
 ---
+
+**Purpose:** Two-way ANOVA of protein abundance over time; WGCNA co-expression
+network analysis per nutrient × genotype; KEGG module maps.
+
+**Inputs:** `tables/master_tidy_protein.csv`, `tables/normed_ratio_perseus.csv`
+
+**Outputs:** `tables/anova_genotype.csv`, `tables/anova_nutrient.csv`,
+`tables/anova_genotype_nutrient.csv`, WGCNA RData objects in `output/wgcna/`.
+
+**Note:** WGCNA is computationally intensive. If `output/wgcna/*.RData` already
+exist, run `extract_wgcna_tables.R` instead of re-running this script.
 
 ## Chrunks
 

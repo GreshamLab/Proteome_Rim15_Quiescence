@@ -1,9 +1,11 @@
 ---
-title: "ANCOVA of protein gorups and pSites"
+title: "03 — ANCOVA (RETIRED)"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+**Status: RETIRED.** This script crashes at the ANCOVA modeling step and is
+superseded by `04_protein_de_go_analysis.Rmd`, which produces the ANCOVA
+results used in the paper. Do not run.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse=TRUE, comment="##", fig.retina=2, fig.path = "README_figs/README-")

@@ -1,11 +1,19 @@
 ---
-title: "PCA and DE analysis for proteins"
-output: 
-  html_document: 
+title: "01 — Data preparation and QC"
+output:
+  html_document:
     keep_md: true
 ---
 
-## Chrunks
+**Purpose:** SILAC ratio normalization, quality control, and PCA for the
+protein-level data.
+
+**Inputs:** `data/proteinGroups.csv`
+
+**Outputs:** `tables/master_tidy_protein.csv`, `tables/normed_ratio_perseus.csv`,
+`tables/master_protein.csv`, QC box plots and PCA figures in `plots/`.
+
+## Chunks
 
 * [Load libraries]
 * [Read in tables]

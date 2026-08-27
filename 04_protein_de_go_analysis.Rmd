@@ -1,11 +1,19 @@
 ---
-title: "proteomics analysis (based on normalized ratio)"
-author: "Siyu Sun"
-date: "5/4/2020"
-output: 
+title: "04 — Differential protein abundance and GO/KEGG enrichment"
+output:
   html_document:
     keep_md: true
 ---
+
+**Purpose:** ANCOVA-based differential expression by genotype and nutrient;
+GO and KEGG enrichment of significant proteins; visualization (volcano plots,
+heatmaps, enrichment bar charts).
+
+**Inputs:** `tables/master_tidy_protein.csv`, `tables/normed_ratio_perseus.csv`
+
+**Outputs:** `tables/DE_proteins_byGenotype.csv`, `tables/DE_proteins_byNutrient.csv`,
+`tables/anova_genotype.csv`, `tables/anova_nutrient.csv`,
+`tables/anova_genotype_nutrient.csv`, figures in `plots/`.
 
 ## Chrunks
 

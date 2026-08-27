@@ -1,11 +1,19 @@
 ---
-title: "phospho proteomics analysis (based on normalized ratio)"
-author: "Siyu Sun"
-date: "5/4/2020"
-output: 
+title: "05 — Phosphosite analysis"
+output:
   html_document:
     keep_md: true
 ---
+
+**Purpose:** Phosphosite-level SILAC ratio normalization, differential
+phosphorylation by genotype and nutrient, and serine/threonine motif enrichment
+(rmotifx).
+
+**Inputs:** `data/Phospho (STY)Sites.csv`, `tables/normed_ratio_perseus.csv`
+
+**Outputs:** `tables/normed_pSite_ratio_perseus.csv`,
+`tables/DE_pSites_byGenotype.csv`, `tables/DE_pSites_bynutrient.csv`,
+motif tables in `tables/motif_sig*.csv`, figures in `plots/`.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse=TRUE, comment="##", fig.retina=2, fig.path = "README_figs/README-")
