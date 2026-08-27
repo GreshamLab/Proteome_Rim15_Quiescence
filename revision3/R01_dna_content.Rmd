@@ -45,6 +45,8 @@ remotes::install_github("DillonHammill/CytoExploreR")
 ```
 
 ```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+
 library(tidyverse)
 library(cowplot)
 library(scales)
@@ -54,6 +56,9 @@ library(flowCore)
 library(flowWorkspace)
 library(openCyto)
 library(CytoExploreR)
+
+# CytoExploreR masks dplyr::filter with stats::filter; restore it
+filter <- dplyr::filter
 
 dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
 
@@ -104,10 +109,13 @@ plot_channel_density <- function(gs, idx, channel, parent, fill, xlim_vals) {
 # Load FCS data and apply gating
 
 ```{r load-data, message=FALSE, warning=FALSE}
-# cyto_setup() looks for "Experiment-Details.csv" in the working directory.
-# Copy our stored metadata there under that canonical name.
+# cyto_setup() looks for "Experiment-Details.csv" by basename in the CWD.
+# cyto_gatingTemplate_apply() does the same — copy both to the repo root.
 if (!file.exists("Experiment-Details.csv"))
   file.copy(exp_details_csv, "Experiment-Details.csv")
+gt_local <- basename(gating_template)
+if (!file.exists(gt_local))
+  file.copy(gating_template, gt_local)
 
 my_gs <- cyto_setup(path = fcs_path, restrict = TRUE, select = "fcs")
 
@@ -119,8 +127,9 @@ fsc_ssc_trans <- cyto_transformer_arcsinh(my_gs,
 combined_trans <- cyto_transformer_combine(sytox_trans, fsc_ssc_trans)
 gs <- cyto_transform(my_gs, trans = combined_trans)
 
-# Apply Ozan's pre-drawn gating template
-cyto_gatingTemplate_apply(gs, gatingTemplate = gating_template)
+# Apply Ozan's pre-drawn gating template (pass basename only — CytoExploreR
+# validates the file exists in CWD by name)
+cyto_gatingTemplate_apply(gs, gatingTemplate = gt_local)
 
 # Show per-file metadata as a sanity check
 cyto_details(gs)
@@ -135,18 +144,32 @@ diploid 2N/4N peaks at the same B2-A position; diploid cells are larger (FSC-A).
 # Sample indices as used in V2; adjust if gating-set order changes after reload.
 # WT (haploid) SYTOX+: rows 97–99; Unstained: rows 7,9,11
 # DGY3 (diploid) SYTOX+: rows 94–96; Unstained: rows 4,6,8
-cyto_plot(gs[97:99,],      channels = "B2-A",  parent = "root",
-          xlim = c(10e3, 10e5), title = NA)
-p1 <- recordPlot()
-cyto_plot(gs[c(7,9,11),],  channels = "FSC-A", parent = "root",
-          xlim = c(10e3, 10e7), title = NA)
-p2 <- recordPlot()
-cyto_plot(gs[94:96,],      channels = "B2-A",  parent = "root",
-          xlim = c(10e3, 10e5), title = NA)
-p3 <- recordPlot()
-cyto_plot(gs[c(4,6,8),],   channels = "FSC-A", parent = "root",
-          xlim = c(10e3, 10e7), title = NA)
-p4 <- recordPlot()
+#
+# cyto_plot() uses base-R graphics + recordPlot(), which fails in non-interactive
+# Rscript. Use channel_df() + ggplot2 instead, which works everywhere.
+
+plot_multi_density <- function(gs, indices, channel, parent, fill, xlim_vals, title_str) {
+  df_all <- map_dfr(seq_along(indices), function(k) {
+    df <- channel_df(gs, indices[k], parent, channel)
+    if (!is.null(df)) mutate(df, rep = factor(k)) else NULL
+  })
+  if (is.null(df_all) || nrow(df_all) == 0) return(ggplot() + theme_void())
+  ggplot(df_all, aes(x = value, group = rep)) +
+    geom_density(fill = fill, color = "black", alpha = 0.3) +
+    scale_x_continuous(limits = xlim_vals) +
+    labs(x = channel, y = "Density", title = title_str) +
+    theme_cowplot(font_size = 9) +
+    theme(plot.title = element_text(size = 9))
+}
+
+p1 <- plot_multi_density(gs, 97:99,       "B2-A",  "root",
+                         "coral",     c(0, 1e5), "WT haploid — SYTOX Green (B2-A)")
+p2 <- plot_multi_density(gs, c(7,9,11),   "FSC-A", "root",
+                         "steelblue", c(0, 2e6), "WT haploid — FSC-A (Unstained)")
+p3 <- plot_multi_density(gs, 94:96,       "B2-A",  "root",
+                         "coral",     c(0, 1e5), "DGY3 diploid — SYTOX Green (B2-A)")
+p4 <- plot_multi_density(gs, c(4,6,8),    "FSC-A", "root",
+                         "steelblue", c(0, 2e6), "DGY3 diploid — FSC-A (Unstained)")
 
 ctrl_page <- plot_grid(p1, p2, p3, p4, labels = c("A","B","C","D"),
                        ncol = 2, nrow = 2)
@@ -173,7 +196,7 @@ for (sample_type in c("Size_control", "DNA_content")) {
   file_pfx   <- if (sample_type == "Size_control") "distr_FSC" else "distr_B2A"
 
   combos <- gs_meta %>%
-    filter(Sample_type == sample_type) %>%
+    dplyr::filter(Sample_type == sample_type) %>%
     distinct(Strain, Media) %>%
     arrange(Strain, Media)
 
@@ -297,7 +320,7 @@ raw_1n <- map_dfr(seq_along(gs), function(i) {
 write_csv(raw_1n, file.path(out_dir, "dna_1n_per_replicate.csv"))
 
 raw_1n <- raw_1n %>%
-  filter(Strain != "DGY3") %>%
+  dplyr::filter(Strain != "DGY3") %>%
   mutate(Strain = recode(Strain, "RIM15Δ0" = "rim15Δ"))
 
 dna_summary <- raw_1n %>%
@@ -405,7 +428,7 @@ final_df <- map_dfr(c("C","N","P"), function(m) {
   dna_m <- dna_plot_df %>% filter(Media == m, Time > 0)
   siz_m <- size_plot_df %>% filter(Media == m, Time > 0)
   t0_s  <- size_plot_df %>% filter(Media == m, Time == 0)
-  t0_row <- t0_s %>% left_join(t0_dna %>% select(-Media), by = c("Strain","Time"))
+  t0_row <- t0_s %>% left_join(t0_dna, by = c("Strain","Time"))
   bind_rows(
     left_join(dna_m, siz_m, by = c("Strain","Media","Time")),
     mutate(t0_row, Media = m)
@@ -444,7 +467,7 @@ make_dual <- function(m, lab) {
           legend.position    = "none",
           panel.grid.major.x = element_line(color = "grey90", linetype = "dotted"))
 }
-a
+
 make_dna_only <- function(m, lab) {
   pd <- final_df %>% filter(Media == m)
   ggplot(pd, aes(x = Time, y = mean_dna, color = Strain, group = Strain)) +
