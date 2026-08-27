@@ -18,7 +18,7 @@ Saccharomyces cerevisiae cells" (PLOS Genetics, PGENETICS-D-25-01150R1)
 - [ ] Refactor pipeline so it reproducibly regenerates all main-text analyses and all 
       supplemental tables/figures from raw or processed input data, ideally via a single 
       entry-point script or clearly ordered sequence
-- [ ] Write/update README.md with, for each script: what it does, what inputs it expects, 
+- [x] Write/update README.md with, for each script: what it does, what inputs it expects, 
       and what output file(s) it generates (map script -> output filename explicitly)
 
 ## New Supplemental Tables
@@ -30,9 +30,9 @@ Saccharomyces cerevisiae cells" (PLOS Genetics, PGENETICS-D-25-01150R1)
 
 ## New Supplemental Figures — Flow Cytometry
 
-- [ ] Ridge plots: DNA content over time, split by genotype (2) x condition (3)
-- [ ] Cell size (FSC) over time, split by genotype (2) x condition (3)
-- [ ] Check for existing flow cytometry processing code before writing new
+- [x] Ridge plots: DNA content over time, split by genotype (2) x condition (3) — `revision3/output/sfig_dna_ridges.pdf`
+- [x] Cell size (FSC) over time, split by genotype (2) x condition (3) — `revision3/output/sfig_fsc_ridges.pdf`
+- [x] Check for existing flow cytometry processing code before writing new
 
 ---
 
