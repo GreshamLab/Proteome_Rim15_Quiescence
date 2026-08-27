@@ -535,7 +535,7 @@ pie(slices, labels = slices_labels,
 fg_P <- sig_logFC_ttest_pS_motif %>%
   dplyr::filter(nutrient == "P")
 #for only in Phosphorous condition
-#motif_P<-motifx(sig_logFC_ttest_pS_motif$motif, ratio_sequence_motif$motif, central.res = "S", min.seqs = 10, pval.cutoff = 0.05, verbose = F, perl.impl = F)
+motif_P <- motifx(fg_P$motif, ratio_sequence_motif$motif, central.res = "S", min.seqs = 10, pval.cutoff = 0.05, verbose = F, perl.impl = F)
 motif_P
 
 fg_C <- sig_logFC_ttest_pS_motif %>%

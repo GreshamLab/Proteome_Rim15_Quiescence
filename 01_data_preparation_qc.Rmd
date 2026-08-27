@@ -508,6 +508,26 @@ master <- left_join(intensity_geoMean_normed %>% select(-channel),ratio_all%>% s
 dim(master)
 head(master)
 write_csv(master, "./tables/master_protein.csv")
+
+# Tidy (wide) version: one row per protein × sample, four measurement columns.
+# Only proteins with at least one valid SILAC ratio are kept — intensity-only
+# detections (no H/L or M/L ratio) are excluded because downstream analyses
+# (ANCOVA, WGCNA, Shiny) require normalized_ratio as the primary measurement.
+# Read by: 03_ancova_analysis.Rmd, R03_mito_reconciliation.Rmd, shiny/prep_data.R
+has_ratio <- master %>%
+  filter(data == "normed_ratio", !is.na(value), is.finite(value), value > 0) %>%
+  distinct(`Protein IDs`) %>%
+  pull(`Protein IDs`)
+
+master_tidy <- master %>%
+  filter(`Protein IDs` %in% has_ratio, !is.na(value), is.finite(value)) %>%
+  pivot_wider(names_from = data, values_from = value) %>%
+  rename(normalized_ratio     = normed_ratio,
+         normalized_intensity = normed_intensity) %>%
+  select(-`Protein names`, -`Fasta headers`)
+
+write_csv(master_tidy, "./tables/master_tidy_protein.csv")
+rm(has_ratio, master_tidy)
 ```
 
 ## PCA analysis for each data type

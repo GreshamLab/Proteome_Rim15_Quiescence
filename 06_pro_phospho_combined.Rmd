@@ -1,121 +1,213 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "Combined proteome + phosphoproteome analysis"
+author: "Sun et al."
+output: html_document
 ---
 
-Combined protein and pSites analysis
-##merge protein Groups with pSite
-```{r , echo = FALSE}
-logFC_ttest <- left_join(logFC_ttest_pS, logFC_ttest_pG, by = c("Protein names","Gene names","Fasta headers","nutrient","time"), suffix = c(".phospho",".protein"))
-
-ggplot(data=logFC_ttest, aes(x=log2FC.protein, y =log2FC.phospho)) +
-  #geom_point(data=logFC_ttest, alpha = 1/3, size = 0.6, color = "#6e6e6e") +
-  geom_point(data=logFC_ttest, size=1, alpha = 0.7, col="#a3a3a3") +
-  geom_point(data=logFC_ttest %>% dplyr::filter(log2FC.phospho > 0 & qvalue.phospho < 0.05 & log2FC.phospho > log2FC.protein), color='#FF3333',size=1, alpha = 0.7) +
-  geom_point(data=logFC_ttest %>% dplyr::filter(log2FC.phospho < 0 & qvalue.phospho < 0.05  & log2FC.phospho < log2FC.protein), color='#3399FF',size=1, alpha = 0.7) +
-  #stat_cor(method = "spearman", label.x.npc = "left", label.y.npc = "top", size=3, col = "#a3a3a3") +
-  theme_classic() +
- geom_text_repel(data = logFC_ttest %>% dplyr::filter(log2FC.phospho > 0 & qvalue.phospho < 0.05 & log2FC.phospho > log2FC.protein), aes(label = pSite), size =2.5) +
- geom_text_repel(data = logFC_ttest %>% dplyr::filter(log2FC.phospho < 0 & qvalue.phospho < 0.05  & log2FC.phospho < log2FC.protein), aes(label = pSite), size =2.5) +
-  #geom_vline(xintercept = 0, color = "#949191")+
-  #geom_hline(yintercept = 0, color = "#949191") +
-  xlab(expression(log[2]*" (WT / rim15Δ) - protein")) +
-  ylab(expression(log[2]*" (WT / rim15Δ) - phosphorylation site")) +
-  theme(plot.title = element_text(hjust = 0.5, size = 14), axis.title = element_text(size = 12), axis.text = element_text(size = 10, colour = "black"))+
-  #xlim(c(-3, 3)) +
-  facet_grid(nutrient~time, scale = "free")+
-  theme(legend.position="none")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-#significantly differentially expressing proteins
+```{r libraries}
+library(tidyverse)
+library(reshape2)
+library(ggrepel)
+library(gridExtra)
+library(ggpubr)
+library(cowplot)
+```
 
-#Significantly DE proteins by genotype
-```{r, eval=FALSE}
+```{r load-data}
+# DE results: protein log2FC (WT/rim15KO) per condition × timepoint
+logFC_ttest_pG <- read_csv("./tables/DE_proteins_byGenotype.csv",
+                           show_col_types = FALSE)
+
+# DE results: phosphosite log2FC (WT/rim15KO) per condition × timepoint
+logFC_ttest_pS <- read_csv("./tables/DE_pSites_byGenotype.csv",
+                           show_col_types = FALSE)
+
+# Normalised protein ratios (wide: one row per protein × sample)
+master <- read_csv("./tables/master_tidy_protein.csv",
+                   show_col_types = FALSE) %>%
+  mutate(samplingTime = as.numeric(substr(samplingTime, 2, nchar(samplingTime))))
+
+# ANCOVA results — used to define sig protein lists for trajectory plots
+anova_genotype         <- read_csv("./tables/anova_genotype.csv",
+                                   show_col_types = FALSE)
+anova_nutrient         <- read_csv("./tables/anova_nutrient.csv",
+                                   show_col_types = FALSE)
+anova_genotype_nutrient <- read_csv("./tables/anova_genotype_nutrient.csv",
+                                    show_col_types = FALSE)
+```
+
+```{r define-sig-lists}
+# Proteins with significant genotype × time interaction (q < 0.05, normed_ratio)
+sig_genotype <- anova_genotype %>%
+  filter(term == "samplingTime:genotypeWT", data == "normed_ratio", qvalue < 0.05)
+
+# Proteins with significant nutrient × time interaction (q < 0.05, normed_ratio)
+sig_nutrient <- anova_nutrient %>%
+  filter(grepl("samplingTime", term) & grepl("nutrient", term),
+         data == "normed_ratio", qvalue < 0.05)
+
+# Proteins with significant 3-way interaction (q < 0.05, normed_ratio)
+sig_3way <- anova_genotype_nutrient %>%
+  filter(term == "samplingTime:genotype:nutrient",
+         data == "normed_ratio", qvalue < 0.05)
+```
+
+## Phosphosite vs protein log2FC scatter
+
+Scatter plot of protein-level log2FC (x) against phosphosite log2FC (y). Red points
+highlight phosphosites with significant change (q < 0.05) that exceed the parent
+protein's fold change — i.e. sites whose change is not simply a reflection of altered
+protein abundance.
+
+```{r scatter-phospho-vs-protein, fig.width=10, fig.height=8}
+logFC_ttest <- left_join(
+  logFC_ttest_pS,
+  logFC_ttest_pG,
+  by     = c("Protein names", "Gene names", "Fasta headers", "nutrient", "time"),
+  suffix = c(".phospho", ".protein")
+)
+
+p_scatter <- ggplot(data = logFC_ttest,
+                    aes(x = log2FC.protein, y = log2FC.phospho)) +
+  geom_point(size = 0.8, alpha = 0.5, color = "#a3a3a3") +
+  geom_point(data = filter(logFC_ttest,
+                           log2FC.phospho > 0,
+                           qvalue.phospho < 0.05,
+                           log2FC.phospho > log2FC.protein),
+             color = "#FF3333", size = 1, alpha = 0.7) +
+  geom_point(data = filter(logFC_ttest,
+                           log2FC.phospho < 0,
+                           qvalue.phospho < 0.05,
+                           log2FC.phospho < log2FC.protein),
+             color = "#3399FF", size = 1, alpha = 0.7) +
+  geom_text_repel(
+    data  = filter(logFC_ttest,
+                   log2FC.phospho > 0, qvalue.phospho < 0.05,
+                   log2FC.phospho > log2FC.protein),
+    aes(label = pSite), size = 2, max.overlaps = 15) +
+  geom_text_repel(
+    data  = filter(logFC_ttest,
+                   log2FC.phospho < 0, qvalue.phospho < 0.05,
+                   log2FC.phospho < log2FC.protein),
+    aes(label = pSite), size = 2, max.overlaps = 15) +
+  geom_vline(xintercept = 0, color = "#cccccc", linetype = "dashed") +
+  geom_hline(yintercept = 0, color = "#cccccc", linetype = "dashed") +
+  geom_abline(slope = 1, intercept = 0, color = "#888888", linetype = "dotted") +
+  xlab(expression(log[2] * " (WT / rim15Δ) - protein")) +
+  ylab(expression(log[2] * " (WT / rim15Δ) - phosphorylation site")) +
+  facet_grid(nutrient ~ time, scale = "free") +
+  theme_classic(base_size = 11) +
+  theme(legend.position = "none",
+        strip.background = element_blank())
+
+p_scatter
+
+ggsave("./plots/phospho_vs_protein_logFC.pdf",
+       plot = p_scatter, width = 10, height = 7, useDingbats = FALSE)
+```
+
+## Trajectory plots for significantly DE proteins
+
+The next three chunks generate multi-page PDFs of protein trajectories for proteins
+significant by genotype, nutrient, and the 3-way interaction respectively.
+Set `eval=TRUE` to regenerate; they are slow for large protein lists.
+
+```{r traj-sig-genotype, eval=FALSE}
+master_long <- master %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity),
+               names_to = "variable", values_to = "value") %>%
+  filter(!is.na(value), is.finite(value))
+
 protein_list <- unique(sig_genotype$`Protein IDs`)
-plot_list_genotype = list()
+plot_list_genotype <- list()
 
-for (cond in c("C","P")) {
-  for (i in 1:length(protein_list)) {
-    protein <- master %>% 
-      filter(nutrient == cond) %>%
-      filter(`Protein IDs` %in% sig_genotype$`Protein IDs`) %>%
-      melt() %>%
-      mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>% 
-      mutate(samplingTime = as.numeric(samplingTime)) %>% 
-      filter(`Protein IDs` == protein_list[i]) 
-    
-    p <- protein %>%
-      ggline(x = "samplingTime", y = "value", color = "genotype", facet.by = "variable",  add = c("mean_se", "dotplot"), palette = c("#00AFBB","#E7B800"))+
-      facet_wrap( ~ variable, scale = "free", ncol = 4) +
-      ggtitle(paste0(cond, " starvation ", unique(protein$`Gene names`))) +
+for (cond in c("C", "P")) {
+  for (i in seq_along(protein_list)) {
+    protein <- master_long %>%
+      filter(nutrient == cond, `Protein IDs` == protein_list[i])
+    if (nrow(protein) == 0) next
+
+    p <- ggline(protein, x = "samplingTime", y = "value",
+                color = "genotype", facet.by = "variable",
+                add = c("mean_se", "dotplot"),
+                palette = c("#00AFBB", "#E7B800")) +
+      facet_wrap(~variable, scale = "free", ncol = 2) +
+      ggtitle(paste0(cond, " — ", unique(protein$`Gene names`))) +
       scale_y_log10()
- 
-  plot_list_genotype[[i]] = p
+
+    plot_list_genotype[[length(plot_list_genotype) + 1]] <- p
   }
 }
 
-ggsave(filename = "./plots/sigDE_by_genotype.pdf", plot = marrangeGrob(plot_list_genotype, nrow=6, ncol = 1), width = 15, height = 10)
+ggsave("./plots/sigDE_by_genotype.pdf",
+       plot = marrangeGrob(plot_list_genotype, nrow = 6, ncol = 1),
+       width = 12, height = 14)
 ```
 
-#Significantly DE proteins by nutrient
-```{r, echo = FALSE}
+```{r traj-sig-nutrient, eval=FALSE}
+master_long <- master %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity),
+               names_to = "variable", values_to = "value") %>%
+  filter(!is.na(value), is.finite(value))
+
 protein_list <- unique(sig_nutrient$`Protein IDs`)
-plot_list_nutrient = list()
+plot_list_nutrient <- list()
 
-for (cond in c("rim15KO","WT")) {
-  for (i in 1:length(protein_list)) {
-    protein <- master %>% 
-      filter(`Protein IDs` %in% sig_nutrient$`Protein IDs`) %>%
-      filter(nutrient == cond) %>%
-      melt() %>%
-      mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>% 
-      mutate(samplingTime = as.numeric(samplingTime)) %>% 
-      filter(`Protein IDs` == protein_list[i]) 
-    
-    p <- protein %>%
-      ggline(x = "samplingTime", y = "value", color = "nutrient", facet.by = "variable",  add = c("mean_se", "dotplot"), palette = c("#ff9500","#8300ab"))+
-      facet_wrap( ~ variable, scale = "free", ncol = 4) +
-      ggtitle(paste0(cond, " starvation ", unique(protein$`Gene names`))) +
+for (gt in c("WT", "rim15KO")) {
+  for (i in seq_along(protein_list)) {
+    protein <- master_long %>%
+      filter(genotype == gt, `Protein IDs` == protein_list[i])
+    if (nrow(protein) == 0) next
+
+    p <- ggline(protein, x = "samplingTime", y = "value",
+                color = "nutrient", facet.by = "variable",
+                add = c("mean_se", "dotplot"),
+                palette = c("#ff9500", "#8300ab")) +
+      facet_wrap(~variable, scale = "free", ncol = 2) +
+      ggtitle(paste0(gt, " — ", unique(protein$`Gene names`))) +
       scale_y_log10()
- 
-  plot_list_nutrient[[i]] = p
+
+    plot_list_nutrient[[length(plot_list_nutrient) + 1]] <- p
   }
 }
 
-ggsave(filename = "./plots/sigDE_by_nutrient.pdf", plot = marrangeGrob(plot_list_nutrient, nrow=6, ncol = 1), width = 15, height = 10)
+ggsave("./plots/sigDE_by_nutrient.pdf",
+       plot = marrangeGrob(plot_list_nutrient, nrow = 6, ncol = 1),
+       width = 12, height = 14)
 ```
 
-#Significantly DE proteins by nutrient
-```{r, echo = FALSE}
+```{r traj-sig-3way, eval=FALSE}
+master_long <- master %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity),
+               names_to = "variable", values_to = "value") %>%
+  filter(!is.na(value), is.finite(value))
+
 protein_list <- unique(sig_3way$`Protein IDs`)
-plot_list_3way = list()
+plot_list_3way <- list()
 
-for (cond in c("rim15KO","WT")) {
-  for (i in 1:length(protein_list)) {
-    protein <- master %>% 
-      filter(`Protein IDs` %in% sig_3way$`Protein IDs`) %>%
-      filter(nutrient == cond) %>%
-      melt() %>%
-      mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>% 
-      mutate(samplingTime = as.numeric(samplingTime)) %>% 
-      filter(`Protein IDs` == protein_list[i]) 
-    
-    p <- protein %>%
-      ggline(x = "samplingTime", y = "value", color = "nutrient", facet.by = "variable",  add = c("mean_se", "dotplot"), palette = c("#ff9500","#8300ab"))+
-      facet_wrap( ~ variable, scale = "free", ncol = 4) +
-      ggtitle(paste0(cond, " starvation ", unique(protein$`Gene names`))) +
+for (gt in c("WT", "rim15KO")) {
+  for (i in seq_along(protein_list)) {
+    protein <- master_long %>%
+      filter(genotype == gt, `Protein IDs` == protein_list[i])
+    if (nrow(protein) == 0) next
+
+    p <- ggline(protein, x = "samplingTime", y = "value",
+                color = "nutrient", facet.by = "variable",
+                add = c("mean_se", "dotplot"),
+                palette = c("#ff9500", "#8300ab")) +
+      facet_wrap(~variable, scale = "free", ncol = 2) +
+      ggtitle(paste0(gt, " — ", unique(protein$`Gene names`))) +
       scale_y_log10()
- 
-  plot_list_3way[[i]] = p
+
+    plot_list_3way[[length(plot_list_3way) + 1]] <- p
   }
 }
 
-ggsave(filename = "./plots/sigDE_3way.pdf", plot = marrangeGrob(plot_list_3way, nrow=6, ncol = 1), width = 15, height = 10)
+ggsave("./plots/sigDE_3way.pdf",
+       plot = marrangeGrob(plot_list_3way, nrow = 6, ncol = 1),
+       width = 12, height = 14)
 ```
-
-## Phosphoproteomic data preperation
-```{r , echo = FALSE}
-
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
