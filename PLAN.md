@@ -23,10 +23,10 @@ Saccharomyces cerevisiae cells" (PLOS Genetics, PGENETICS-D-25-01150R1)
 
 ## New Supplemental Tables
 
-- [x] S4 — Normalized protein SILAC ratios (`tables/supplemental/S4_normalized_protein_ratios.csv`): 1,276 proteins × 74 sample columns (WT + rim15Δ, C + P, T0/6/16/30, 3 reps)
-- [x] S5 — Normalized phosphosite ratios (`tables/supplemental/S5_normalized_phosphosite_ratios.csv`): 5,056 pSites × 53 columns (full matrix, not filtered by significance)
-- [x] S6 — ANCOVA results (`tables/supplemental/S6_ancova_results.csv`): genotype, nutrient, and 3-way models combined; filtered to normed_ratio data
-- [x] S7 — WGCNA module membership (`tables/supplemental/S7_wgcna_module_membership.csv`): 927 proteins × 4 networks (C/P × WT/rim15Δ)
+- [x] S5 — Normalized protein SILAC ratios (`tables/supplemental/S5_normalized_protein_ratios.csv`): 1,276 proteins × 74 sample columns (WT + rim15Δ, C + P, T0/6/16/30, 3 reps)
+- [x] S6 — Normalized phosphosite ratios (`tables/supplemental/S6_normalized_phosphosite_ratios.csv`): 5,056 pSites × 53 columns (full matrix, not filtered by significance)
+- [x] S7 — ANCOVA results (`tables/supplemental/S7_ancova_results.csv`): genotype, nutrient, and 3-way models combined; filtered to normed_ratio data
+- [x] S8 — WGCNA module membership (`tables/supplemental/S8_wgcna_module_membership.csv`): 927 proteins × 4 networks (C/P × WT/rim15Δ)
 
 ## New Supplemental Figures — Flow Cytometry
 

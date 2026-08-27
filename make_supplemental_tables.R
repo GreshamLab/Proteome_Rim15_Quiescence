@@ -27,7 +27,7 @@ s4 <- protein_long %>%
   pivot_wider(names_from = sample, values_from = normalized_ratio) %>%
   arrange(`Gene names`)
 
-write_csv(s4, "tables/supplemental/S4_normalized_protein_ratios.csv")
+write_csv(s4, "tables/supplemental/S5_normalized_protein_ratios.csv")
 cat(sprintf("  S4: %d proteins × %d columns\n", nrow(s4), ncol(s4)))
 
 # ── S5: Normalized phosphosite ratios ────────────────────────────────────────
@@ -50,7 +50,7 @@ s5 <- psite_raw %>%
   select(all_of(c(meta_cols, sample_cols))) %>%
   arrange(`Gene names`, pSite)
 
-write_csv(s5, "tables/supplemental/S5_normalized_phosphosite_ratios.csv")
+write_csv(s5, "tables/supplemental/S6_normalized_phosphosite_ratios.csv")
 cat(sprintf("  S5: %d phosphosites × %d columns\n", nrow(s5), ncol(s5)))
 
 # ── S6: ANCOVA results ────────────────────────────────────────────────────────
@@ -94,7 +94,7 @@ ancova_3way <- read_csv("tables/anova_genotype_nutrient.csv",
 s6 <- bind_rows(ancova_geno, ancova_nutri, ancova_3way) %>%
   arrange(comparison, `Gene names`, term)
 
-write_csv(s6, "tables/supplemental/S6_ancova_results.csv")
+write_csv(s6, "tables/supplemental/S7_ancova_results.csv")
 cat(sprintf("  S6: %d rows\n", nrow(s6)))
 
 # ── S7: WGCNA module membership ───────────────────────────────────────────────
@@ -105,11 +105,11 @@ s7 <- read_csv("tables/wgcna_module_membership_wide.csv",
   rename(`Protein IDs` = protein_id, `Gene names` = gene_name) %>%
   arrange(`Gene names`)
 
-write_csv(s7, "tables/supplemental/S7_wgcna_module_membership.csv")
+write_csv(s7, "tables/supplemental/S8_wgcna_module_membership.csv")
 cat(sprintf("  S7: %d proteins\n", nrow(s7)))
 
 cat("\nDone. Files in tables/supplemental/:\n")
-cat("  S4_normalized_protein_ratios.csv\n")
-cat("  S5_normalized_phosphosite_ratios.csv\n")
-cat("  S6_ancova_results.csv\n")
-cat("  S7_wgcna_module_membership.csv\n")
+cat("  S5_normalized_protein_ratios.csv\n")
+cat("  S6_normalized_phosphosite_ratios.csv\n")
+cat("  S7_ancova_results.csv\n")
+cat("  S8_wgcna_module_membership.csv\n")
