@@ -300,6 +300,43 @@ dev.off()
 message("Saved: ", file.path(out_dir, "dna_content_histograms.pdf"))
 ```
 
+# Export raw channel data for ridge plots
+
+```{r export-raw-channels}
+gs_meta <- pData(gs)
+
+# Export raw B2-A (SYTOX Green, DNA content) from SYTOX+ gate.
+# Includes DGY1 (haploid control) and DGY3 (diploid control) — Media = NA for controls.
+raw_b2a <- map_dfr(seq_along(gs), function(i) {
+  md <- gs_meta[i, ]
+  if (is.na(md$Sample_type) || md$Sample_type != "DNA_content") return(NULL)
+  df <- channel_df(gs, i, "SYTOX+", "B2-A")
+  if (is.null(df) || nrow(df) == 0) return(NULL)
+  mutate(df, Strain = md$Strain, Media = md$Media,
+         Time = md$Time, Bio_rep = md$Bio_rep)
+})
+write_csv(raw_b2a, file.path(out_dir, "dna_b2a_raw.csv"))
+message(sprintf("Saved dna_b2a_raw.csv: %d cells across %d samples",
+                nrow(raw_b2a),
+                n_distinct(paste(raw_b2a$Strain, raw_b2a$Media,
+                                 raw_b2a$Time, raw_b2a$Bio_rep))))
+
+# Export raw FSC-A (cell size) from Unstained gate.
+raw_fsc_full <- map_dfr(seq_along(gs), function(i) {
+  md <- gs_meta[i, ]
+  if (is.na(md$Sample_type) || md$Sample_type != "Size_control") return(NULL)
+  df <- channel_df(gs, i, "Unstained", "FSC-A")
+  if (is.null(df) || nrow(df) == 0) return(NULL)
+  mutate(df, Strain = md$Strain, Media = md$Media,
+         Time = md$Time, Bio_rep = md$Bio_rep)
+})
+write_csv(raw_fsc_full, file.path(out_dir, "fsc_raw.csv"))
+message(sprintf("Saved fsc_raw.csv: %d cells across %d samples",
+                nrow(raw_fsc_full),
+                n_distinct(paste(raw_fsc_full$Strain, raw_fsc_full$Media,
+                                 raw_fsc_full$Time, raw_fsc_full$Bio_rep))))
+```
+
 # 1N-fraction over time
 
 ```{r one-n-fraction}
