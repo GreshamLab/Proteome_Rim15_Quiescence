@@ -46,7 +46,7 @@ Saccharomyces cerevisiae cells" (PLOS Genetics, PGENETICS-D-25-01150R1)
 ## Other tasks
 
 - [ ] Shiny app deployment (NYU Research Computing)
-- [ ] rescue/drive-versions/ reconciliation (Data prep, Proteome analysis, pSites analysis Rmds)
+- [x] rescue/drive-versions/ reconciliation — 01 and 04 repo versions are polished; 05 updated with drop_na(Proteins) and pSite[is.na(pSite)] <- 0 from Drive version
 
 ---
 

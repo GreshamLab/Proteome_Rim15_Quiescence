@@ -345,7 +345,9 @@ write_csv(perseus,"./tables/normed_pSite_ratio_perseus.csv")
 ```{r, echo = FALSE}
 ###############################################################################################
 pSite<-read_csv("./tables/normed_pSite_ratio_perseus.csv") %>%
-    dplyr::select(-c("id"))
+    dplyr::select(-c("id")) %>%
+    drop_na(Proteins)
+pSite[is.na(pSite)] <- 0
 
 pSite_tidy <- melt(pSite) %>%
   separate(variable, c("genotype", "nutrient", "samplingTime", "replicate"), sep = "_") %>%
@@ -594,9 +596,9 @@ proteinG<-read_csv("./tables/normed_ratio_perseus.csv") %>%
 
 pSite<-read_csv("./tables/normed_pSite_ratio_perseus.csv") %>%
   dplyr::select(-c("id")) %>%
-  dplyr::select(-contains("/"))# %>%
-  #remove entries with any NA reads
-  #drop_na()
+  dplyr::select(-contains("/")) %>%
+  drop_na(Proteins)
+pSite[is.na(pSite)] <- 0
 
 #+++++++++++++++++++++++++
 # Function to calculate the mean and the standard deviation
@@ -711,7 +713,9 @@ dotplot(gse, showCategory=30, split=".sign")  + facet_grid(.~.sign)
 ```{r, echo = FALSE}
 ###############################################################################################
 pSite<-read_csv("./tables/normed_pSite_ratio_perseus.csv") %>%
-    dplyr::select(-c("id"))
+    dplyr::select(-c("id")) %>%
+    drop_na(Proteins)
+pSite[is.na(pSite)] <- 0
 
 pSite_tidy <- melt(pSite) %>%
   separate(variable, c("genotype", "nutrient", "samplingTime", "replicate"), sep = "_") %>%
