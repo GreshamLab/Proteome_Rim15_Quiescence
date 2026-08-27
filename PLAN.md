@@ -8,18 +8,16 @@ Saccharomyces cerevisiae cells" (PLOS Genetics, PGENETICS-D-25-01150R1)
 
 ## Reproducibility & Documentation
 
-- [ ] Audit existing repo for scripts that already perform these analyses (protein ratio 
-      normalization, phosphosite normalization, ANCOVA, WGCNA, flow cytometry processing) — 
+- [x] Audit existing repo for scripts that already perform these analyses (protein ratio
+      normalization, phosphosite normalization, ANCOVA, WGCNA, flow cytometry processing) —
       inventory what exists before writing anything new
-- [ ] Identify and label ambiguous/undocumented scripts (rename or annotate with header 
-      comments describing purpose, inputs, outputs)
-- [ ] Standardize output file naming so each generated file's contents are identifiable 
-      from its name (e.g. `supp_table_S4_normalized_protein_ratios.csv`, not `output3.csv`)
-- [ ] Refactor pipeline so it reproducibly regenerates all main-text analyses and all 
-      supplemental tables/figures from raw or processed input data, ideally via a single 
-      entry-point script or clearly ordered sequence
-- [x] Write/update README.md with, for each script: what it does, what inputs it expects, 
-      and what output file(s) it generates (map script -> output filename explicitly)
+- [x] Identify and label ambiguous/undocumented scripts — purpose/inputs/outputs blocks
+      added to 01–06; scripts 03 and 07 marked RETIRED
+- [x] Standardize output file naming — supplemental tables named S5–S8_*.csv;
+      revision3 outputs named descriptively
+- [x] Refactor pipeline so it reproducibly regenerates all main-text analyses and
+      supplemental tables/figures — `run_pipeline.R` created as single entry point
+- [x] Write/update README.md with script → input → output map
 
 ## New Supplemental Tables
 
