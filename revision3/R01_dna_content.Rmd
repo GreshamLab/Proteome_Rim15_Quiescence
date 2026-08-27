@@ -321,11 +321,20 @@ message(sprintf("Saved dna_b2a_raw.csv: %d cells across %d samples",
                 n_distinct(paste(raw_b2a$Strain, raw_b2a$Media,
                                  raw_b2a$Time, raw_b2a$Bio_rep))))
 
-# Export raw FSC-A (cell size) from Unstained gate.
+# Export raw FSC-A (cell size).
+# DGY3 has Size_control samples (unstained) — use Unstained gate.
+# DGY1 has only DNA_content samples — FSC-A is unaffected by SYTOX staining,
+# so extract it from the SYTOX+ gate for DGY1.
 raw_fsc_full <- map_dfr(seq_along(gs), function(i) {
   md <- gs_meta[i, ]
-  if (is.na(md$Sample_type) || md$Sample_type != "Size_control") return(NULL)
-  df <- channel_df(gs, i, "Unstained", "FSC-A")
+  if (is.na(md$Sample_type)) return(NULL)
+  if (md$Sample_type == "Size_control") {
+    df <- channel_df(gs, i, "Unstained", "FSC-A")
+  } else if (md$Sample_type == "DNA_content" && !is.na(md$Strain) && md$Strain == "DGY1") {
+    df <- channel_df(gs, i, "SYTOX+", "FSC-A")
+  } else {
+    return(NULL)
+  }
   if (is.null(df) || nrow(df) == 0) return(NULL)
   mutate(df, Strain = md$Strain, Media = md$Media,
          Time = md$Time, Bio_rep = md$Bio_rep)

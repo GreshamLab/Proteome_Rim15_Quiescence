@@ -26,14 +26,14 @@ COND_LABELS <- c("C" = "Carbon starvation",
                  "N" = "Nitrogen starvation",
                  "P" = "Phosphorus starvation")
 
-TIME_COLORS <- c("DGY3 ctrl" = "#cccccc",
-                 "DGY1 ctrl" = "#999999",
+TIME_COLORS <- c("Diploid control" = "#cccccc",
+                 "Haploid control" = "#999999",
                  "0 h"  = "#fef0d9",
                  "6 h"  = "#fdcc8a",
                  "16 h" = "#fc8d59",
                  "30 h" = "#b30000")
 
-out_dir <- "./revision3/output"
+out_dir <- "/Users/david/Projects/Proteome_Rim15_Quiescence/revision3/output"
 ```
 
 ```{r load-dna}
@@ -41,20 +41,19 @@ b2a_raw <- read_csv(file.path(out_dir, "dna_b2a_raw.csv"),
                     show_col_types = FALSE) %>%
   mutate(
     Strain  = recode(Strain, "RIM15Δ0" = "rim15Δ"),
-    # Build ridge label: controls at top, timepoints below
     ridge = case_when(
-      Strain == "Diploid ctrl" ~ "DGY3 ctrl",   # diploid: 2N/4N markers
-      Strain %in% c("WT (haploid ctrl)", "DGY1") ~ "DGY1 ctrl",
-      TRUE ~ paste0(Time, " h")
+      Strain == "DGY3"            ~ "Diploid control",
+      Strain == "DGY1"            ~ "Haploid control",
+      Time %in% c(0, 6, 16, 30)  ~ paste0(Time, " h"),
+      TRUE                        ~ NA_character_
     ),
-    # Ordered factor: DGY3 top, DGY1 next, then T0→T30 from top to bottom
     ridge = factor(ridge,
-                   levels = rev(c("DGY3 ctrl", "DGY1 ctrl",
+                   levels = rev(c("Diploid control", "Haploid control",
                                   "0 h", "6 h", "16 h", "30 h")))
   ) %>%
-  # Keep only experimental strains + controls for the ridge plots
-  dplyr::filter(Strain %in% c("WT", "rim15Δ") |
-                  grepl("ctrl", ridge, fixed = TRUE))
+  dplyr::filter(!is.na(ridge),
+                Strain %in% c("WT", "rim15Δ") |
+                  ridge %in% c("Diploid control", "Haploid control"))
 ```
 
 ```{r load-fsc}
@@ -63,14 +62,18 @@ fsc_raw <- read_csv(file.path(out_dir, "fsc_raw.csv"),
   mutate(
     Strain = recode(Strain, "RIM15Δ0" = "rim15Δ"),
     ridge  = case_when(
-      Strain %in% c("WT (haploid ctrl)", "DGY1") ~ "DGY1 ctrl",
-      TRUE ~ paste0(Time, " h")
+      Strain == "DGY3"            ~ "Diploid control",
+      Strain == "DGY1"            ~ "Haploid control",
+      Time %in% c(0, 6, 16, 30)  ~ paste0(Time, " h"),
+      TRUE                        ~ NA_character_
     ),
     ridge  = factor(ridge,
-                    levels = rev(c("DGY1 ctrl", "0 h", "6 h", "16 h", "30 h")))
+                    levels = rev(c("Diploid control", "Haploid control",
+                                   "0 h", "6 h", "16 h", "30 h")))
   ) %>%
-  dplyr::filter(Strain %in% c("WT", "rim15Δ") |
-                  grepl("ctrl", ridge, fixed = TRUE))
+  dplyr::filter(!is.na(ridge),
+                Strain %in% c("WT", "rim15Δ") |
+                  ridge %in% c("Diploid control", "Haploid control"))
 ```
 
 ## DNA content ridge plots
@@ -80,9 +83,8 @@ the top as landmarks for the 1N and 2N peak positions. Timepoints run top to bot
 
 ```{r dna-ridge-plots, fig.height=10}
 make_dna_ridge <- function(genotype, condition) {
-  # Controls are shared across conditions — no Media filter for them
   ctrl <- b2a_raw %>%
-    dplyr::filter(grepl("ctrl", ridge, fixed = TRUE))
+    dplyr::filter(ridge %in% c("Diploid control", "Haploid control"))
 
   expt <- b2a_raw %>%
     dplyr::filter(Strain == genotype, Media == condition)
@@ -127,7 +129,7 @@ message("Saved sfig_dna_ridges.pdf")
 ```{r fsc-ridge-plots, fig.height=9}
 make_fsc_ridge <- function(genotype, condition) {
   ctrl <- fsc_raw %>%
-    dplyr::filter(grepl("ctrl", ridge, fixed = TRUE))
+    dplyr::filter(ridge %in% c("Diploid control", "Haploid control"))
 
   expt <- fsc_raw %>%
     dplyr::filter(Strain == genotype, Media == condition)
@@ -139,10 +141,8 @@ make_fsc_ridge <- function(genotype, condition) {
                         rel_min_height = 0.005) +
     scale_x_continuous(limits   = c(0, 2e6),
                        labels   = scales::label_number(scale = 1e-3, suffix = "k")) +
-    scale_fill_manual(values  = TIME_COLORS[names(TIME_COLORS) != "DGY3 ctrl"],
-                      guide   = "none") +
-    scale_color_manual(values = TIME_COLORS[names(TIME_COLORS) != "DGY3 ctrl"],
-                       guide  = "none") +
+    scale_fill_manual(values  = TIME_COLORS, guide = "none") +
+    scale_color_manual(values = TIME_COLORS, guide = "none") +
     labs(x     = "FSC-A (cell size)",
          y     = NULL,
          title = paste0(genotype, " — ", COND_LABELS[condition])) +
