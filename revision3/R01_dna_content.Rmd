@@ -70,8 +70,8 @@ out_dir         <- "./revision3/output/"
 
 # Strain labels and colour palette used throughout
 # Metadata uses "WT" directly (not DGY1); only RIM15Δ0 needs recoding
-STRAIN_LABELS <- c("WT" = "WT", "RIM15Δ0" = "rim15Δ")
-STRAIN_COLORS <- c("WT" = "#E69F00", "rim15Δ" = "#56B4E9")
+STRAIN_LABELS <- c("WT" = "WT", "RIM15Δ0" = "rim15Δ0")
+STRAIN_COLORS <- c("WT" = "#E69F00", "rim15Δ0" = "#56B4E9")
 
 # Helper: timepoint label grob (used in distribution pages)
 tp_label_grob <- function(tp) {
@@ -196,7 +196,9 @@ for (sample_type in c("Size_control", "DNA_content")) {
   file_pfx   <- if (sample_type == "Size_control") "distr_FSC" else "distr_B2A"
 
   combos <- gs_meta %>%
-    dplyr::filter(Sample_type == sample_type) %>%
+    dplyr::filter(Sample_type == sample_type,
+                  Strain %in% c("WT", "RIM15Δ0"),
+                  Media %in% c("C", "N", "P")) %>%
     distinct(Strain, Media) %>%
     arrange(Strain, Media)
 
@@ -208,8 +210,17 @@ for (sample_type in c("Size_control", "DNA_content")) {
 
     row_plots <- lapply(timepoints, function(tp) {
       col_plots <- lapply(1:3, function(rep) {
-        idx <- which(gs_meta$Strain == strain & gs_meta$Media == media &
-                     gs_meta$Time == tp     & gs_meta$Bio_rep == rep &
+        # T0 DNA_content samples have Media="Control" (collected before nutrient
+        # starvation was applied), so at tp==0 also accept "Control" media.
+        media_match <- if (tp == 0 && sample_type == "DNA_content") {
+          gs_meta$Media %in% c(media, "Control")
+        } else {
+          gs_meta$Media == media
+        }
+        idx <- which(gs_meta$Strain == strain &
+                     media_match &
+                     suppressWarnings(as.numeric(sub("^[Tt]", "", as.character(gs_meta$Time)))) == tp &
+                     as.integer(gs_meta$Bio_rep) == rep &
                      gs_meta$Sample_type == sample_type)
         plot_channel_density(gs, idx, channel, parent, fill_color, xlim_vals)
       })
@@ -258,8 +269,15 @@ for (ci in seq_along(conditions)) {
   panel_list <- list()
   for (sn in strains_exp) {
     for (tp in tp_paper) {
-      idx_all <- which(gs_meta$Strain == sn & gs_meta$Media == conditions[ci] &
-                       gs_meta$Time == tp & gs_meta$Sample_type == "DNA_content")
+      # Same T0/Control fallback as distributions chunk
+      media_match_rep <- if (tp == 0) {
+        gs_meta$Media %in% c(conditions[ci], "Control")
+      } else {
+        gs_meta$Media == conditions[ci]
+      }
+      idx_all <- which(gs_meta$Strain == sn & media_match_rep &
+                       suppressWarnings(as.numeric(sub("^[Tt]", "", as.character(gs_meta$Time)))) == tp &
+                       gs_meta$Sample_type == "DNA_content")
       df_all <- map_dfr(seq_along(idx_all), function(k) {
         df <- channel_df(gs, idx_all[k], "SYTOX+", "B2-A")
         if (!is.null(df)) mutate(df, rep = k) else NULL
@@ -315,6 +333,19 @@ raw_b2a <- map_dfr(seq_along(gs), function(i) {
   mutate(df, Strain = md$Strain, Media = md$Media,
          Time = md$Time, Bio_rep = md$Bio_rep)
 })
+# T0 DNA_content FCS files have no condition suffix, so CytoExploreR labels
+# them Media="Control". Replicate those rows for C/N/P so downstream scripts
+# (ridge plots, summaries) see T0 data under each starvation condition.
+t0_ctrl <- raw_b2a %>% dplyr::filter(Media == "Control")
+if (nrow(t0_ctrl) > 0) {
+  raw_b2a <- raw_b2a %>%
+    dplyr::filter(Media != "Control") %>%
+    dplyr::bind_rows(
+      dplyr::mutate(t0_ctrl, Media = "C"),
+      dplyr::mutate(t0_ctrl, Media = "N"),
+      dplyr::mutate(t0_ctrl, Media = "P")
+    )
+}
 write_csv(raw_b2a, file.path(out_dir, "dna_b2a_raw.csv"))
 message(sprintf("Saved dna_b2a_raw.csv: %d cells across %d samples",
                 nrow(raw_b2a),
