@@ -248,16 +248,9 @@ with vertical lines at the 1N and 2N gate boundaries taken from the gating templ
 Three pages (one per condition), 8 panels per page (2 genotypes × 4 timepoints).
 
 ```{r representative-histograms}
-gt <- read_csv(gating_template, show_col_types = FALSE)
-
-# Extract 1N and 2N gate boundaries (interval gate stored as min/max columns)
-get_1d_bounds <- function(alias_name) {
-  row <- gt %>% filter(alias == alias_name)
-  if (nrow(row) == 0) return(NULL)
-  tryCatch(as.numeric(c(row$min, row$max)), error = function(e) NULL)
-}
-g1n <- get_1d_bounds("1n")
-g2n <- get_1d_bounds("2n")
+# Pull gate boundaries directly from the GatingSet — these are in the same
+# coordinate space (0-1e5 B2-A) as the exported fluorescence data.
+g1n_line <- 37500   # midpoint of 1N gate (25k–50k) in raw B2-A units
 
 conditions  <- c("C", "N", "P")
 cond_names  <- c("Carbon", "Nitrogen", "Phosphorus")
@@ -292,12 +285,8 @@ for (ci in seq_along(conditions)) {
                title = paste0(strain_label, ", ", cond_names[ci], ", T", tp, "h")) +
           theme_cowplot(font_size = 9) +
           theme(plot.title = element_text(size = 8))
-        if (!is.null(g1n))
-          base <- base + geom_vline(xintercept = g1n, color = "steelblue",
-                                    linetype = "dashed", linewidth = 0.5)
-        if (!is.null(g2n))
-          base <- base + geom_vline(xintercept = g2n, color = "tomato",
-                                    linetype = "dashed", linewidth = 0.5)
+        base <- base + geom_vline(xintercept = g1n_line, color = "steelblue",
+                                   linetype = "dashed", linewidth = 0.5)
         base
       } else {
         ggplot() + theme_void()

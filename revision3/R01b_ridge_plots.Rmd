@@ -99,6 +99,8 @@ make_dna_ridge <- function(genotype, condition) {
                        labels = scales::label_number(scale = 1e-3, suffix = "k")) +
     scale_fill_manual(values  = TIME_COLORS, guide = "none") +
     scale_color_manual(values = TIME_COLORS, guide = "none") +
+    geom_vline(xintercept = 37500, color = "steelblue",
+               linetype = "dashed", linewidth = 0.4) +
     labs(x     = "SYTOX Green fluorescence (B2-A)",
          y     = NULL,
          title = paste0(genotype, " — ", COND_LABELS[condition])) +
