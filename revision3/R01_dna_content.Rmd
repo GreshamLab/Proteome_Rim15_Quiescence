@@ -255,9 +255,9 @@ g1n_line <- 37500   # midpoint of 1N gate (25k–50k) in raw B2-A units
 conditions  <- c("C", "N", "P")
 cond_names  <- c("Carbon", "Nitrogen", "Phosphorus")
 strains_exp <- c("WT", "RIM15Δ0")
-tp_paper    <- c(0, 6, 16, 30)
+tp_paper    <- c(0, 6, 16, 30, 46)
 
-pdf(file.path(out_dir, "dna_content_histograms.pdf"), width = 14, height = 8)
+pages <- list()
 for (ci in seq_along(conditions)) {
   panel_list <- list()
   for (sn in strains_exp) {
@@ -298,13 +298,17 @@ for (ci in seq_along(conditions)) {
   page_title <- ggdraw() +
     draw_label(paste0("SYTOX Green (DNA content) — ", cond_names[ci], " starvation"),
                fontface = "bold")
-  page <- plot_grid(page_title,
-                    plot_grid(plotlist = panel_list, ncol = 4, nrow = 2),
-                    ncol = 1, rel_heights = c(0.06, 0.94))
-  print(page)
+  pages[[ci]] <- plot_grid(page_title,
+                           plot_grid(plotlist = panel_list, ncol = 5, nrow = 2),
+                           ncol = 1, rel_heights = c(0.06, 0.94))
 }
+
+pdf(file.path(out_dir, "dna_content_histograms.pdf"), width = 14, height = 8)
+invisible(lapply(pages, print))
 dev.off()
 message("Saved: ", file.path(out_dir, "dna_content_histograms.pdf"))
+
+invisible(lapply(pages, print))
 ```
 
 # Export raw channel data for ridge plots
@@ -599,9 +603,19 @@ difference — delayed and less-synchronous G1 arrest in rim15Δ — not a termi
 phenotype.
 
 ```{r anova}
+# T0 samples have Media="Control" in the gating set; replicate as C/N/P
+# so T0 serves as the reference timepoint in each condition's model.
+t0_ctrl_rows <- raw_1n %>% filter(Time == 0, Media == "Control")
+t0_expanded  <- bind_rows(
+  mutate(t0_ctrl_rows, Media = "C"),
+  mutate(t0_ctrl_rows, Media = "N"),
+  mutate(t0_ctrl_rows, Media = "P")
+)
+
 anova_input <- raw_1n %>%
-  filter(Media %in% c("C","N","P"), Time %in% c(0, 6, 16, 30)) %>%
-  mutate(time_f   = factor(Time, levels = c(0, 6, 16, 30)),
+  filter(Media %in% c("C","N","P"), Time %in% c(6, 16, 30, 46)) %>%
+  bind_rows(t0_expanded) %>%
+  mutate(time_f   = factor(Time, levels = c(0, 6, 16, 30, 46)),
          genotype = factor(Strain, levels = c("WT", "rim15Δ")))   # WT = reference level
 
 anova_results <- anova_input %>%
@@ -617,7 +631,7 @@ anova_results <- anova_input %>%
 write_csv(anova_results, file.path(out_dir, "dna_1N_anova.csv"))
 
 cat("=== Two-way ANOVA: 1N% ~ time × genotype per condition ===\n")
-cat("(WT is the reference level; time as factor with levels 0/6/16/30 h)\n\n")
+cat("(WT is the reference level; time as factor with levels 0/6/16/30/46 h)\n\n")
 
 cat("--- ANOVA table ---\n")
 anova_results %>%
@@ -637,6 +651,34 @@ anova_results %>%
   select(Media, term, estimate, conf.low, conf.high, p.value) %>%
   print(n = 20)
 ```
+
+## Interpretation
+
+The proportion of cells in G1 phase (1N fraction) was indistinguishable between
+wild type and *rim15Δ* at T0, before nutrient starvation was applied (linear model;
+genotype effect at T0: all conditions p > 0.75), confirming a common baseline. Upon
+starvation, the 1N fraction increased significantly over time in all three conditions
+(two-way ANOVA, df = 4,20; carbon: F = 102.5, p = 5.0 × 10⁻¹³; nitrogen: F = 1614.4,
+p = 8.6 × 10⁻²⁵; phosphorus: F = 1182.4, p = 1.9 × 10⁻²³), confirming successful
+G1 arrest. Critically, the time × genotype interaction was significant in all three
+conditions (carbon: F(4,20) = 19.6, p = 1.1 × 10⁻⁶; nitrogen: F(4,20) = 19.7,
+p = 1.1 × 10⁻⁶; phosphorus: F(4,20) = 3.14, p = 0.037), indicating that the
+trajectory of G1 accumulation differed between wild type and *rim15Δ* regardless of
+the limiting nutrient. In carbon and nitrogen starvation, wild-type cells accumulated
+rapidly in G1 (reaching ~77% and ~97% at 16 h, respectively), whereas *rim15Δ* cells
+showed a strongly attenuated response at the same timepoint (carbon: −20.8 percentage
+points, 95% CI [−27.7, −13.8], p = 4.1 × 10⁻⁶; nitrogen: −15.5 percentage points,
+95% CI [−19.5, −11.6], p = 7.4 × 10⁻⁸). The genotype difference persisted through
+30 h and 46 h, though it narrowed over time (carbon at 46 h: −10.5 percentage points,
+p = 0.005; nitrogen at 46 h: −6.1 percentage points, p = 0.004), consistent with
+delayed rather than absent G1 arrest in *rim15Δ*. In phosphorus starvation, the
+genotype difference was smaller in magnitude but significant from 6 h onward
+(T6: −5.3 percentage points, p = 0.009; T16: −5.8 percentage points, p = 0.005;
+T30: −4.6 percentage points, p = 0.023), becoming marginal by 46 h (−3.3 percentage
+points, p = 0.086). Together, these results demonstrate that Rim15 is required for
+normal kinetics of G1 arrest during quiescence entry under all three modes of nutrient
+limitation, with the strongest and most prolonged effect under carbon and nitrogen
+starvation.
 
 ```{r session}
 sessionInfo()

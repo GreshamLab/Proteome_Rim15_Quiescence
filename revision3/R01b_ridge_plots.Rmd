@@ -26,12 +26,10 @@ COND_LABELS <- c("C" = "Carbon starvation",
                  "N" = "Nitrogen starvation",
                  "P" = "Phosphorus starvation")
 
-TIME_COLORS <- c("Diploid control" = "#cccccc",
-                 "Haploid control" = "#999999",
-                 "0 h"  = "#fef0d9",
-                 "6 h"  = "#fdcc8a",
-                 "16 h" = "#fc8d59",
-                 "30 h" = "#b30000")
+GENO_COLORS <- c("WT"      = "#E69F00",
+                 "rim15Δ0" = "#56B4E9",
+                 "DGY1"    = "#999999",
+                 "DGY3"    = "#cccccc")
 
 out_dir <- "/Users/david/Projects/Proteome_Rim15_Quiescence/revision3/output"
 ```
@@ -42,14 +40,14 @@ b2a_raw <- read_csv(file.path(out_dir, "dna_b2a_raw.csv"),
   mutate(
     Strain  = recode(Strain, "RIM15Δ0" = "rim15Δ0"),
     ridge = case_when(
-      Strain == "DGY3"            ~ "Diploid control",
-      Strain == "DGY1"            ~ "Haploid control",
-      Time %in% c(0, 6, 16, 30)  ~ paste0(Time, " h"),
-      TRUE                        ~ NA_character_
+      Strain == "DGY3"                ~ "Diploid control",
+      Strain == "DGY1"                ~ "Haploid control",
+      Time %in% c(0, 6, 16, 30, 46)  ~ paste0(Time, " h"),
+      TRUE                            ~ NA_character_
     ),
     ridge = factor(ridge,
                    levels = rev(c("Diploid control", "Haploid control",
-                                  "0 h", "6 h", "16 h", "30 h")))
+                                  "0 h", "6 h", "16 h", "30 h", "46 h")))
   ) %>%
   dplyr::filter(!is.na(ridge),
                 Strain %in% c("WT", "rim15Δ0") |
@@ -62,14 +60,14 @@ fsc_raw <- read_csv(file.path(out_dir, "fsc_raw.csv"),
   mutate(
     Strain = recode(Strain, "RIM15Δ0" = "rim15Δ0"),
     ridge  = case_when(
-      Strain == "DGY3"            ~ "Diploid control",
-      Strain == "DGY1"            ~ "Haploid control",
-      Time %in% c(0, 6, 16, 30)  ~ paste0(Time, " h"),
-      TRUE                        ~ NA_character_
+      Strain == "DGY3"                ~ "Diploid control",
+      Strain == "DGY1"                ~ "Haploid control",
+      Time %in% c(0, 6, 16, 30, 46)  ~ paste0(Time, " h"),
+      TRUE                            ~ NA_character_
     ),
     ridge  = factor(ridge,
                     levels = rev(c("Diploid control", "Haploid control",
-                                   "0 h", "6 h", "16 h", "30 h")))
+                                   "0 h", "6 h", "16 h", "30 h", "46 h")))
   ) %>%
   dplyr::filter(!is.na(ridge),
                 Strain %in% c("WT", "rim15Δ0") |
@@ -91,14 +89,14 @@ make_dna_ridge <- function(genotype, condition) {
 
   df <- bind_rows(ctrl, expt)
 
-  ggplot(df, aes(x = value, y = ridge, fill = ridge, color = ridge)) +
+  ggplot(df, aes(x = value, y = ridge, fill = Strain, color = Strain)) +
     geom_density_ridges(alpha = 0.7, scale = 1.5,
                         bandwidth = 500,
                         rel_min_height = 0.005) +
     scale_x_continuous(limits = c(0, 1e5),
                        labels = scales::label_number(scale = 1e-3, suffix = "k")) +
-    scale_fill_manual(values  = TIME_COLORS, guide = "none") +
-    scale_color_manual(values = TIME_COLORS, guide = "none") +
+    scale_fill_manual(values  = GENO_COLORS, guide = "none") +
+    scale_color_manual(values = GENO_COLORS, guide = "none") +
     geom_vline(xintercept = 37500, color = "steelblue",
                linetype = "dashed", linewidth = 0.4) +
     labs(x     = "SYTOX Green fluorescence (B2-A)",
@@ -137,13 +135,13 @@ make_fsc_ridge <- function(genotype, condition) {
 
   df <- bind_rows(ctrl, expt)
 
-  ggplot(df, aes(x = value, y = ridge, fill = ridge, color = ridge)) +
+  ggplot(df, aes(x = value, y = ridge, fill = Strain, color = Strain)) +
     geom_density_ridges(alpha = 0.7, scale = 1.5,
                         rel_min_height = 0.005) +
     scale_x_continuous(limits   = c(0, 2e6),
                        labels   = scales::label_number(scale = 1e-3, suffix = "k")) +
-    scale_fill_manual(values  = TIME_COLORS, guide = "none") +
-    scale_color_manual(values = TIME_COLORS, guide = "none") +
+    scale_fill_manual(values  = GENO_COLORS, guide = "none") +
+    scale_color_manual(values = GENO_COLORS, guide = "none") +
     labs(x     = "FSC-A (cell size)",
          y     = NULL,
          title = paste0(genotype, " — ", COND_LABELS[condition])) +
