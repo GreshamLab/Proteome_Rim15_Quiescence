@@ -1,928 +1,928 @@
-Protein IDs,Gene names,C_WT_module,C_rim15_module,P_WT_module,P_rim15_module
-P04710,AAC1,NA,NA,blue,blue
-P37898,AAP1,NA,NA,turquoise,turquoise
-P23542,AAT2,NA,turquoise,turquoise,brown
-P14164,ABF1,NA,NA,brown,NA
-Q02486,ABF2,turquoise,turquoise,blue,blue
-P15891,ABP1,NA,NA,brown,blue
-P31787,ACB1,NA,NA,turquoise,turquoise
-Q00955,ACC1,NA,turquoise,turquoise,turquoise
-P32316,ACH1,turquoise,turquoise,blue,blue
-P19414,ACO1,NA,turquoise,NA,NA
-P39533,ACO2,turquoise,turquoise,NA,NA
-P52910,ACS2,blue,turquoise,turquoise,brown
-P60010,ACT1,blue,unassigned,NA,NA
-P27616,ADE1,turquoise,turquoise,blue,blue
-P80210,ADE12,turquoise,turquoise,blue,blue
-Q05911,ADE13,turquoise,turquoise,blue,blue
-P54113,ADE16,turquoise,NA,NA,turquoise
-P38009,ADE17,turquoise,turquoise,blue,blue
-P21264,ADE2,turquoise,turquoise,blue,blue
-P07245,ADE3,NA,NA,brown,blue
-P04046,ADE4,blue,turquoise,blue,blue
-P07244,"ADE5,7",NA,turquoise,blue,blue
-P38972,ADE6,turquoise,NA,blue,blue
-P00330,ADH1,turquoise,turquoise,blue,blue
-P07246,ADH3,turquoise,turquoise,blue,blue
-Q04894,ADH6,NA,turquoise,turquoise,turquoise
-P07170,ADK1,NA,NA,turquoise,brown
-P47143,ADO1,turquoise,turquoise,turquoise,turquoise
-Q12449,AHA1,turquoise,turquoise,turquoise,NA
-P38013,AHP1,NA,NA,turquoise,NA
-P23180,AIM17,turquoise,turquoise,blue,blue
-P36154,AIM29,NA,NA,NA,blue
-Q12032,AIM41,NA,NA,blue,blue
-Q12480,AIM45,turquoise,turquoise,brown,blue
-P40053,AIM9,turquoise,turquoise,blue,NA
-P46680,AIP1,turquoise,turquoise,blue,NA
-P40825,ALA1,blue,NA,turquoise,turquoise
-P46367,ALD4,turquoise,turquoise,blue,blue
-P40047,ALD5,turquoise,turquoise,blue,blue
-P54115,ALD6,NA,NA,turquoise,blue
-P54783,ALO1,NA,NA,turquoise,brown
-P52893,ALT1,turquoise,turquoise,blue,blue
-P15274,AMD1,turquoise,NA,unassigned,NA
-P22855,AMS1,turquoise,turquoise,blue,blue
-P16550,APA1,NA,NA,turquoise,turquoise
-P14904,APE1,turquoise,turquoise,blue,blue
-P32454,APE2,turquoise,turquoise,blue,blue
-P37302,APE3,turquoise,turquoise,blue,blue
-P38821,APE4,turquoise,NA,NA,NA
-P49435,APT1,NA,NA,turquoise,turquoise
-P38115,ARA1,turquoise,turquoise,blue,blue
-P40024,ARB1,NA,turquoise,turquoise,turquoise
-P46672,ARC1,NA,NA,turquoise,turquoise
-P40518,ARC15,unassigned,NA,NA,NA
-P33204,ARC19,turquoise,turquoise,NA,blue
-P53731,ARC35,turquoise,NA,NA,NA
-P11076,ARF1,NA,turquoise,turquoise,brown
-P22768,ARG1,NA,NA,turquoise,turquoise
-P04076,ARG4,turquoise,turquoise,blue,blue
-Q01217,"ARG5,6",NA,turquoise,NA,NA
-Q04728,ARG7,NA,turquoise,NA,blue
-P38116,ARL1,blue,NA,NA,NA
-P08566,ARO1,NA,turquoise,turquoise,blue
-P28777,ARO2,NA,NA,turquoise,turquoise
-P14843,ARO3,turquoise,NA,turquoise,blue
-P32449,ARO4,NA,turquoise,NA,blue
-P32178,ARO7,NA,NA,turquoise,turquoise
-P53090,ARO8,NA,turquoise,turquoise,turquoise
-P32381,ARP2,turquoise,unassigned,NA,blue
-P47117,ARP3,turquoise,turquoise,NA,NA
-Q03862,ARX1,NA,blue,NA,NA
-P38011,ASC1,NA,turquoise,turquoise,turquoise
-P49089,ASN1,NA,NA,turquoise,brown
-P49090,ASN2,NA,NA,turquoise,turquoise
-P38986,ASP1,NA,NA,turquoise,turquoise
-P07251,ATP1,turquoise,turquoise,blue,blue
-P00830,ATP2,turquoise,turquoise,blue,blue
-P38077,ATP3,turquoise,turquoise,blue,blue
-P05626,ATP4,turquoise,turquoise,blue,blue
-P09457,ATP5,turquoise,turquoise,blue,blue
-P30902,ATP7,turquoise,turquoise,blue,blue
-P40471,AYR1,NA,turquoise,turquoise,turquoise
-P38891,BAT1,NA,turquoise,blue,blue
-P47176,BAT2,turquoise,turquoise,brown,blue
-P47068,BBC1,blue,turquoise,NA,turquoise
-P07278,BCY1,turquoise,turquoise,turquoise,NA
-P39714,BDH1,turquoise,turquoise,brown,blue
-P39960,BEM2,NA,turquoise,NA,NA
-P38934,BFR1,NA,NA,turquoise,turquoise
-Q06631,BFR2,NA,NA,turquoise,turquoise
-P29311,BMH1,turquoise,turquoise,blue,blue
-P34730,BMH2,turquoise,turquoise,blue,blue
-P47096,BNA1,NA,NA,blue,NA
-P47039,BNA3,turquoise,turquoise,blue,blue
-Q07457,BRE1,NA,turquoise,NA,NA
-P40506,CAB2,NA,NA,turquoise,brown
-P29547,CAM1,turquoise,NA,NA,NA
-P28495,CAP1,NA,NA,blue,turquoise
-P13517,CAP2,turquoise,turquoise,turquoise,NA
-P00812,CAR1,turquoise,turquoise,turquoise,blue
-P07991,CAR2,turquoise,turquoise,blue,blue
-P17106,CBF1,NA,NA,blue,blue
-P33322,CBF5,NA,turquoise,turquoise,turquoise
-P38626,CBR1,NA,NA,turquoise,brown
-P00431,CCP1,turquoise,turquoise,blue,blue
-P40202,CCS1,NA,NA,turquoise,turquoise
-P39076,CCT2,turquoise,NA,turquoise,turquoise
-P39077,CCT3,NA,NA,turquoise,turquoise
-P39078,CCT4,NA,NA,turquoise,turquoise
-P40413,CCT5,NA,NA,turquoise,turquoise
-P39079,CCT6,NA,turquoise,turquoise,turquoise
-P42943,CCT7,turquoise,turquoise,turquoise,turquoise
-P47079,CCT8,turquoise,NA,turquoise,turquoise
-P32458,CDC11,blue,turquoise,turquoise,NA
-P32468,CDC12,turquoise,turquoise,NA,NA
-P00549,CDC19,NA,NA,blue,blue
-P06785,CDC21,blue,turquoise,turquoise,brown
-P00546,CDC28,NA,unassigned,NA,NA
-P06704,CDC31,NA,turquoise,NA,NA
-P07260,CDC33,unassigned,NA,turquoise,turquoise
-P06101,CDC37,unassigned,turquoise,turquoise,turquoise
-P25655,CDC39,NA,NA,turquoise,turquoise
-P19073,CDC42,NA,NA,turquoise,brown
-P25694,CDC48,blue,turquoise,turquoise,brown
-Q00362,CDC55,NA,NA,NA,brown
-P26637,CDC60,NA,NA,turquoise,turquoise
-O13297,CET1,turquoise,turquoise,NA,NA
-P22137,CHC1,NA,turquoise,NA,NA
-Q12114,CHS5,blue,turquoise,blue,NA
-P42940,CIR1,turquoise,turquoise,brown,blue
-Q08822,CIR2,NA,turquoise,turquoise,NA
-P00890,CIT1,turquoise,turquoise,blue,blue
-P20485,CKI1,NA,NA,turquoise,turquoise
-P17891,CLC1,turquoise,turquoise,NA,NA
-Q03690,CLU1,turquoise,turquoise,turquoise,turquoise
-P06787,CMD1,NA,turquoise,NA,turquoise
-Q03048,COF1,NA,turquoise,NA,NA
-P53622,COP1,NA,turquoise,NA,turquoise
-P07256,COR1,turquoise,turquoise,blue,blue
-Q01519,COX12,NA,NA,blue,blue
-P04037,COX4,turquoise,turquoise,blue,blue
-P00427,COX6,turquoise,turquoise,blue,blue
-P34237,COY1,NA,NA,NA,turquoise
-P03965,CPA2,NA,NA,turquoise,NA
-P14832,CPR1,NA,turquoise,turquoise,turquoise
-P25719,CPR3,NA,NA,turquoise,turquoise
-P35176,CPR5,NA,turquoise,turquoise,turquoise
-P53691,CPR6,NA,NA,turquoise,turquoise
-P27614,CPS1,NA,NA,brown,brown
-P30822,CRM1,NA,turquoise,NA,turquoise
-Q06440,CRN1,NA,NA,turquoise,turquoise
-P38845,CRP1,turquoise,NA,turquoise,NA
-Q06705,CSR1,NA,NA,turquoise,turquoise
-P53008,CWH41,NA,NA,turquoise,NA
-P40312,CYB5,NA,NA,turquoise,turquoise
-P31373,CYS3,NA,NA,blue,blue
-P32582,CYS4,NA,NA,turquoise,turquoise
-P07143,CYT1,turquoise,turquoise,blue,blue
-P54838,DAK1,turquoise,turquoise,turquoise,blue
-P24783,DBP2,blue,turquoise,turquoise,turquoise
-P20447,DBP3,blue,turquoise,turquoise,turquoise
-P20449,DBP5,turquoise,NA,NA,turquoise
-Q06218,DBP9,blue,turquoise,NA,NA
-P53550,DCP2,turquoise,turquoise,brown,brown
-Q06151,DCS1,NA,NA,blue,blue
-P40087,DDI1,NA,NA,turquoise,brown
-P18899,DDR48,NA,NA,blue,blue
-P06634,DED1,blue,turquoise,turquoise,turquoise
-P38707,DED81,NA,NA,turquoise,turquoise
-P39517,DHH1,blue,NA,turquoise,turquoise
-P32891,DLD1,turquoise,turquoise,blue,blue
-P46681,DLD2,turquoise,turquoise,brown,unassigned
-P39976,DLD3,blue,turquoise,turquoise,brown
-P54861,DNM1,blue,turquoise,turquoise,NA
-P36037,DOA1,NA,turquoise,turquoise,turquoise
-P38773;P38774,DOG2,NA,turquoise,NA,NA
-P32469,DPH5,turquoise,turquoise,turquoise,turquoise
-P04802,DPS1,turquoise,turquoise,turquoise,turquoise
-P53753,DSE4,NA,NA,NA,turquoise
-P07273,DST1,blue,turquoise,NA,turquoise
-P43616,DUG1,turquoise,turquoise,NA,NA
-P38791,DYS1,turquoise,turquoise,turquoise,turquoise
-P38248,ECM33,NA,turquoise,brown,blue
-P34216,EDE1,unassigned,turquoise,turquoise,turquoise
-P32471,EFB1,NA,NA,turquoise,turquoise
-P32324,EFT1,blue,turquoise,turquoise,turquoise
-P38879,EGD2,NA,turquoise,turquoise,turquoise
-P38295,EHT1,blue,NA,turquoise,brown
-Q05050,EIS1,turquoise,turquoise,blue,blue
-P25574,EMC1,NA,unassigned,NA,brown
-P53073,EMC4,NA,NA,turquoise,turquoise
-Q04409,EMI2,turquoise,turquoise,NA,NA
-P32803,EMP24,NA,turquoise,turquoise,brown
-P43555,EMP47,NA,NA,turquoise,turquoise
-P00924,ENO1,NA,NA,blue,blue
-P00925,ENO2,NA,NA,brown,brown
-P47160,ENT3,NA,NA,turquoise,turquoise
-Q04660,ERB1,NA,turquoise,turquoise,NA
-P32476,ERG1,turquoise,turquoise,blue,turquoise
-P41338,ERG10,NA,NA,turquoise,turquoise
-P07277,ERG12,NA,blue,turquoise,turquoise
-P54839,ERG13,blue,turquoise,turquoise,turquoise
-P32352,ERG2,turquoise,NA,turquoise,turquoise
-P08524,ERG20,NA,turquoise,turquoise,turquoise
-P53199,ERG26,turquoise,NA,turquoise,turquoise
-Q12452,ERG27,turquoise,turquoise,turquoise,turquoise
-P25087,ERG6,blue,turquoise,turquoise,turquoise
-P24521,ERG8,NA,unassigned,turquoise,turquoise
-P29704,ERG9,NA,NA,turquoise,turquoise
-Q05359,ERP1,NA,NA,turquoise,brown
-P38071,ETR1,turquoise,turquoise,blue,blue
-Q08421,ETT1,NA,NA,turquoise,turquoise
-P23776,EXG1,NA,NA,blue,blue
-P30624,FAA1,turquoise,turquoise,turquoise,brown
-P47912,FAA4,NA,NA,turquoise,turquoise
-P07149,FAS1,NA,turquoise,turquoise,turquoise
-P19097,FAS2,NA,turquoise,turquoise,turquoise
-P14540,FBA1,NA,NA,blue,blue
-Q12178,FCY1,blue,unassigned,turquoise,turquoise
-P40515,FIS1,NA,turquoise,NA,NA
-P38631,FKS1,blue,turquoise,turquoise,turquoise
-P53889,FMP41,NA,NA,blue,blue
-P20081,FPR1,turquoise,turquoise,turquoise,blue
-P38911,FPR3,NA,NA,blue,blue
-Q07825,FRA1,NA,NA,blue,blue
-P32614,FRD1,NA,turquoise,brown,blue
-P15624,FRS1,NA,unassigned,turquoise,turquoise
-P15625,FRS2,NA,turquoise,turquoise,turquoise
-Q12029,FSF1,unassigned,unassigned,blue,blue
-P08417,FUM1,turquoise,turquoise,turquoise,blue
-P39730,FUN12,NA,NA,turquoise,turquoise
-P18562,FUR1,NA,turquoise,turquoise,turquoise
-P28007,GAR1,NA,NA,blue,blue
-P22146,GAS1,blue,turquoise,turquoise,brown
-Q08193,GAS5,unassigned,turquoise,brown,blue
-P09032,GCD1,NA,NA,turquoise,turquoise
-P32481,GCD11,turquoise,turquoise,turquoise,turquoise
-P32501,GCD6,blue,NA,NA,NA
-P33892,GCN1,NA,turquoise,turquoise,turquoise
-P43535,GCN20,NA,NA,turquoise,turquoise
-P35197,GCS1,NA,NA,turquoise,turquoise
-P48015,GCV1,turquoise,turquoise,blue,blue
-P49095,GCV2,turquoise,turquoise,blue,blue
-Q06625,GDB1,turquoise,turquoise,blue,blue
-P07262,GDH1,unassigned,turquoise,brown,blue
-P33327,GDH2,turquoise,turquoise,blue,blue
-P39958,GDI1,blue,turquoise,turquoise,brown
-Q12154,GET3,NA,turquoise,turquoise,turquoise
-P14742,GFA1,NA,unassigned,turquoise,turquoise
-P38817,GGA2,NA,turquoise,turquoise,turquoise
-P53900,GIM3,turquoise,NA,turquoise,turquoise
-P53849,GIS2,blue,unassigned,turquoise,turquoise
-P32775,GLC3,turquoise,turquoise,blue,blue
-P32598,GLC7,NA,NA,brown,brown
-P17709,GLK1,turquoise,turquoise,blue,blue
-P32288,GLN1,NA,turquoise,brown,blue
-P13188,GLN4,NA,NA,turquoise,turquoise
-P50107,GLO1,NA,NA,turquoise,turquoise
-Q05584,GLO2,NA,NA,turquoise,NA
-P38682,GLO3,NA,NA,turquoise,turquoise
-P41921,GLR1,turquoise,turquoise,turquoise,turquoise
-Q12680,GLT1,turquoise,turquoise,blue,blue
-P38720,GND1,turquoise,turquoise,blue,blue
-P53839,GOR1,turquoise,turquoise,blue,blue
-Q00055,GPD1,NA,turquoise,blue,blue
-P41911,GPD2,NA,NA,brown,blue
-P06738,GPH1,turquoise,turquoise,blue,blue
-P00950,GPM1,NA,turquoise,blue,blue
-P41277,GPP1,blue,turquoise,blue,blue
-P40106,GPP2,NA,NA,blue,blue
-P36148,GPT2,NA,NA,NA,blue
-Q12068,GRE2,turquoise,turquoise,blue,blue
-P38715,GRE3,turquoise,turquoise,blue,blue
-P38088,GRS1,NA,NA,turquoise,turquoise
-P25373,GRX1,NA,turquoise,blue,blue
-P17695,GRX2,turquoise,NA,blue,blue
-Q03835,GRX3,turquoise,turquoise,NA,NA
-Q02784,GRX5,NA,NA,turquoise,NA
-P40989;Q04952,GSC2,NA,NA,turquoise,turquoise
-Q04697,GSF2,NA,turquoise,NA,brown
-P32477,GSH1,NA,NA,blue,blue
-Q08220,GSH2,NA,turquoise,turquoise,turquoise
-P32836,GSP2,turquoise,turquoise,turquoise,turquoise
-P27472,GSY2,turquoise,turquoise,blue,blue
-P40582,GTT1,NA,NA,blue,blue
-P38625,GUA1,NA,NA,turquoise,turquoise
-P15454,GUK1,NA,turquoise,turquoise,turquoise
-P46655,GUS1,NA,NA,turquoise,turquoise
-P32191,GUT2,turquoise,turquoise,blue,blue
-P40531,GVP36,turquoise,turquoise,brown,blue
-P47119,HAM1,NA,NA,turquoise,turquoise
-P32769,HBS1,NA,turquoise,NA,NA
-P53834,HCH1,NA,turquoise,turquoise,turquoise
-Q05775,HCR1,turquoise,turquoise,turquoise,turquoise
-P11353,HEM13,turquoise,turquoise,turquoise,turquoise
-P16622,HEM15,NA,NA,turquoise,turquoise
-P05373,HEM2,NA,NA,turquoise,turquoise
-P28789,HEM3,blue,turquoise,turquoise,turquoise
-Q04458,HFD1,NA,NA,blue,NA
-P48362,HGH1,NA,unassigned,turquoise,turquoise
-P02309,HHF1,NA,turquoise,turquoise,blue
-P61830,HHT1,NA,NA,NA,brown
-P00498,HIS1,NA,NA,blue,blue
-P00815,HIS4,NA,turquoise,blue,blue
-P07172,HIS5,turquoise,turquoise,blue,blue
-P33734,HIS7,turquoise,turquoise,blue,blue
-P40037,HMF1,NA,turquoise,blue,blue
-Q03973,HMO1,unassigned,NA,NA,turquoise
-Q04344,HNT1,NA,NA,NA,blue
-P32485;P41808,HOG1,NA,NA,turquoise,brown
-P13663,HOM2,NA,NA,brown,blue
-P10869,HOM3,NA,NA,blue,blue
-P31116,HOM6,blue,NA,blue,blue
-Q04178,HPT1,NA,turquoise,blue,blue
-Q05905,HRI1,NA,turquoise,turquoise,turquoise
-Q99383,HRP1,blue,NA,turquoise,turquoise
-P15108,HSC82,turquoise,turquoise,turquoise,turquoise
-P38910,HSP10,NA,brown,NA,NA
-P31539,HSP104,turquoise,turquoise,blue,blue
-Q04432,HSP31,NA,NA,blue,blue
-P19882,HSP60,NA,turquoise,turquoise,NA
-P33416,HSP78,turquoise,turquoise,blue,blue
-P02829,HSP82,turquoise,turquoise,NA,brown
-P04912;P04911,HTA2,NA,turquoise,NA,NA
-P02294;P02293,HTB2,NA,turquoise,turquoise,turquoise
-P07263,HTS1,NA,turquoise,turquoise,brown
-P04806,HXK1,turquoise,turquoise,blue,blue
-P04807,HXK2,NA,turquoise,turquoise,turquoise
-P39004,HXT7,NA,turquoise,NA,NA
-P23301,HYP2,blue,turquoise,turquoise,turquoise
-P28834,IDH1,NA,turquoise,NA,blue
-P28241,IDH2,turquoise,turquoise,NA,blue
-P15496,IDI1,blue,turquoise,turquoise,turquoise
-P21954,IDP1,turquoise,turquoise,brown,blue
-P38286,IFA38,NA,turquoise,NA,NA
-P53897,IGO1,blue,NA,unassigned,NA
-Q06706,IKI3,NA,NA,turquoise,turquoise
-P09436,ILS1,NA,unassigned,turquoise,turquoise
-P00927,ILV1,NA,NA,brown,NA
-P07342,ILV2,unassigned,NA,blue,blue
-P39522,ILV3,turquoise,turquoise,blue,blue
-P06168,ILV5,turquoise,turquoise,blue,blue
-P25605,ILV6,blue,turquoise,turquoise,NA
-P50095,IMD3,NA,turquoise,turquoise,turquoise
-P50094,IMD4,NA,turquoise,NA,NA
-Q12271,INP53,NA,NA,NA,turquoise
-P00817,IPP1,NA,turquoise,blue,blue
-P40580,IRC24,NA,NA,blue,blue
-P38250,IST2,turquoise,turquoise,NA,NA
-P38144,ISW1,NA,NA,turquoise,turquoise
-P40069,KAP123,NA,unassigned,turquoise,turquoise
-Q06142,KAP95,NA,turquoise,NA,NA
-P16474,KAR2,blue,turquoise,turquoise,turquoise
-P35844,KES1,blue,NA,turquoise,turquoise
-P20967,KGD1,turquoise,turquoise,blue,blue
-P19262,KGD2,NA,NA,blue,blue
-P27809,KRE2,NA,NA,turquoise,turquoise
-P53914,KRE33,NA,turquoise,NA,turquoise
-P42846,KRI1,NA,NA,turquoise,turquoise
-P25586,KRR1,NA,NA,turquoise,turquoise
-P15180,KRS1,NA,turquoise,turquoise,turquoise
-P27810,KTR1,blue,turquoise,turquoise,turquoise
-P38130,KTR3,NA,NA,NA,turquoise
-Q10740,LAP2,turquoise,NA,NA,turquoise
-Q01532,LAP3,NA,NA,blue,blue
-P12695,LAT1,turquoise,NA,turquoise,turquoise
-P25045,LCB1,turquoise,NA,turquoise,turquoise
-P40970,LCB2,NA,NA,NA,brown
-P07264,LEU1,turquoise,turquoise,blue,blue
-P04173,LEU2,NA,NA,blue,blue
-P06208,LEU4,turquoise,turquoise,blue,blue
-P33399,LHP1,NA,NA,turquoise,turquoise
-P36016,LHS1,turquoise,NA,NA,NA
-P47120,LIA1,blue,turquoise,turquoise,turquoise
-P09624,LPD1,turquoise,turquoise,blue,blue
-P43603,LSB3,NA,turquoise,NA,turquoise
-P53598,LSC1,turquoise,turquoise,blue,blue
-P53312,LSC2,turquoise,turquoise,blue,blue
-Q12230,LSP1,turquoise,turquoise,blue,blue
-P38998,LYS1,NA,NA,brown,blue
-P40495,LYS12,turquoise,turquoise,blue,turquoise
-P07702,LYS2,turquoise,NA,NA,blue
-Q12122,LYS21,blue,turquoise,brown,blue
-P49367,LYS4,NA,NA,unassigned,NA
-P38999,LYS9,turquoise,NA,unassigned,NA
-P36013,MAE1,NA,NA,blue,blue
-P20484,MAK11,turquoise,NA,turquoise,turquoise
-Q01662,MAP1,blue,turquoise,turquoise,turquoise
-P38174,MAP2,NA,NA,turquoise,turquoise
-O14467,MBF1,blue,blue,turquoise,turquoise
-P21965,MCK1,NA,NA,blue,brown
-P36060,MCR1,turquoise,turquoise,blue,blue
-P17505,MDH1,turquoise,turquoise,blue,blue
-P32419,MDH3,NA,turquoise,turquoise,brown
-Q12019,MDN1,NA,NA,unassigned,turquoise
-Q12285,MDY2,unassigned,NA,NA,turquoise
-P25039,MEF1,NA,turquoise,NA,NA
-P00958,MES1,NA,turquoise,turquoise,turquoise
-P39692,MET10,unassigned,unassigned,blue,turquoise
-P53128,MET13,unassigned,turquoise,brown,blue
-P06106,MET17,turquoise,turquoise,blue,blue
-P32179,MET22,NA,NA,blue,blue
-P05694,MET6,turquoise,turquoise,blue,blue
-Q08645,MET7,NA,turquoise,NA,brown
-Q99257,MEX67,NA,NA,turquoise,turquoise
-P38523,MGE1,NA,turquoise,turquoise,NA
-P32787,MGM101,turquoise,unassigned,blue,blue
-P36046,MIA40,NA,turquoise,NA,NA
-P36112,MIC60,turquoise,turquoise,blue,blue
-P23641,MIR1,turquoise,turquoise,blue,blue
-P09440,MIS1,NA,turquoise,turquoise,turquoise
-P53141,MLC1,NA,NA,turquoise,turquoise
-Q02455,MLP1,blue,turquoise,NA,NA
-P40185,MMF1,turquoise,turquoise,turquoise,blue
-P38069,MNN2,NA,NA,turquoise,turquoise
-Q12117,MRH1,NA,NA,turquoise,NA
-Q06489,MRI1,NA,NA,turquoise,turquoise
-P35719,MRP8,turquoise,turquoise,blue,blue
-P33201,MRT4,NA,NA,turquoise,turquoise
-Q03104,MSC1,turquoise,turquoise,blue,blue
-P38694,MSC7,NA,NA,turquoise,turquoise
-P47018,MTC1,NA,turquoise,turquoise,turquoise
-P47047,MTR4,turquoise,NA,NA,NA
-P32377,MVD1,NA,NA,turquoise,turquoise
-P40029,MXR1,NA,NA,blue,blue
-P19524,MYO2,NA,NA,NA,turquoise
-Q04439,MYO5,NA,NA,NA,brown
-P32505,NAB2,NA,NA,turquoise,turquoise
-P38996,NAB3,NA,turquoise,unassigned,NA
-P30771,NAM7,NA,NA,NA,turquoise
-Q02931,NAN1,blue,NA,NA,NA
-P25293,NAP1,blue,turquoise,turquoise,NA
-P12945,NAT1,NA,NA,turquoise,turquoise
-P38205,NCL1,turquoise,NA,turquoise,turquoise
-P16603,NCP1,blue,NA,turquoise,turquoise
-P40215,NDE1,turquoise,turquoise,NA,blue
-P32340,NDI1,turquoise,turquoise,blue,blue
-P47035,NET1,NA,NA,NA,blue
-Q08972,NEW1,blue,turquoise,turquoise,turquoise
-P25374,NFS1,NA,turquoise,NA,NA
-P11633,NHP6B,unassigned,turquoise,blue,blue
-P34077,NIC96,NA,turquoise,NA,NA
-P53081,NIF3,NA,turquoise,brown,NA
-P32497,NIP1,NA,NA,turquoise,turquoise
-P53920,NMA111,NA,brown,turquoise,NA
-P38861,NMD3,blue,NA,turquoise,turquoise
-P14743,NMT1,unassigned,turquoise,turquoise,turquoise
-P39744,NOC2,NA,NA,NA,turquoise
-P15646,NOP1,NA,NA,turquoise,turquoise
-Q08208,NOP12,blue,turquoise,NA,NA
-P40991,NOP2,NA,NA,turquoise,blue
-Q12460,NOP56,blue,NA,turquoise,turquoise
-Q12499,NOP58,blue,NA,turquoise,turquoise
-Q07623,NOP6,blue,turquoise,NA,NA
-P53261,NOP7,NA,turquoise,turquoise,turquoise
-P06102,NOT3,NA,turquoise,turquoise,NA
-Q01560,NPL3,blue,NA,turquoise,turquoise
-P32832,NPL6,NA,unassigned,NA,NA
-P39683,NPT1,NA,NA,turquoise,turquoise
-P14907,NSP1,NA,NA,turquoise,turquoise
-P27476,NSR1,NA,NA,turquoise,turquoise
-P33331,NTF2,NA,NA,turquoise,turquoise
-P32356,NTH1,NA,NA,blue,blue
-P40010,NUG1,blue,turquoise,turquoise,turquoise
-Q00402,NUM1,NA,NA,turquoise,turquoise
-P36161,NUP133,turquoise,turquoise,NA,NA
-P40477,NUP159,unassigned,NA,turquoise,NA
-P32499,NUP2,unassigned,turquoise,turquoise,turquoise
-P48837,NUP57,blue,turquoise,NA,NA
-P38219,OLA1,unassigned,blue,turquoise,turquoise
-P16547,OM45,turquoise,turquoise,blue,blue
-Q12451,OSH2,turquoise,turquoise,NA,NA
-Q02201,OSH6,NA,NA,NA,turquoise
-P41543,OST1,NA,NA,turquoise,NA
-Q03558,OYE2,NA,NA,NA,blue
-Q12447,PAA1,NA,turquoise,turquoise,brown
-P04147,PAB1,NA,NA,turquoise,turquoise
-P32521,PAN1,NA,turquoise,turquoise,turquoise
-P38787,PAN5,NA,NA,turquoise,blue
-P38628,PCM1,NA,NA,turquoise,turquoise
-P38137,PCS60,turquoise,turquoise,turquoise,unassigned
-P16387,PDA1,turquoise,turquoise,brown,blue
-P32473,PDB1,turquoise,NA,brown,blue
-P06169;Q07471,PDC1,turquoise,turquoise,blue,blue
-P17967,PDI1,NA,NA,turquoise,turquoise
-P53860;P38907,PDR16,NA,NA,unassigned,blue
-P38075,PDX3,turquoise,NA,brown,brown
-P07267,PEP4,turquoise,turquoise,blue,blue
-P18239;P18238,PET9,turquoise,turquoise,blue,blue
-P16861,PFK1,turquoise,turquoise,blue,blue
-P16862,PFK2,NA,turquoise,blue,blue
-P07274,PFY1,NA,NA,NA,turquoise
-P12709,PGI1,NA,turquoise,blue,blue
-P00560,PGK1,NA,NA,blue,blue
-P33401,PGM1,NA,NA,turquoise,turquoise
-P37012,PGM2,turquoise,turquoise,blue,blue
-P40961,PHB1,turquoise,turquoise,NA,NA
-P19881,PHO13,NA,NA,turquoise,NA
-P17157,PHO85,NA,turquoise,NA,NA
-P38264,PHO88,turquoise,NA,turquoise,turquoise
-P53252,PIL1,turquoise,turquoise,blue,blue
-P36775,PIM1,NA,NA,turquoise,blue
-Q06449,PIN3,NA,NA,turquoise,turquoise
-P05030,PMA1,turquoise,turquoise,turquoise,blue
-P29952,PMI40,NA,unassigned,turquoise,brown
-P13586,PMR1,NA,NA,NA,turquoise
-P33775,PMT1,NA,NA,turquoise,turquoise
-P31382,PMT2,NA,NA,turquoise,brown
-P46971,PMT4,NA,turquoise,NA,NA
-P53184,PNC1,NA,turquoise,blue,blue
-Q04636,POB3,turquoise,turquoise,unassigned,NA
-P15873,POL30,NA,NA,turquoise,turquoise
-P39685,POM152,blue,turquoise,NA,NA
-P04840,POR1,turquoise,turquoise,blue,blue
-P09232,PRB1,turquoise,turquoise,blue,blue
-P00729,PRC1,NA,NA,blue,blue
-P25375,PRD1,NA,NA,turquoise,turquoise
-P22141,PRE1,NA,NA,NA,brown
-P21242,PRE10,turquoise,turquoise,NA,NA
-P38624,PRE3,turquoise,turquoise,blue,blue
-P30657,PRE4,blue,turquoise,NA,NA
-P40302,PRE5,turquoise,turquoise,NA,NA
-P40303,PRE6,blue,NA,NA,NA
-P23724,PRE7,turquoise,turquoise,NA,turquoise
-P23639,PRE8,unassigned,turquoise,NA,turquoise
-P32264,PRO1,NA,NA,turquoise,turquoise
-P54885,PRO2,NA,turquoise,turquoise,turquoise
-P32263,PRO3,NA,brown,turquoise,brown
-P53131,PRP43,turquoise,NA,turquoise,turquoise
-P32895,PRS1,NA,turquoise,turquoise,turquoise
-P38689,PRS3,NA,unassigned,turquoise,turquoise
-Q12265,PRS5,NA,NA,turquoise,NA
-P06103,PRT1,NA,NA,turquoise,turquoise
-P34227,PRX1,turquoise,turquoise,blue,blue
-P41940,PSA1,NA,turquoise,turquoise,brown
-P32337,PSE1,NA,unassigned,NA,turquoise
-Q12335,PST2,turquoise,turquoise,blue,blue
-P39966,PTC2,turquoise,turquoise,turquoise,NA
-P34221,PTC3,turquoise,turquoise,NA,NA
-P32588,PUB1,NA,NA,turquoise,turquoise
-Q07807,PUF3,NA,unassigned,NA,NA
-P32379,PUP2,turquoise,turquoise,NA,NA
-P25451,PUP3,turquoise,turquoise,NA,NA
-Q08647,PUS7,NA,NA,turquoise,blue
-P07275,PUT2,turquoise,turquoise,blue,blue
-P21304,PWP1,NA,NA,turquoise,turquoise
-P25635,PWP2,NA,NA,turquoise,turquoise
-P11154,PYC1,NA,NA,blue,blue
-P32327,PYC2,turquoise,turquoise,blue,blue
-P52489,PYK2,unassigned,turquoise,blue,blue
-P07257,QCR2,turquoise,turquoise,blue,blue
-P00128,QCR7,turquoise,turquoise,blue,blue
-P38795,QNS1,NA,turquoise,NA,NA
-P43123,QRI1,NA,turquoise,turquoise,NA
-P32628,RAD23,blue,turquoise,turquoise,turquoise
-P11938,RAP1,NA,NA,turquoise,turquoise
-P01120,RAS2,NA,turquoise,blue,blue
-P53295,RBG2,NA,turquoise,turquoise,turquoise
-P48606,RBL2,NA,NA,NA,turquoise
-P53721,RCF2,NA,turquoise,NA,NA
-P38623,RCK2,NA,NA,turquoise,brown
-Q12044,RCN2,NA,NA,turquoise,turquoise
-Q12305,RDL1,NA,NA,brown,NA
-P40893,REE1,NA,NA,brown,blue
-P43621,RET2,turquoise,turquoise,turquoise,turquoise
-P22336,RFA1,NA,turquoise,turquoise,brown
-P38629,RFC3,NA,NA,NA,turquoise
-P40043,RGI1,NA,NA,blue,NA
-P06780,RHO1,turquoise,NA,blue,blue
-Q00245,RHO3,turquoise,turquoise,blue,blue
-P53879,RHO5,NA,NA,blue,blue
-Q99258,RIB3,NA,NA,NA,turquoise
-P50861,RIB4,turquoise,NA,blue,NA
-P32445,RIM1,turquoise,turquoise,brown,blue
-Q12189,RKI1,blue,turquoise,NA,turquoise
-Q03195,RLI1,NA,NA,turquoise,turquoise
-P11745,RNA1,unassigned,NA,turquoise,turquoise
-P25367,RNQ1,turquoise,turquoise,NA,NA
-P09938,RNR2,turquoise,turquoise,blue,blue
-P49723,RNR4,turquoise,turquoise,blue,blue
-P22138,RPA135,NA,NA,turquoise,turquoise
-P10964,RPA190,NA,turquoise,turquoise,turquoise
-Q01080,RPA49,NA,NA,turquoise,turquoise
-P08518,RPB2,turquoise,turquoise,turquoise,turquoise
-P07703,RPC40,turquoise,turquoise,turquoise,turquoise
-P36160,RPF2,NA,brown,NA,NA
-P38249,RPG1,NA,NA,turquoise,turquoise
-P41805,RPL10,blue,NA,turquoise,turquoise
-Q3E757;P0C0W9,RPL11B,NA,NA,turquoise,turquoise
-P0CX54;P0CX53,RPL12B,NA,turquoise,turquoise,turquoise
-P40212,RPL13B,NA,unassigned,turquoise,turquoise
-P36105,RPL14A,NA,NA,turquoise,turquoise
-P05748,RPL15A,NA,turquoise,turquoise,turquoise
-P26784,RPL16A,turquoise,turquoise,NA,NA
-P26785,RPL16B,turquoise,turquoise,turquoise,turquoise
-P05740,RPL17A,unassigned,unassigned,turquoise,turquoise
-P46990,RPL17B,NA,turquoise,NA,NA
-P0CX50;P0CX49,RPL18B,NA,NA,turquoise,turquoise
-P0CX83;P0CX82,RPL19B,turquoise,NA,turquoise,turquoise
-P0CX44;P0CX43,RPL1B,NA,NA,turquoise,turquoise
-P0CX24;P0CX23,RPL20B,turquoise,unassigned,turquoise,turquoise
-Q02753,RPL21A,NA,unassigned,turquoise,turquoise
-P0CX42;P0CX41,RPL23B,turquoise,turquoise,turquoise,turquoise
-P04449,RPL24A,NA,NA,turquoise,turquoise
-P04456,RPL25,turquoise,turquoise,turquoise,turquoise
-P53221,RPL26B,turquoise,turquoise,turquoise,turquoise
-P0C2H7;P0C2H6,RPL27B,blue,turquoise,turquoise,turquoise
-P02406,RPL28,turquoise,blue,turquoise,turquoise
-P0CX46;P0CX45,RPL2B,NA,unassigned,turquoise,turquoise
-P14126,RPL3,turquoise,NA,turquoise,turquoise
-P14120,RPL30,NA,NA,turquoise,turquoise
-P0C2H8,RPL31A,NA,NA,turquoise,turquoise
-P38061,RPL32,unassigned,unassigned,turquoise,turquoise
-P05744,RPL33A,turquoise,turquoise,turquoise,turquoise
-P41056,RPL33B,turquoise,turquoise,NA,NA
-P87262;P40525,RPL34A,NA,NA,turquoise,turquoise
-P0CX85;P0CX84,RPL35B,NA,unassigned,turquoise,turquoise
-O14455,RPL36B,turquoise,NA,turquoise,turquoise
-P49167,RPL38,NA,brown,turquoise,turquoise
-P0CX26;P0CX25,RPL43B,NA,turquoise,turquoise,turquoise
-P10664,RPL4A,turquoise,blue,turquoise,turquoise
-P26321,RPL5,turquoise,NA,turquoise,turquoise
-Q02326,RPL6A,blue,turquoise,turquoise,turquoise
-P05739,RPL6B,turquoise,turquoise,turquoise,turquoise
-P05737,RPL7A,NA,NA,turquoise,turquoise
-P29453,RPL8B,turquoise,turquoise,turquoise,turquoise
-P51401,RPL9B,turquoise,NA,turquoise,turquoise
-P38764,RPN1,NA,turquoise,turquoise,turquoise
-P38886,RPN10,NA,turquoise,turquoise,turquoise
-P43588,RPN11,blue,turquoise,turquoise,turquoise
-P32496,RPN12,blue,NA,turquoise,turquoise
-P32565,RPN2,NA,turquoise,NA,turquoise
-P40016,RPN3,NA,turquoise,NA,turquoise
-Q12250,RPN5,turquoise,turquoise,NA,blue
-Q12377,RPN6,turquoise,turquoise,NA,blue
-Q06103,RPN7,turquoise,turquoise,NA,turquoise
-Q08723,RPN8,turquoise,NA,turquoise,brown
-Q04062,RPN9,turquoise,turquoise,NA,brown
-P04050,RPO21,blue,NA,turquoise,turquoise
-P05317,RPP0,turquoise,turquoise,turquoise,turquoise
-P02400,RPP2B,NA,unassigned,turquoise,turquoise
-P46654;P32905,RPS0B,turquoise,turquoise,turquoise,turquoise
-Q08745;P46784,RPS10A,NA,turquoise,turquoise,turquoise
-P0CX48;P0CX47,RPS11B,NA,turquoise,turquoise,turquoise
-P48589,RPS12,NA,turquoise,turquoise,turquoise
-P05756,RPS13,turquoise,turquoise,turquoise,turquoise
-P06367,RPS14A,NA,turquoise,turquoise,turquoise
-Q01855,RPS15,NA,blue,turquoise,turquoise
-P0CX52;P0CX51,RPS16B,blue,turquoise,turquoise,turquoise
-P14127;P02407,RPS17B,turquoise,NA,turquoise,turquoise
-P0CX56;P0CX55,RPS18B,NA,unassigned,turquoise,turquoise
-P07281;P07280,RPS19B,NA,NA,turquoise,turquoise
-P33442,RPS1A,NA,NA,turquoise,turquoise
-P23248,RPS1B,NA,NA,turquoise,turquoise
-P25443,RPS2,blue,turquoise,turquoise,turquoise
-P38701,RPS20,turquoise,turquoise,turquoise,turquoise
-Q3E754,RPS21B,turquoise,turquoise,turquoise,turquoise
-Q3E7Y3;P0C0W1,RPS22B,NA,NA,turquoise,turquoise
-P0CX30;P0CX29,RPS23B,NA,NA,turquoise,turquoise
-P0CX32;P0CX31,RPS24B,NA,turquoise,turquoise,turquoise
-Q3E792;P0C0T4,RPS25A,blue,NA,turquoise,turquoise
-P38711;P35997,RPS27B,NA,turquoise,turquoise,turquoise
-Q3E7X9,RPS28A,NA,turquoise,turquoise,turquoise
-P41057,RPS29A,unassigned,NA,turquoise,turquoise
-P05750,RPS3,NA,NA,turquoise,turquoise
-P0CX34;P0CX33,RPS30B,NA,turquoise,turquoise,turquoise
-P05759;P0CG63,RPS31,NA,NA,turquoise,turquoise
-P0CX36;P0CX35,RPS4B,turquoise,turquoise,turquoise,turquoise
-P26783,RPS5,NA,turquoise,turquoise,turquoise
-P0CX38;P0CX37,RPS6B,NA,NA,turquoise,turquoise
-P26786,RPS7A,NA,turquoise,turquoise,turquoise
-P48164,RPS7B,NA,turquoise,turquoise,turquoise
-P0CX40;P0CX39,RPS8B,turquoise,turquoise,turquoise,turquoise
-P05755,RPS9B,turquoise,NA,turquoise,turquoise
-P33299,RPT1,NA,NA,turquoise,turquoise
-P40327,RPT2,blue,NA,turquoise,turquoise
-P33298,RPT3,NA,NA,turquoise,turquoise
-P53549,RPT4,turquoise,turquoise,NA,turquoise
-P33297,RPT5,NA,unassigned,turquoise,turquoise
-Q01939,RPT6,NA,turquoise,turquoise,turquoise
-Q12532,RQC2,turquoise,turquoise,NA,NA
-Q04225,RRB1,unassigned,NA,turquoise,NA
-Q12754,RRP12,NA,turquoise,turquoise,turquoise
-P38792,RRP4,NA,NA,turquoise,NA
-Q05022,RRP5,NA,turquoise,turquoise,turquoise
-Q07979,RSC58,NA,NA,turquoise,NA
-P25632,RSC6,NA,NA,turquoise,turquoise
-P43609,RSC8,NA,NA,turquoise,turquoise
-Q03124,RSC9,NA,turquoise,NA,NA
-P39940,RSP5,NA,turquoise,turquoise,turquoise
-P38804,RTC3,NA,NA,blue,blue
-P32608,RTG2,turquoise,turquoise,NA,NA
-Q04947,RTN1,NA,NA,turquoise,turquoise
-P38903,RTS1,NA,NA,turquoise,turquoise
-Q12464,RVB2,NA,NA,turquoise,NA
-P25343,RVS161,NA,turquoise,turquoise,brown
-P39743,RVS167,NA,NA,turquoise,turquoise
-P32368,SAC1,NA,turquoise,NA,brown
-P32599,SAC6,NA,turquoise,NA,brown
-P39954,SAH1,NA,NA,turquoise,turquoise
-P10659,SAM1,NA,NA,blue,blue
-P19358,SAM2,turquoise,turquoise,turquoise,brown
-Q08985;Q04898,SAM4,NA,NA,turquoise,turquoise
-P20606,SAR1,unassigned,turquoise,turquoise,turquoise
-P28707,SBA1,turquoise,NA,NA,NA
-P10080,SBP1,NA,NA,NA,turquoise
-P45978,SCD6,NA,NA,turquoise,turquoise
-P21243,SCL1,turquoise,turquoise,NA,brown
-P06105,SCP160,NA,turquoise,turquoise,turquoise
-P40075,SCS2,NA,NA,NA,brown
-P53334,SCW4,NA,NA,NA,blue
-Q00711,SDH1,turquoise,turquoise,blue,blue
-P21801,SDH2,turquoise,blue,blue,blue
-P36047,SDS22,turquoise,turquoise,NA,NA
-Q04491,SEC13,blue,NA,turquoise,turquoise
-P24280,SEC14,turquoise,blue,turquoise,turquoise
-P32602,SEC17,NA,turquoise,turquoise,brown
-P18759,SEC18,blue,NA,turquoise,turquoise
-P32074,SEC21,NA,turquoise,NA,turquoise
-P15303,SEC23,NA,NA,turquoise,turquoise
-P40482,SEC24,NA,turquoise,turquoise,turquoise
-P41810,SEC26,NA,turquoise,NA,brown
-P41811,SEC27,NA,NA,turquoise,turquoise
-P40509,SEC28,NA,NA,turquoise,turquoise
-P38968,SEC31,NA,NA,turquoise,turquoise
-P07560,SEC4,unassigned,turquoise,turquoise,brown
-P07283,SEC53,turquoise,blue,turquoise,turquoise
-P14906,SEC63,NA,turquoise,NA,brown
-P29478,SEC65,NA,NA,turquoise,turquoise
-P11075,SEC7,NA,turquoise,NA,turquoise
-P33330,SER1,blue,turquoise,blue,blue
-P40510,SER33,turquoise,turquoise,blue,blue
-P07284,SES1,turquoise,NA,turquoise,turquoise
-P32771,SFA1,NA,NA,NA,unassigned
-Q12314,SFM1,NA,NA,turquoise,turquoise
-Q12118,SGT2,NA,turquoise,NA,turquoise
-P36136,SHB17,turquoise,NA,turquoise,turquoise
-P37292,SHM1,turquoise,NA,turquoise,turquoise
-P37291,SHM2,turquoise,turquoise,blue,blue
-P34223,SHP1,blue,NA,turquoise,turquoise
-P25294,SIS1,NA,turquoise,turquoise,blue
-P20604,SIT4,NA,NA,turquoise,turquoise
-P32790,SLA1,NA,NA,turquoise,turquoise
-P33338,SLA2,NA,NA,NA,brown
-P33333,SLC1,turquoise,NA,NA,NA
-Q00772,SLT2,NA,NA,NA,turquoise
-P39929,SNF7,NA,NA,turquoise,turquoise
-P39990,SNU13,NA,NA,turquoise,blue
-P00445,SOD1,turquoise,turquoise,blue,turquoise
-P00447,SOD2,turquoise,turquoise,blue,blue
-P37262,SOL2,NA,turquoise,NA,NA
-P38858,SOL3,NA,NA,blue,blue
-Q12074,SPE3,NA,NA,turquoise,turquoise
-P39986,SPF1,turquoise,NA,turquoise,brown
-Q06505,SPN1,NA,NA,turquoise,turquoise
-P32558,SPT16,NA,turquoise,NA,NA
-P27692,SPT5,NA,unassigned,turquoise,turquoise
-P23615,SPT6,NA,turquoise,NA,NA
-P25567,SRO9,blue,turquoise,NA,NA
-Q02821,SRP1,NA,turquoise,turquoise,turquoise
-P38687,SRP68,unassigned,NA,NA,turquoise
-P38688,SRP72,NA,NA,turquoise,turquoise
-P17555,SRV2,blue,turquoise,NA,NA
-P10591,SSA1,turquoise,turquoise,blue,blue
-P10592,SSA2,NA,turquoise,turquoise,turquoise
-P11484,SSB1,NA,turquoise,turquoise,turquoise
-P40150,SSB2,NA,NA,turquoise,turquoise
-P0CS90,SSC1,NA,turquoise,NA,NA
-P24276,SSD1,turquoise,brown,brown,turquoise
-P32589,SSE1,turquoise,turquoise,turquoise,turquoise
-P39926,SSO2,NA,turquoise,NA,NA
-P38788,SSZ1,NA,turquoise,turquoise,turquoise
-Q06010,STE23,NA,NA,NA,turquoise
-P47154,STE24,NA,turquoise,NA,turquoise
-P32597,STH1,NA,NA,NA,turquoise
-P15705,STI1,turquoise,turquoise,turquoise,turquoise
-P39015,STM1,turquoise,blue,turquoise,turquoise
-P39007,STT3,NA,turquoise,NA,NA
-P54000,SUB1,NA,NA,NA,turquoise
-Q07478,SUB2,turquoise,turquoise,NA,NA
-P32911,SUI1,NA,turquoise,NA,NA
-P20459,SUI2,NA,NA,turquoise,turquoise
-P09064,SUI3,turquoise,unassigned,turquoise,turquoise
-P05453,SUP35,turquoise,turquoise,turquoise,turquoise
-P12385,SUP45,NA,NA,turquoise,turquoise
-Q05515,SVF1,NA,turquoise,turquoise,turquoise
-Q03088,SVL3,NA,turquoise,NA,turquoise
-Q04175,SXM1,NA,NA,turquoise,turquoise
-P25623,SYP1,turquoise,turquoise,blue,NA
-P35189,TAF14,NA,NA,turquoise,turquoise
-P15019,TAL1,turquoise,turquoise,blue,blue
-Q12466,TCB1,turquoise,turquoise,NA,blue
-Q03640,TCB3,blue,turquoise,NA,brown
-P12612,TCP1,NA,NA,turquoise,turquoise
-P00360,TDH1,NA,NA,blue,blue
-P00358,TDH2,NA,NA,turquoise,blue
-P00359,TDH3,NA,NA,blue,blue
-P02994,TEF1,turquoise,NA,turquoise,turquoise
-P36008,TEF4,NA,NA,turquoise,turquoise
-P41895,TFG1,NA,turquoise,turquoise,turquoise
-P17423,THR1,NA,NA,turquoise,turquoise
-P16120,THR4,NA,NA,NA,turquoise
-P04801,THS1,NA,NA,turquoise,turquoise
-P10081,TIF1,NA,turquoise,turquoise,turquoise
-P38912,TIF11,NA,turquoise,turquoise,turquoise
-P34167,TIF3,turquoise,turquoise,turquoise,turquoise
-P40217,TIF34,NA,NA,turquoise,turquoise
-Q04067,TIF35,NA,turquoise,turquoise,turquoise
-P39935,TIF4631,NA,NA,turquoise,turquoise
-P38431,TIF5,NA,NA,turquoise,turquoise
-P87108,TIM10,NA,turquoise,NA,turquoise
-P53299,TIM13,NA,turquoise,brown,turquoise
-Q01852,TIM44,NA,NA,turquoise,turquoise
-Q02776,TIM50,NA,NA,turquoise,brown
-P57744,TIM8,NA,turquoise,NA,NA
-O74700,TIM9,NA,turquoise,turquoise,turquoise
-P23254,TKL1,blue,turquoise,turquoise,brown
-P40462,TMA108,NA,NA,turquoise,turquoise
-Q12513,TMA17,turquoise,turquoise,blue,blue
-P35691,TMA19,NA,NA,turquoise,blue
-P89886,TMA20,NA,NA,turquoise,turquoise
-Q3E764,TMA7,NA,blue,turquoise,turquoise
-P35180,TOM20,NA,turquoise,turquoise,turquoise
-P23644,TOM40,turquoise,turquoise,NA,blue
-P07213,TOM70,turquoise,NA,turquoise,turquoise
-P40032,TPA1,NA,NA,turquoise,NA
-P31383,TPD3,turquoise,turquoise,NA,NA
-P00942,TPI1,NA,turquoise,turquoise,turquoise
-P17536,TPM1,NA,turquoise,turquoise,turquoise
-P40414,TPM2,NA,turquoise,NA,turquoise
-Q00764,TPS1,turquoise,turquoise,blue,blue
-P31688,TPS2,NA,NA,blue,blue
-P38426,TPS3,turquoise,turquoise,blue,blue
-P15565,TRM1,NA,NA,turquoise,turquoise
-Q12009,TRM8,NA,NA,turquoise,turquoise
-P00899,TRP2,blue,turquoise,turquoise,brown
-P00937,TRP3,NA,unassigned,NA,NA
-P07285,TRP4,turquoise,turquoise,NA,NA
-P00931,TRP5,NA,turquoise,turquoise,NA
-P29509,TRR1,NA,NA,turquoise,NA
-P22217,TRX1,turquoise,turquoise,turquoise,turquoise
-P38427,TSL1,turquoise,turquoise,blue,blue
-P09733,TUB1,turquoise,NA,NA,NA
-P02557,TUB2,NA,NA,unassigned,NA
-P02992,TUF1,NA,turquoise,turquoise,brown
-P16649,TUP1,NA,turquoise,turquoise,turquoise
-P36421,TYS1,NA,NA,turquoise,turquoise
-P22515,UBA1,turquoise,turquoise,turquoise,brown
-P38820,UBA4,unassigned,turquoise,NA,NA
-P21734,UBC1,NA,NA,turquoise,turquoise
-P50101,UBP15,turquoise,turquoise,NA,blue
-Q01477,UBP3,NA,NA,turquoise,brown
-P43593,UBP6,turquoise,NA,brown,brown
-P17649,UGA1,NA,NA,blue,blue
-P32861,UGP1,NA,NA,blue,blue
-P07259,URA2,NA,turquoise,blue,blue
-P03962,URA3,turquoise,turquoise,turquoise,NA
-P13298,URA5,turquoise,NA,turquoise,turquoise
-P15700,URA6,NA,NA,turquoise,brown
-P28274,URA7,NA,turquoise,turquoise,turquoise
-P53254,UTP22,NA,turquoise,turquoise,turquoise
-P38882,UTP9,NA,NA,turquoise,turquoise
-P39968,VAC8,turquoise,NA,NA,NA
-P07806,VAS1,NA,unassigned,turquoise,turquoise
-Q06685,VIP1,NA,turquoise,brown,blue
-P17255,VMA1,turquoise,turquoise,turquoise,NA
-P48836,VMA10,NA,turquoise,turquoise,NA
-P41807,VMA13,NA,turquoise,NA,turquoise
-P16140,VMA2,turquoise,NA,turquoise,turquoise
-P22203,VMA4,NA,NA,turquoise,turquoise
-P31412,VMA5,blue,turquoise,turquoise,brown
-P32366,VMA6,NA,NA,turquoise,NA
-P39111,VMA7,NA,NA,turquoise,turquoise
-P32610,VMA8,turquoise,unassigned,NA,brown
-P32563,VPH1,turquoise,turquoise,NA,NA
-P21576,VPS1,turquoise,NA,turquoise,turquoise
-Q07878,VPS13,NA,unassigned,NA,NA
-P36017,VPS21,NA,NA,turquoise,brown
-P38759,VPS29,NA,NA,turquoise,turquoise
-P43585,VTC2,NA,NA,blue,blue
-Q02725,VTC3,NA,NA,blue,blue
-P47075,VTC4,NA,NA,blue,blue
-Q12109,WRS1,NA,NA,turquoise,turquoise
-Q12363,WTM1,turquoise,turquoise,blue,blue
-P22147,XRN1,NA,NA,turquoise,turquoise
-P46683,YAR1,NA,NA,NA,turquoise
-O43137,YBR085C-A,NA,NA,unassigned,brown
-P32386,YBT1,blue,NA,NA,unassigned
-P23292,YCK2,NA,NA,turquoise,unassigned
-P25349,YCP4,turquoise,turquoise,blue,blue
-P25491,YDJ1,blue,turquoise,turquoise,turquoise
-Q07505,YDL086W,NA,NA,turquoise,turquoise
-P16521,YEF3,blue,turquoise,turquoise,turquoise
-P40093,YER156C,turquoise,NA,turquoise,turquoise
-Q07451,YET3,NA,turquoise,NA,NA
-P43590,YFR006W,turquoise,turquoise,blue,turquoise
-P53155,YGL082W,NA,NA,turquoise,blue
-P38616,YGP1,NA,turquoise,NA,turquoise
-P53235,YGR054W,NA,NA,turquoise,turquoise
-P53278,YGR130C,NA,turquoise,blue,blue
-P39676,YHB1,NA,NA,turquoise,turquoise
-P38765,YHI9,NA,turquoise,blue,blue
-P38708,YHR020W,NA,NA,turquoise,turquoise
-P53633,YIP3,NA,NA,turquoise,turquoise
-P52553,YKE2,NA,NA,turquoise,turquoise
-Q86ZR7,YKL033W-A,NA,NA,turquoise,turquoise
-P36114,YKR018C,NA,turquoise,NA,brown
-P36015,YKT6,blue,turquoise,turquoise,brown
-P32843,YME2,NA,NA,blue,blue
-P19955,YMR31,NA,NA,blue,blue
-P36010,YNK1,turquoise,turquoise,blue,blue
-Q3E841,YNR034W-A,turquoise,turquoise,blue,NA
-P12688,YPK1,turquoise,turquoise,turquoise,turquoise
-Q08971,YPL225W,NA,turquoise,NA,turquoise
-Q08977,YPL260W,turquoise,turquoise,NA,blue
-Q12458,YPR1,turquoise,NA,blue,blue
-Q06523,YPR148C,turquoise,turquoise,turquoise,brown
-P01123,YPT1,NA,turquoise,turquoise,brown
-P38555,YPT31,blue,turquoise,NA,NA
-P36018,YPT52,NA,turquoise,turquoise,brown
-P32939,YPT7,unassigned,turquoise,blue,blue
-Q12159,YRA1,NA,turquoise,turquoise,brown
-P41920,YRB1,NA,NA,turquoise,turquoise
-Q08245,ZEO1,NA,turquoise,turquoise,turquoise
-P53303,ZPR1,NA,brown,turquoise,turquoise
-P32527,ZUO1,NA,NA,turquoise,turquoise
-P11412,ZWF1,turquoise,turquoise,blue,blue
+Protein IDs,Gene names,C_WT_module,C_WT_module_description,C_rim15_module,C_rim15_module_description,P_WT_module,P_WT_module_description,P_rim15_module,P_rim15_module_description
+P04710,AAC1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P37898,AAP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P23542,AAT2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P14164,ABF1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,NA,NA
+Q02486,ABF2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P15891,ABP1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P31787,ACB1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q00955,ACC1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32316,ACH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P19414,ACO1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P39533,ACO2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P52910,ACS2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P60010,ACT1,blue,Downregulated during carbon starvation,unassigned,No coherent co-expression pattern,NA,NA,NA,NA
+P27616,ADE1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P80210,ADE12,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q05911,ADE13,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P54113,ADE16,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P38009,ADE17,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P21264,ADE2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07245,ADE3,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P04046,ADE4,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07244,"ADE5,7",NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38972,ADE6,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00330,ADH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07246,ADH3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q04894,ADH6,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07170,ADK1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P47143,ADO1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12449,AHA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P38013,AHP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P23180,AIM17,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P36154,AIM29,NA,NA,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q12032,AIM41,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12480,AIM45,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P40053,AIM9,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P46680,AIP1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P40825,ALA1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P46367,ALD4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40047,ALD5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P54115,ALD6,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P54783,ALO1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P52893,ALT1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P15274,AMD1,turquoise,Upregulated during carbon starvation,NA,NA,unassigned,No coherent co-expression pattern,NA,NA
+P22855,AMS1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P16550,APA1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14904,APE1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32454,APE2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P37302,APE3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38821,APE4,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P49435,APT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38115,ARA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40024,ARB1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P46672,ARC1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40518,ARC15,unassigned,No coherent co-expression pattern,NA,NA,NA,NA,NA,NA
+P33204,ARC19,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P53731,ARC35,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P11076,ARF1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P22768,ARG1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P04076,ARG4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q01217,"ARG5,6",NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q04728,ARG7,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P38116,ARL1,blue,Downregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P08566,ARO1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P28777,ARO2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14843,ARO3,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P32449,ARO4,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P32178,ARO7,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53090,ARO8,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32381,ARP2,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P47117,ARP3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q03862,ARX1,NA,NA,blue,Downregulated during carbon starvation,NA,NA,NA,NA
+P38011,ASC1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P49089,ASN1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P49090,ASN2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38986,ASP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07251,ATP1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00830,ATP2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38077,ATP3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P05626,ATP4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P09457,ATP5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P30902,ATP7,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40471,AYR1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38891,BAT1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P47176,BAT2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P47068,BBC1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P07278,BCY1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P39714,BDH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P39960,BEM2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38934,BFR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q06631,BFR2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P29311,BMH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P34730,BMH2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P47096,BNA1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P47039,BNA3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q07457,BRE1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P40506,CAB2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P29547,CAM1,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P28495,CAP1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),turquoise,Downregulated during phosphorus starvation
+P13517,CAP2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P00812,CAR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P07991,CAR2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P17106,CBF1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P33322,CBF5,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38626,CBR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P00431,CCP1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40202,CCS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39076,CCT2,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39077,CCT3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39078,CCT4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40413,CCT5,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39079,CCT6,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P42943,CCT7,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P47079,CCT8,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32458,CDC11,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P32468,CDC12,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P00549,CDC19,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P06785,CDC21,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P00546,CDC28,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,NA,NA
+P06704,CDC31,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P07260,CDC33,unassigned,No coherent co-expression pattern,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P06101,CDC37,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25655,CDC39,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P19073,CDC42,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P25694,CDC48,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q00362,CDC55,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P26637,CDC60,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+O13297,CET1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P22137,CHC1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q12114,CHS5,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P42940,CIR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+Q08822,CIR2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P00890,CIT1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P20485,CKI1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P17891,CLC1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q03690,CLU1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P06787,CMD1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q03048,COF1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53622,COP1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P07256,COR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q01519,COX12,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P04037,COX4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00427,COX6,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P34237,COY1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P03965,CPA2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P14832,CPR1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25719,CPR3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P35176,CPR5,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53691,CPR6,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P27614,CPS1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P30822,CRM1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q06440,CRN1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38845,CRP1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+Q06705,CSR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53008,CWH41,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P40312,CYB5,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P31373,CYS3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32582,CYS4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07143,CYT1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P54838,DAK1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P24783,DBP2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P20447,DBP3,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P20449,DBP5,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q06218,DBP9,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53550,DCP2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q06151,DCS1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40087,DDI1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P18899,DDR48,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P06634,DED1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38707,DED81,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39517,DHH1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32891,DLD1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P46681,DLD2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,unassigned,No coherent co-expression pattern
+P39976,DLD3,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P54861,DNM1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P36037,DOA1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38773;P38774,DOG2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P32469,DPH5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P04802,DPS1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53753,DSE4,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P07273,DST1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P43616,DUG1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38791,DYS1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38248,ECM33,NA,NA,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P34216,EDE1,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32471,EFB1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32324,EFT1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38879,EGD2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38295,EHT1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q05050,EIS1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P25574,EMC1,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P53073,EMC4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q04409,EMI2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P32803,EMP24,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P43555,EMP47,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P00924,ENO1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00925,ENO2,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P47160,ENT3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q04660,ERB1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P32476,ERG1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),turquoise,Downregulated during phosphorus starvation
+P41338,ERG10,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07277,ERG12,NA,NA,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P54839,ERG13,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32352,ERG2,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P08524,ERG20,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53199,ERG26,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12452,ERG27,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25087,ERG6,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P24521,ERG8,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P29704,ERG9,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q05359,ERP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P38071,ETR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q08421,ETT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P23776,EXG1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P30624,FAA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P47912,FAA4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07149,FAS1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P19097,FAS2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14540,FBA1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12178,FCY1,blue,Downregulated during carbon starvation,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40515,FIS1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38631,FKS1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53889,FMP41,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P20081,FPR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P38911,FPR3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q07825,FRA1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32614,FRD1,NA,NA,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P15624,FRS1,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P15625,FRS2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12029,FSF1,unassigned,No coherent co-expression pattern,unassigned,No coherent co-expression pattern,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P08417,FUM1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P39730,FUN12,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P18562,FUR1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P28007,GAR1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P22146,GAS1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q08193,GAS5,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P09032,GCD1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32481,GCD11,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32501,GCD6,blue,Downregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P33892,GCN1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P43535,GCN20,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P35197,GCS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P48015,GCV1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P49095,GCV2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q06625,GDB1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07262,GDH1,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P33327,GDH2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P39958,GDI1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q12154,GET3,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14742,GFA1,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38817,GGA2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53900,GIM3,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53849,GIS2,blue,Downregulated during carbon starvation,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32775,GLC3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32598,GLC7,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P17709,GLK1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32288,GLN1,NA,NA,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P13188,GLN4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P50107,GLO1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q05584,GLO2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P38682,GLO3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P41921,GLR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12680,GLT1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38720,GND1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P53839,GOR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q00055,GPD1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P41911,GPD2,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P06738,GPH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00950,GPM1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P41277,GPP1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40106,GPP2,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P36148,GPT2,NA,NA,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q12068,GRE2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38715,GRE3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38088,GRS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25373,GRX1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P17695,GRX2,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q03835,GRX3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q02784,GRX5,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P40989;Q04952,GSC2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q04697,GSF2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P32477,GSH1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q08220,GSH2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32836,GSP2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P27472,GSY2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40582,GTT1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38625,GUA1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P15454,GUK1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P46655,GUS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32191,GUT2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40531,GVP36,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P47119,HAM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32769,HBS1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53834,HCH1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q05775,HCR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11353,HEM13,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P16622,HEM15,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05373,HEM2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P28789,HEM3,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q04458,HFD1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P48362,HGH1,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P02309,HHF1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P61830,HHT1,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P00498,HIS1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00815,HIS4,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07172,HIS5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P33734,HIS7,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40037,HMF1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q03973,HMO1,unassigned,No coherent co-expression pattern,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q04344,HNT1,NA,NA,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P32485;P41808,HOG1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P13663,HOM2,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P10869,HOM3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P31116,HOM6,blue,Downregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q04178,HPT1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q05905,HRI1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q99383,HRP1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P15108,HSC82,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38910,HSP10,NA,NA,brown,Downregulated during carbon starvation (secondary cluster),NA,NA,NA,NA
+P31539,HSP104,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q04432,HSP31,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P19882,HSP60,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P33416,HSP78,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P02829,HSP82,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P04912;P04911,HTA2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P02294;P02293,HTB2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07263,HTS1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P04806,HXK1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P04807,HXK2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39004,HXT7,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P23301,HYP2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P28834,IDH1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P28241,IDH2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P15496,IDI1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P21954,IDP1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P38286,IFA38,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53897,IGO1,blue,Downregulated during carbon starvation,NA,NA,unassigned,No coherent co-expression pattern,NA,NA
+Q06706,IKI3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P09436,ILS1,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P00927,ILV1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,NA,NA
+P07342,ILV2,unassigned,No coherent co-expression pattern,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P39522,ILV3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P06168,ILV5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P25605,ILV6,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P50095,IMD3,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P50094,IMD4,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q12271,INP53,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P00817,IPP1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40580,IRC24,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38250,IST2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38144,ISW1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40069,KAP123,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q06142,KAP95,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P16474,KAR2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P35844,KES1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P20967,KGD1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P19262,KGD2,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P27809,KRE2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53914,KRE33,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P42846,KRI1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25586,KRR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P15180,KRS1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P27810,KTR1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38130,KTR3,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q10740,LAP2,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q01532,LAP3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P12695,LAT1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25045,LCB1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40970,LCB2,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P07264,LEU1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P04173,LEU2,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P06208,LEU4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P33399,LHP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36016,LHS1,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P47120,LIA1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P09624,LPD1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P43603,LSB3,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P53598,LSC1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P53312,LSC2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12230,LSP1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38998,LYS1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P40495,LYS12,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),turquoise,Downregulated during phosphorus starvation
+P07702,LYS2,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q12122,LYS21,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P49367,LYS4,NA,NA,NA,NA,unassigned,No coherent co-expression pattern,NA,NA
+P38999,LYS9,turquoise,Upregulated during carbon starvation,NA,NA,unassigned,No coherent co-expression pattern,NA,NA
+P36013,MAE1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P20484,MAK11,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q01662,MAP1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38174,MAP2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+O14467,MBF1,blue,Downregulated during carbon starvation,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P21965,MCK1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),brown,Transiently upregulated early in phosphorus starvation
+P36060,MCR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P17505,MDH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32419,MDH3,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q12019,MDN1,NA,NA,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation
+Q12285,MDY2,unassigned,No coherent co-expression pattern,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P25039,MEF1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P00958,MES1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39692,MET10,unassigned,No coherent co-expression pattern,unassigned,No coherent co-expression pattern,blue,Upregulated during phosphorus starvation (sustained),turquoise,Downregulated during phosphorus starvation
+P53128,MET13,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P06106,MET17,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32179,MET22,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P05694,MET6,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q08645,MET7,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+Q99257,MEX67,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38523,MGE1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P32787,MGM101,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P36046,MIA40,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P36112,MIC60,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P23641,MIR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P09440,MIS1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53141,MLC1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q02455,MLP1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P40185,MMF1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P38069,MNN2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12117,MRH1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+Q06489,MRI1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P35719,MRP8,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P33201,MRT4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q03104,MSC1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38694,MSC7,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P47018,MTC1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P47047,MTR4,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P32377,MVD1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40029,MXR1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P19524,MYO2,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q04439,MYO5,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P32505,NAB2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38996,NAB3,NA,NA,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,NA,NA
+P30771,NAM7,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q02931,NAN1,blue,Downregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P25293,NAP1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P12945,NAT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38205,NCL1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P16603,NCP1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40215,NDE1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P32340,NDI1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P47035,NET1,NA,NA,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q08972,NEW1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25374,NFS1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P11633,NHP6B,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P34077,NIC96,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53081,NIF3,NA,NA,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,NA,NA
+P32497,NIP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53920,NMA111,NA,NA,brown,Downregulated during carbon starvation (secondary cluster),turquoise,Downregulated during phosphorus starvation,NA,NA
+P38861,NMD3,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14743,NMT1,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39744,NOC2,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P15646,NOP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q08208,NOP12,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P40991,NOP2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+Q12460,NOP56,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12499,NOP58,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q07623,NOP6,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53261,NOP7,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P06102,NOT3,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+Q01560,NPL3,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32832,NPL6,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,NA,NA
+P39683,NPT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14907,NSP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P27476,NSR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P33331,NTF2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32356,NTH1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40010,NUG1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q00402,NUM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36161,NUP133,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P40477,NUP159,unassigned,No coherent co-expression pattern,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P32499,NUP2,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P48837,NUP57,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38219,OLA1,unassigned,No coherent co-expression pattern,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P16547,OM45,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12451,OSH2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q02201,OSH6,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P41543,OST1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+Q03558,OYE2,NA,NA,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q12447,PAA1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P04147,PAB1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32521,PAN1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38787,PAN5,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P38628,PCM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38137,PCS60,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,unassigned,No coherent co-expression pattern
+P16387,PDA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P32473,PDB1,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P06169;Q07471,PDC1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P17967,PDI1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53860;P38907,PDR16,NA,NA,NA,NA,unassigned,No coherent co-expression pattern,blue,Upregulated during phosphorus starvation (sustained)
+P38075,PDX3,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P07267,PEP4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P18239;P18238,PET9,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P16861,PFK1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P16862,PFK2,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07274,PFY1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P12709,PGI1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00560,PGK1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P33401,PGM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P37012,PGM2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40961,PHB1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P19881,PHO13,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P17157,PHO85,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38264,PHO88,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53252,PIL1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P36775,PIM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+Q06449,PIN3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05030,PMA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P29952,PMI40,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P13586,PMR1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P33775,PMT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P31382,PMT2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P46971,PMT4,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P53184,PNC1,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q04636,POB3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,NA,NA
+P15873,POL30,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39685,POM152,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P04840,POR1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P09232,PRB1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00729,PRC1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P25375,PRD1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P22141,PRE1,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P21242,PRE10,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38624,PRE3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P30657,PRE4,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P40302,PRE5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P40303,PRE6,blue,Downregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P23724,PRE7,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P23639,PRE8,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P32264,PRO1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P54885,PRO2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32263,PRO3,NA,NA,brown,Downregulated during carbon starvation (secondary cluster),turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P53131,PRP43,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32895,PRS1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38689,PRS3,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12265,PRS5,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P06103,PRT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P34227,PRX1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P41940,PSA1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P32337,PSE1,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q12335,PST2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P39966,PTC2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P34221,PTC3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P32588,PUB1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q07807,PUF3,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,NA,NA
+P32379,PUP2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P25451,PUP3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q08647,PUS7,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P07275,PUT2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P21304,PWP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25635,PWP2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11154,PYC1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32327,PYC2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P52489,PYK2,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07257,QCR2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00128,QCR7,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38795,QNS1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P43123,QRI1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P32628,RAD23,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11938,RAP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P01120,RAS2,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P53295,RBG2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P48606,RBL2,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P53721,RCF2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38623,RCK2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q12044,RCN2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12305,RDL1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,NA,NA
+P40893,REE1,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P43621,RET2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P22336,RFA1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P38629,RFC3,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P40043,RGI1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P06780,RHO1,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q00245,RHO3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P53879,RHO5,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q99258,RIB3,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P50861,RIB4,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P32445,RIM1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+Q12189,RKI1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q03195,RLI1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11745,RNA1,unassigned,No coherent co-expression pattern,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25367,RNQ1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P09938,RNR2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P49723,RNR4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P22138,RPA135,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P10964,RPA190,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q01080,RPA49,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P08518,RPB2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07703,RPC40,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36160,RPF2,NA,NA,brown,Downregulated during carbon starvation (secondary cluster),NA,NA,NA,NA
+P38249,RPG1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P41805,RPL10,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q3E757;P0C0W9,RPL11B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX54;P0CX53,RPL12B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40212,RPL13B,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36105,RPL14A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05748,RPL15A,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P26784,RPL16A,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P26785,RPL16B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05740,RPL17A,unassigned,No coherent co-expression pattern,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P46990,RPL17B,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P0CX50;P0CX49,RPL18B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX83;P0CX82,RPL19B,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX44;P0CX43,RPL1B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX24;P0CX23,RPL20B,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q02753,RPL21A,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX42;P0CX41,RPL23B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P04449,RPL24A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P04456,RPL25,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53221,RPL26B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0C2H7;P0C2H6,RPL27B,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P02406,RPL28,turquoise,Upregulated during carbon starvation,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX46;P0CX45,RPL2B,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14126,RPL3,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14120,RPL30,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0C2H8,RPL31A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38061,RPL32,unassigned,No coherent co-expression pattern,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05744,RPL33A,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P41056,RPL33B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P87262;P40525,RPL34A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX85;P0CX84,RPL35B,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+O14455,RPL36B,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P49167,RPL38,NA,NA,brown,Downregulated during carbon starvation (secondary cluster),turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX26;P0CX25,RPL43B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P10664,RPL4A,turquoise,Upregulated during carbon starvation,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P26321,RPL5,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q02326,RPL6A,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05739,RPL6B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05737,RPL7A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P29453,RPL8B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P51401,RPL9B,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38764,RPN1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38886,RPN10,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P43588,RPN11,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32496,RPN12,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32565,RPN2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P40016,RPN3,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q12250,RPN5,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q12377,RPN6,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q06103,RPN7,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q08723,RPN8,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q04062,RPN9,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P04050,RPO21,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05317,RPP0,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P02400,RPP2B,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P46654;P32905,RPS0B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q08745;P46784,RPS10A,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX48;P0CX47,RPS11B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P48589,RPS12,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05756,RPS13,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P06367,RPS14A,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q01855,RPS15,NA,NA,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX52;P0CX51,RPS16B,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14127;P02407,RPS17B,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX56;P0CX55,RPS18B,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07281;P07280,RPS19B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P33442,RPS1A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P23248,RPS1B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25443,RPS2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38701,RPS20,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q3E754,RPS21B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q3E7Y3;P0C0W1,RPS22B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX30;P0CX29,RPS23B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX32;P0CX31,RPS24B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q3E792;P0C0T4,RPS25A,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38711;P35997,RPS27B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q3E7X9,RPS28A,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P41057,RPS29A,unassigned,No coherent co-expression pattern,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05750,RPS3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX34;P0CX33,RPS30B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05759;P0CG63,RPS31,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX36;P0CX35,RPS4B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P26783,RPS5,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX38;P0CX37,RPS6B,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P26786,RPS7A,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P48164,RPS7B,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CX40;P0CX39,RPS8B,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05755,RPS9B,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P33299,RPT1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40327,RPT2,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P33298,RPT3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53549,RPT4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P33297,RPT5,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q01939,RPT6,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12532,RQC2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q04225,RRB1,unassigned,No coherent co-expression pattern,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+Q12754,RRP12,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38792,RRP4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+Q05022,RRP5,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q07979,RSC58,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P25632,RSC6,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P43609,RSC8,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q03124,RSC9,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P39940,RSP5,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38804,RTC3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32608,RTG2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q04947,RTN1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38903,RTS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12464,RVB2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P25343,RVS161,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P39743,RVS167,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32368,SAC1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P32599,SAC6,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P39954,SAH1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P10659,SAM1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P19358,SAM2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q08985;Q04898,SAM4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P20606,SAR1,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P28707,SBA1,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P10080,SBP1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P45978,SCD6,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P21243,SCL1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P06105,SCP160,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40075,SCS2,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P53334,SCW4,NA,NA,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q00711,SDH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P21801,SDH2,turquoise,Upregulated during carbon starvation,blue,Downregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P36047,SDS22,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q04491,SEC13,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P24280,SEC14,turquoise,Upregulated during carbon starvation,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32602,SEC17,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P18759,SEC18,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32074,SEC21,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P15303,SEC23,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40482,SEC24,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P41810,SEC26,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P41811,SEC27,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40509,SEC28,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38968,SEC31,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P07560,SEC4,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P07283,SEC53,turquoise,Upregulated during carbon starvation,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P14906,SEC63,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P29478,SEC65,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11075,SEC7,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P33330,SER1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P40510,SER33,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07284,SES1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32771,SFA1,NA,NA,NA,NA,NA,NA,unassigned,No coherent co-expression pattern
+Q12314,SFM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12118,SGT2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P36136,SHB17,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P37292,SHM1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P37291,SHM2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P34223,SHP1,blue,Downregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25294,SIS1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P20604,SIT4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32790,SLA1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P33338,SLA2,NA,NA,NA,NA,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P33333,SLC1,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+Q00772,SLT2,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P39929,SNF7,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39990,SNU13,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P00445,SOD1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),turquoise,Downregulated during phosphorus starvation
+P00447,SOD2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P37262,SOL2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38858,SOL3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12074,SPE3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39986,SPF1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+Q06505,SPN1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32558,SPT16,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P27692,SPT5,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P23615,SPT6,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P25567,SRO9,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+Q02821,SRP1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38687,SRP68,unassigned,No coherent co-expression pattern,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P38688,SRP72,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P17555,SRV2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P10591,SSA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P10592,SSA2,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11484,SSB1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40150,SSB2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P0CS90,SSC1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P24276,SSD1,turquoise,Upregulated during carbon starvation,brown,Downregulated during carbon starvation (secondary cluster),brown,Transiently upregulated early in phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32589,SSE1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39926,SSO2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P38788,SSZ1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q06010,STE23,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P47154,STE24,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P32597,STH1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P15705,STI1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39015,STM1,turquoise,Upregulated during carbon starvation,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39007,STT3,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P54000,SUB1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q07478,SUB2,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P32911,SUI1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P20459,SUI2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P09064,SUI3,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P05453,SUP35,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P12385,SUP45,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q05515,SVF1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q03088,SVL3,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q04175,SXM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P25623,SYP1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P35189,TAF14,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P15019,TAL1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12466,TCB1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q03640,TCB3,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P12612,TCP1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P00360,TDH1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P00358,TDH2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P00359,TDH3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P02994,TEF1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36008,TEF4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P41895,TFG1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P17423,THR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P16120,THR4,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+P04801,THS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P10081,TIF1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38912,TIF11,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P34167,TIF3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40217,TIF34,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q04067,TIF35,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39935,TIF4631,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38431,TIF5,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P87108,TIM10,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P53299,TIM13,NA,NA,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q01852,TIM44,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q02776,TIM50,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P57744,TIM8,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+O74700,TIM9,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P23254,TKL1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P40462,TMA108,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12513,TMA17,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P35691,TMA19,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P89886,TMA20,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q3E764,TMA7,NA,NA,blue,Downregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P35180,TOM20,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P23644,TOM40,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+P07213,TOM70,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40032,TPA1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P31383,TPD3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P00942,TPI1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P17536,TPM1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40414,TPM2,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q00764,TPS1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P31688,TPS2,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38426,TPS3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P15565,TRM1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12009,TRM8,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P00899,TRP2,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P00937,TRP3,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,NA,NA
+P07285,TRP4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P00931,TRP5,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P29509,TRR1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P22217,TRX1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38427,TSL1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P09733,TUB1,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P02557,TUB2,NA,NA,NA,NA,unassigned,No coherent co-expression pattern,NA,NA
+P02992,TUF1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P16649,TUP1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36421,TYS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P22515,UBA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P38820,UBA4,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P21734,UBC1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P50101,UBP15,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q01477,UBP3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P43593,UBP6,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P17649,UGA1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P32861,UGP1,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P07259,URA2,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P03962,URA3,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P13298,URA5,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P15700,URA6,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P28274,URA7,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53254,UTP22,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38882,UTP9,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P39968,VAC8,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA,NA,NA
+P07806,VAS1,NA,NA,unassigned,No coherent co-expression pattern,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q06685,VIP1,NA,NA,turquoise,Upregulated during carbon starvation,brown,Transiently upregulated early in phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P17255,VMA1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P48836,VMA10,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,NA,NA
+P41807,VMA13,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P16140,VMA2,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P22203,VMA4,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P31412,VMA5,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P32366,VMA6,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,NA,NA
+P39111,VMA7,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32610,VMA8,turquoise,Upregulated during carbon starvation,unassigned,No coherent co-expression pattern,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P32563,VPH1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P21576,VPS1,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q07878,VPS13,NA,NA,unassigned,No coherent co-expression pattern,NA,NA,NA,NA
+P36017,VPS21,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P38759,VPS29,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P43585,VTC2,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q02725,VTC3,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P47075,VTC4,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12109,WRS1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q12363,WTM1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P22147,XRN1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P46683,YAR1,NA,NA,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation
+O43137,YBR085C-A,NA,NA,NA,NA,unassigned,No coherent co-expression pattern,brown,Transiently upregulated early in phosphorus starvation
+P32386,YBT1,blue,Downregulated during carbon starvation,NA,NA,NA,NA,unassigned,No coherent co-expression pattern
+P23292,YCK2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,unassigned,No coherent co-expression pattern
+P25349,YCP4,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P25491,YDJ1,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q07505,YDL086W,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P16521,YEF3,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P40093,YER156C,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q07451,YET3,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P43590,YFR006W,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),turquoise,Downregulated during phosphorus starvation
+P53155,YGL082W,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,blue,Upregulated during phosphorus starvation (sustained)
+P38616,YGP1,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+P53235,YGR054W,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53278,YGR130C,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P39676,YHB1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P38765,YHI9,NA,NA,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P38708,YHR020W,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53633,YIP3,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P52553,YKE2,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q86ZR7,YKL033W-A,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P36114,YKR018C,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,brown,Transiently upregulated early in phosphorus starvation
+P36015,YKT6,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P32843,YME2,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P19955,YMR31,NA,NA,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+P36010,YNK1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q3E841,YNR034W-A,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),NA,NA
+P12688,YPK1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q08971,YPL225W,NA,NA,turquoise,Upregulated during carbon starvation,NA,NA,turquoise,Downregulated during phosphorus starvation
+Q08977,YPL260W,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained)
+Q12458,YPR1,turquoise,Upregulated during carbon starvation,NA,NA,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q06523,YPR148C,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P01123,YPT1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P38555,YPT31,blue,Downregulated during carbon starvation,turquoise,Upregulated during carbon starvation,NA,NA,NA,NA
+P36018,YPT52,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P32939,YPT7,unassigned,No coherent co-expression pattern,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
+Q12159,YRA1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,brown,Transiently upregulated early in phosphorus starvation
+P41920,YRB1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+Q08245,ZEO1,NA,NA,turquoise,Upregulated during carbon starvation,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P53303,ZPR1,NA,NA,brown,Downregulated during carbon starvation (secondary cluster),turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P32527,ZUO1,NA,NA,NA,NA,turquoise,Downregulated during phosphorus starvation,turquoise,Downregulated during phosphorus starvation
+P11412,ZWF1,turquoise,Upregulated during carbon starvation,turquoise,Upregulated during carbon starvation,blue,Upregulated during phosphorus starvation (sustained),blue,Upregulated during phosphorus starvation (sustained)
