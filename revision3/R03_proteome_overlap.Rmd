@@ -3,37 +3,38 @@ title: "Cross-dataset comparison of quiescence proteome (R2.3)"
 output: html_document
 ---
 
-Reviewer 2 requested a systematic comparison of the proteins we detected and
-the proteins regulated in rim15Δ with those reported in published quiescence
-proteome studies.
+Reviewer 2 requested a systematic comparison of our starvation-regulated proteins
+with those reported in published quiescence proteome studies.
 
 **Source tables from this study:**
 
-- **Detected proteins** — `tables/supplemental/S5_normalized_protein_ratios.csv`
-  (Table S5): all proteins with at least one quantified SILAC ratio across the
-  experiment. UniProt leading accessions in the `Protein IDs` column.
-- **rim15Δ-regulated proteins** — `tables/DE_proteins_byGenotype.csv`
-  (Table S16): proteins significantly different between WT and rim15Δ
-  (q ≤ 0.05 in any nutrient × timepoint contrast); log2FC > 0 = higher in WT.
+- **Detected proteins / fold-change computation** —
+  `tables/supplemental/S5_normalized_protein_ratios.csv` (Table S5): all
+  proteins with quantified SILAC ratios. For each protein, the WT log₂ fold
+  change at 30 h vs 0 h is computed separately for carbon (C) and nitrogen (N)
+  starvation. Proteins with mean |log₂FC| > 1 across replicates (≥2-fold) are
+  called regulated, matching the Paulo et al. 2015 threshold.
 
 **Published datasets:**
 
 - **Paulo et al. 2015** (Mol Cell Proteomics 14:1998–2015,
-  `Proteome/Paulo et al., 2015/`) — label-free quant of quiescent vs
-  non-quiescent yeast (sedimentation density fractionation). Two outputs used:
-  (a) `NIHMS464126-supplement-2_si_001.xlsx` Sheet1 — all 2438 detected ORFs;
-  (b) `NIHMS464126-supplement-3_si_003.xlsx` sheet "2X or more Up in Quiescent"
-  — proteins significantly and ≥2-fold enriched in quiescent cells.
+  `Proteome/Paulo et al., 2015/`) — label-free quant of quiescent vs log-phase
+  *S. cerevisiae* (sedimentation fractionation). Three outputs used from
+  `NIHMS464126-supplement-2_si_001.xlsx` (Sheet1, all detected ORFs) and
+  `NIHMS464126-supplement-3_si_003.xlsx`:
+  (a) all detected proteins (Sheet1, 2438 ORFs);
+  (b) proteins ≥2-fold enriched in quiescent cells ("2X or more Up in Quiescent", 235 proteins);
+  (c) proteins ≥2-fold enriched in log-phase cells ("2X or more Up in LOG", 332 proteins —
+  i.e., decreasing during quiescence entry).
 - **den Ridder et al. 2023** (Biotechnol Biofuels 16, `Proteome/den Ridder et al., 2023/`)
-  — TMT-based proteome of CEN.PK113-7D and IMX372 yeast under aerobic and
-  anaerobic conditions (not a quiescence study; included for proteome coverage
-  comparison only). `mmc7.xlsx` "All proteins" — 1739 proteins (UniProt
-  accessions).
+  — TMT proteome of *S. cerevisiae* under aerobic/anaerobic conditions (not a
+  quiescence study; included for proteome coverage comparison only, `mmc7.xlsx`).
 
-Analysis plan: (1) All-protein coverage UpSet across three studies; (2) UpSet
-for quiescence-regulated proteins (this study vs Paulo 2015); (3) membership
-tables → `revision3/output/proteome_coverage.csv` (Table S25) and
-`revision3/output/proteome_regulation_overlap.csv` (Table S26).
+Analysis: (1) Detected protein coverage UpSet across three studies; (2) UpSet
+and membership table comparing starvation-regulated proteins from this study
+(C and N starvation, WT cells, T30 vs T00) with Paulo 2015 quiescent-enriched
+and log-enriched sets → `revision3/output/proteome_coverage.csv` (Table S25)
+and `revision3/output/proteome_regulation_overlap.csv` (Table S26).
 
 ```{r setup, message=FALSE}
 library(tidyverse)
@@ -49,7 +50,6 @@ dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 is_orf <- function(x) grepl("^(Y[A-P][LR]\\d{3}[WC](-[A-Z])?|Q\\d{4})$", x)
 
-# Map UniProt accessions → ORF (strips isoform suffix)
 uniprot_to_orf <- function(accessions) {
   acc <- sub("-\\d+$", "", trimws(accessions))
   todo <- unique(acc[!is.na(acc) & acc != ""])
@@ -62,7 +62,6 @@ uniprot_to_orf <- function(accessions) {
   setNames(m$ORF, m$UNIPROT)[acc]
 }
 
-# Map gene symbols → ORF
 symbol_to_orf <- function(symbols) {
   key <- toupper(trimws(symbols))
   orf <- ifelse(is_orf(key), key, NA_character_)
@@ -84,173 +83,207 @@ symbol_to_orf <- function(symbols) {
 }
 ```
 
-# This study
+# This study — detected proteins and starvation fold changes
 
 ```{r ours}
-# All detected proteins — Table S5 source
+# Table S5 source: tables/supplemental/S5_normalized_protein_ratios.csv
 s5 <- read_csv(
   file.path(repo_root, "tables/supplemental/S5_normalized_protein_ratios.csv"),
   show_col_types = FALSE)
 
-# Leading protein accession is a single UniProt ID per row in S5
+# Map to ORF — base-R rename before piping to avoid S4Vectors::rename mask
+names(s5)[names(s5) == "Protein IDs"] <- "accession"
+names(s5)[names(s5) == "Gene names"]  <- "gene"
+
 ours_detected <- s5 %>%
-  transmute(accession = `Protein IDs`,
-            gene      = `Gene names`,
-            orf       = uniprot_to_orf(accession)) %>%
+  transmute(accession, gene,
+            orf = uniprot_to_orf(accession)) %>%
   filter(!is.na(orf)) %>%
   distinct(orf, gene)
 
-cat("This study — detected proteins:", nrow(ours_detected),
-    "| mapped to ORF:", sum(!is.na(ours_detected$orf)), "\n")
+cat("This study — detected proteins:", nrow(ours_detected), "\n")
 
-# rim15Δ-regulated proteins (q ≤ 0.05 in any contrast) — Table S16 source
-de <- read_csv(
-  file.path(repo_root, "tables/DE_proteins_byGenotype.csv"),
-  show_col_types = FALSE)
+# ── Compute WT log2FC at T30 vs T00 for C and N starvation ─────────────────
+# Each cell in S5 is the normalized SILAC ratio (protein / spike-in).
+# log2(T30/T00) = log2(ratio_T30) - log2(ratio_T00), computed per replicate,
+# then averaged. Require ≥ 2 non-NA replicates at both timepoints.
+# Threshold |log2FC| > 1 (≥2-fold) matches Paulo et al. 2015.
 
-ours_regulated <- de %>%
-  filter(!is.na(qvalue), qvalue <= 0.05) %>%
-  distinct(accession = `Protein IDs`, gene = `Gene names`) %>%
-  mutate(orf = uniprot_to_orf(accession)) %>%
-  filter(!is.na(orf))
+compute_fc <- function(df, nutrient) {
+  t00_cols <- grep(sprintf("^WT_%s_T00_R", nutrient), names(df), value = TRUE)
+  t30_cols <- grep(sprintf("^WT_%s_T30_R", nutrient), names(df), value = TRUE)
+  df %>%
+    transmute(
+      accession, gene,
+      mean_t00 = rowMeans(log2(across(all_of(t00_cols))), na.rm = TRUE),
+      mean_t30 = rowMeans(log2(across(all_of(t30_cols))), na.rm = TRUE),
+      n_t00    = rowSums(!is.na(across(all_of(t00_cols)))),
+      n_t30    = rowSums(!is.na(across(all_of(t30_cols)))),
+      log2FC   = mean_t30 - mean_t00
+    ) %>%
+    filter(n_t00 >= 2, n_t30 >= 2, is.finite(log2FC)) %>%
+    mutate(
+      nutrient  = nutrient,
+      direction = case_when(
+        log2FC >  1 ~ "up",
+        log2FC < -1 ~ "down",
+        TRUE        ~ "unchanged"
+      )
+    )
+}
 
-cat("This study — rim15Δ-regulated (q≤0.05):", nrow(ours_regulated), "\n")
+fc_C <- compute_fc(s5, "C")
+fc_N <- compute_fc(s5, "N")
+
+cat("C starvation proteins with FC data:", nrow(fc_C),
+    "| up:", sum(fc_C$direction == "up"),
+    "| down:", sum(fc_C$direction == "down"), "\n")
+cat("N starvation proteins with FC data:", nrow(fc_N),
+    "| up:", sum(fc_N$direction == "up"),
+    "| down:", sum(fc_N$direction == "down"), "\n")
+
+# Regulated in at least one condition
+ours_up   <- bind_rows(
+  fc_C %>% filter(direction == "up")   %>% mutate(condition = "C"),
+  fc_N %>% filter(direction == "up")   %>% mutate(condition = "N")) %>%
+  mutate(orf = uniprot_to_orf(accession)) %>% filter(!is.na(orf)) %>%
+  distinct(orf, .keep_all = TRUE)
+
+ours_down <- bind_rows(
+  fc_C %>% filter(direction == "down") %>% mutate(condition = "C"),
+  fc_N %>% filter(direction == "down") %>% mutate(condition = "N")) %>%
+  mutate(orf = uniprot_to_orf(accession)) %>% filter(!is.na(orf)) %>%
+  distinct(orf, .keep_all = TRUE)
+
+cat("\nThis study — upregulated (≥2-fold, C or N):", nrow(ours_up), "\n")
+cat("This study — downregulated (≥2-fold, C or N):", nrow(ours_down), "\n")
 ```
 
 # Paulo et al. 2015
 
 ```{r paulo}
 # ── All detected proteins ──────────────────────────────────────────────────
-# si_001 Sheet1: header is row 9, data rows start at row 10.
-# Sections separated by comment rows (first char = '#').
-# Column 1 = ORF locus; ORF-like rows contain the protein data.
 si1_raw <- read_excel(
   file.path(pub_dir, "Proteome/Paulo et al., 2015/NIHMS464126-supplement-2_si_001.xlsx"),
-  sheet    = "Sheet1",
-  col_names = FALSE,
-  skip     = 9)    # row 10 is the first ORF row
-names(si1_raw)[1:5] <- c("locus", "fold_change", "pvalue", "gpi", "signal")
+  sheet = "Sheet1", col_names = FALSE, skip = 9)
+names(si1_raw)[1] <- "locus"
 
-paulo_detected_orfs <- si1_raw %>%
-  filter(grepl("^Y|^Q", locus, ignore.case = FALSE)) %>%
-  pull(locus) %>%
-  unique()
-cat("Paulo 2015 — all detected ORFs:", length(paulo_detected_orfs), "\n")
+paulo_detected <- si1_raw %>%
+  filter(grepl("^Y|^Q", locus)) %>%
+  transmute(orf = locus) %>%
+  filter(is_orf(orf)) %>%
+  distinct()
+cat("Paulo 2015 — all detected:", nrow(paulo_detected), "\n")
 
-paulo_detected <- tibble(orf = paulo_detected_orfs) %>%
-  filter(is_orf(orf))
-
-# ── Quiescent-enriched proteins (≥2-fold, significant) ────────────────────
-# si_003 "2X or more Up in Quiescent": Accession column = ORF
+# ── Quiescent-enriched (≥2-fold up in quiescent cells) ────────────────────
 si3_q <- read_excel(
   file.path(pub_dir, "Proteome/Paulo et al., 2015/NIHMS464126-supplement-3_si_003.xlsx"),
   sheet = "2X or more Up in Quiescent")
-
-paulo_quiescent <- si3_q %>%
+paulo_q_up <- si3_q %>%
   transmute(orf = Accession) %>%
   filter(is_orf(orf)) %>%
   distinct()
-cat("Paulo 2015 — quiescent-enriched (≥2-fold):", nrow(paulo_quiescent), "\n")
+cat("Paulo 2015 — quiescent-enriched (≥2-fold):", nrow(paulo_q_up), "\n")
+
+# ── Log-enriched (≥2-fold up in log phase = down during quiescence) ────────
+si3_log <- read_excel(
+  file.path(pub_dir, "Proteome/Paulo et al., 2015/NIHMS464126-supplement-3_si_003.xlsx"),
+  sheet = "2X or more Up in LOG")
+paulo_log_up <- si3_log %>%
+  transmute(orf = Accession) %>%
+  filter(is_orf(orf)) %>%
+  distinct()
+cat("Paulo 2015 — log-enriched (≥2-fold, i.e. decreasing in quiescence):",
+    nrow(paulo_log_up), "\n")
 ```
 
 # den Ridder et al. 2023
 
 ```{r denridder}
-# mmc7 "All proteins": Accession = UniProt ID. Not a quiescence study (aerobic
-# vs anaerobic in CEN.PK and IMX372 strains); included for proteome coverage
-# comparison only.
+# Coverage comparison only (aerobic/anaerobic conditions, not quiescence)
 dr_raw <- read_excel(
   file.path(pub_dir, "Proteome/den Ridder et al., 2023/mmc7.xlsx"),
   sheet = "All proteins")
-
 denridder_detected <- dr_raw %>%
   transmute(accession = Accession,
             orf       = uniprot_to_orf(accession)) %>%
   filter(!is.na(orf)) %>%
   distinct(orf)
-cat("den Ridder 2023 — detected proteins (UniProt→ORF):", nrow(denridder_detected),
-    "| from", nrow(dr_raw), "entries\n")
+cat("den Ridder 2023 — detected:", nrow(denridder_detected), "\n")
 ```
 
 # Coverage overlap (all detected proteins)
 
 ```{r coverage}
-# ORF-to-gene lookup across all studies (prefer our own annotation)
-orf_gene <- bind_rows(
-  ours_detected    %>% transmute(orf, gene),
-  paulo_detected   %>% mutate(gene = NA_character_),
-  denridder_detected %>% mutate(gene = NA_character_)) %>%
-  filter(!is.na(gene)) %>%
+orf_gene <- ours_detected %>% filter(!is.na(gene)) %>%
   group_by(orf) %>% dplyr::slice(1) %>% ungroup()
 
 coverage <- bind_rows(
-  ours_detected    %>% transmute(orf, dataset = "ThisStudy"),
-  paulo_detected   %>% transmute(orf, dataset = "Paulo2015"),
+  ours_detected      %>% transmute(orf, dataset = "ThisStudy"),
+  paulo_detected     %>% transmute(orf, dataset = "Paulo2015"),
   denridder_detected %>% transmute(orf, dataset = "denRidder2023")) %>%
   distinct(orf, dataset) %>%
   mutate(present = 1L) %>%
   pivot_wider(names_from = dataset, values_from = present, values_fill = 0L) %>%
-  # ensure all three columns exist even if a set is empty
-  { if (!"ThisStudy"    %in% names(.)) mutate(., ThisStudy    = 0L) else . } %>%
-  { if (!"Paulo2015"    %in% names(.)) mutate(., Paulo2015    = 0L) else . } %>%
+  { if (!"ThisStudy"     %in% names(.)) mutate(., ThisStudy     = 0L) else . } %>%
+  { if (!"Paulo2015"     %in% names(.)) mutate(., Paulo2015     = 0L) else . } %>%
   { if (!"denRidder2023" %in% names(.)) mutate(., denRidder2023 = 0L) else . } %>%
   left_join(orf_gene, by = "orf") %>%
   relocate(orf, gene) %>%
   arrange(desc(ThisStudy), desc(Paulo2015), desc(denRidder2023), orf)
 
 write_csv(coverage, file.path(out_dir, "proteome_coverage.csv"))
-cat("Coverage table written:", nrow(coverage), "unique ORFs\n")
+cat("Coverage table:", nrow(coverage), "unique ORFs\n")
 
-set_order_coverage <- c("ThisStudy", "Paulo2015", "denRidder2023")
+set_cov <- c("ThisStudy", "Paulo2015", "denRidder2023")
 pdf(file.path(out_dir, "proteome_coverage_upset.pdf"), width = 7, height = 5)
-print(upset(as.data.frame(coverage), sets = set_order_coverage,
-            keep.order = TRUE, order.by = "freq",
-            mainbar.y.label = "Proteins (ORF)",
-            sets.x.label   = "Proteins per dataset"))
+print(upset(as.data.frame(coverage), sets = set_cov, keep.order = TRUE,
+            order.by = "freq", mainbar.y.label = "Proteins (ORF)",
+            sets.x.label = "Proteins per dataset"))
 dev.off()
-
-# Print to notebook
-upset(as.data.frame(coverage), sets = set_order_coverage,
-      keep.order = TRUE, order.by = "freq",
-      mainbar.y.label = "Proteins (ORF)")
+upset(as.data.frame(coverage), sets = set_cov, keep.order = TRUE,
+      order.by = "freq", mainbar.y.label = "Proteins (ORF)")
 ```
 
-# Quiescence-regulation overlap
+# Starvation-regulation overlap (this study vs Paulo 2015)
 
 ```{r regulation}
-# Compare rim15Δ-regulated proteins (this study) with quiescent-enriched
-# proteins from Paulo 2015. den Ridder is excluded here (no quiescence
-# condition in that study).
+# Four sets (all ORF-harmonized):
+#   ThisStudy_up   = proteins ≥2-fold upregulated in WT at T30 vs T00 (C or N)
+#   ThisStudy_down = proteins ≥2-fold downregulated in WT at T30 vs T00 (C or N)
+#   Paulo_q_up     = proteins ≥2-fold enriched in quiescent cells (Paulo 2015)
+#   Paulo_log_up   = proteins ≥2-fold enriched in log-phase cells (Paulo 2015)
+#                    = proteins that decrease during quiescence in Paulo's study
+
 regulation <- bind_rows(
-  ours_regulated   %>% transmute(orf, gene, dataset = "ThisStudy_rim15reg"),
-  paulo_quiescent  %>% transmute(orf, gene = NA_character_, dataset = "Paulo2015_qsnt")) %>%
+  ours_up        %>% transmute(orf, dataset = "ThisStudy_up"),
+  ours_down      %>% transmute(orf, dataset = "ThisStudy_down"),
+  paulo_q_up     %>% transmute(orf, dataset = "Paulo_q_up"),
+  paulo_log_up   %>% transmute(orf, dataset = "Paulo_log_up")) %>%
   distinct(orf, dataset) %>%
   mutate(present = 1L) %>%
   pivot_wider(names_from = dataset, values_from = present, values_fill = 0L) %>%
-  { if (!"ThisStudy_rim15reg" %in% names(.)) mutate(., ThisStudy_rim15reg = 0L) else . } %>%
-  { if (!"Paulo2015_qsnt"    %in% names(.)) mutate(., Paulo2015_qsnt    = 0L) else . } %>%
+  { if (!"ThisStudy_up"   %in% names(.)) mutate(., ThisStudy_up   = 0L) else . } %>%
+  { if (!"ThisStudy_down" %in% names(.)) mutate(., ThisStudy_down = 0L) else . } %>%
+  { if (!"Paulo_q_up"     %in% names(.)) mutate(., Paulo_q_up     = 0L) else . } %>%
+  { if (!"Paulo_log_up"   %in% names(.)) mutate(., Paulo_log_up   = 0L) else . } %>%
   left_join(orf_gene, by = "orf") %>%
   relocate(orf, gene) %>%
-  mutate(category = case_when(
-    ThisStudy_rim15reg == 1 & Paulo2015_qsnt == 1 ~ "shared",
-    ThisStudy_rim15reg == 1                        ~ "novel_this_study",
-    TRUE                                           ~ "paulo_only")) %>%
-  arrange(desc(ThisStudy_rim15reg), desc(Paulo2015_qsnt), orf)
+  arrange(desc(ThisStudy_up), desc(ThisStudy_down),
+          desc(Paulo_q_up), desc(Paulo_log_up), orf)
 
 write_csv(regulation, file.path(out_dir, "proteome_regulation_overlap.csv"))
-cat("Regulation overlap table written:", nrow(regulation), "unique ORFs\n")
+cat("Regulation table:", nrow(regulation), "unique ORFs\n")
 
-set_order_reg <- c("ThisStudy_rim15reg", "Paulo2015_qsnt")
-pdf(file.path(out_dir, "proteome_regulation_upset.pdf"), width = 6, height = 5)
-print(upset(as.data.frame(regulation), sets = set_order_reg,
-            keep.order = TRUE, order.by = "freq",
+set_reg <- c("ThisStudy_up", "ThisStudy_down", "Paulo_q_up", "Paulo_log_up")
+pdf(file.path(out_dir, "proteome_regulation_upset.pdf"), width = 8, height = 5)
+print(upset(as.data.frame(regulation), sets = set_reg, keep.order = TRUE,
+            order.by = "freq",
             mainbar.y.label = "Proteins (ORF)",
             sets.x.label   = "Proteins per set"))
 dev.off()
-
-upset(as.data.frame(regulation), sets = set_order_reg,
-      keep.order = TRUE, order.by = "freq",
-      mainbar.y.label = "Proteins (ORF)")
+upset(as.data.frame(regulation), sets = set_reg, keep.order = TRUE,
+      order.by = "freq", mainbar.y.label = "Proteins (ORF)")
 ```
 
 # Headline numbers
@@ -260,35 +293,40 @@ cat("=== Coverage ===\n")
 cat("This study detected:", sum(coverage$ThisStudy), "\n")
 cat("Paulo 2015 detected:", sum(coverage$Paulo2015), "\n")
 cat("den Ridder 2023 detected:", sum(coverage$denRidder2023), "\n")
-cat("All three studies:", sum(coverage$ThisStudy & coverage$Paulo2015 & coverage$denRidder2023), "\n")
-cat("ThisStudy ∩ Paulo2015:", sum(coverage$ThisStudy & coverage$Paulo2015), "\n")
-cat("ThisStudy ∩ denRidder2023:", sum(coverage$ThisStudy & coverage$denRidder2023), "\n")
+cat("This study ∩ Paulo2015:", sum(coverage$ThisStudy & coverage$Paulo2015), "\n")
+cat("This study ∩ denRidder2023:", sum(coverage$ThisStudy & coverage$denRidder2023), "\n")
+cat("All three:", sum(coverage$ThisStudy & coverage$Paulo2015 & coverage$denRidder2023), "\n")
 
-cat("\n=== Quiescence-regulation overlap ===\n")
-cat("ThisStudy rim15Δ-regulated:", sum(regulation$ThisStudy_rim15reg), "\n")
-cat("Paulo2015 quiescent-enriched:", sum(regulation$Paulo2015_qsnt), "\n")
-cat("Shared:", sum(regulation$category == "shared"), "\n")
-cat("Fraction of our regulated proteins in Paulo quiescent set:",
-    round(sum(regulation$category == "shared") / sum(regulation$ThisStudy_rim15reg), 3), "\n")
+cat("\n=== Starvation regulation overlap (vs Paulo 2015) ===\n")
+cat("This study upregulated (C or N, ≥2-fold at T30):", sum(regulation$ThisStudy_up), "\n")
+cat("This study downregulated (C or N, ≥2-fold at T30):", sum(regulation$ThisStudy_down), "\n")
+cat("Paulo quiescent-enriched:", sum(regulation$Paulo_q_up), "\n")
+cat("Paulo log-enriched (down in quiescence):", sum(regulation$Paulo_log_up), "\n")
 
-# Top shared proteins — rename space-containing columns via base R before piping
-# (S4Vectors::rename, loaded by AnnotationDbi, does not support backtick-quoted names)
-cat("\nTop shared proteins (both rim15Δ-regulated and Paulo quiescent-enriched):\n")
-de_slim <- de %>%
-  distinct(`Protein IDs`, `Gene names`, log2FC, qvalue) %>%
-  group_by(`Protein IDs`) %>%
-  slice_min(qvalue, n = 1) %>%
-  ungroup()
-names(de_slim)[names(de_slim) == "Protein IDs"] <- "accession"
-names(de_slim)[names(de_slim) == "Gene names"]  <- "gene_de"
+cat("\nUpregulated overlap (ThisStudy_up ∩ Paulo_q_up):",
+    sum(regulation$ThisStudy_up & regulation$Paulo_q_up), "\n")
+cat("Downregulated overlap (ThisStudy_down ∩ Paulo_log_up):",
+    sum(regulation$ThisStudy_down & regulation$Paulo_log_up), "\n")
+cat("Agreement fraction — up:",
+    round(sum(regulation$ThisStudy_up & regulation$Paulo_q_up) /
+            sum(regulation$ThisStudy_up), 3), "\n")
+cat("Agreement fraction — down:",
+    round(sum(regulation$ThisStudy_down & regulation$Paulo_log_up) /
+            sum(regulation$ThisStudy_down), 3), "\n")
 
-regulation %>%
-  filter(category == "shared") %>%
-  left_join(de_slim, by = c("orf" = "accession")) %>%
-  arrange(qvalue) %>%
-  dplyr::select(orf, gene, log2FC, qvalue) %>%
-  head(20) %>%
-  print(n = 20)
+cat("\nTop upregulated proteins shared with Paulo quiescent-enriched set:\n")
+up_shared <- regulation %>%
+  filter(ThisStudy_up == 1, Paulo_q_up == 1) %>%
+  left_join(fc_C %>% mutate(orf = uniprot_to_orf(accession)) %>%
+              filter(!is.na(orf)) %>%
+              transmute(orf, log2FC_C = log2FC),
+            by = "orf") %>%
+  left_join(fc_N %>% mutate(orf = uniprot_to_orf(accession)) %>%
+              filter(!is.na(orf)) %>%
+              transmute(orf, log2FC_N = log2FC),
+            by = "orf") %>%
+  arrange(desc(coalesce(log2FC_C, log2FC_N)))
+print(up_shared %>% dplyr::select(orf, gene, log2FC_C, log2FC_N), n = 20)
 ```
 
 ```{r session}
