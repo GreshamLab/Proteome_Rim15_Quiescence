@@ -207,12 +207,73 @@ upset(as.data.frame(regulation), sets = set_reg, keep.order = TRUE,
       order.by = "freq", mainbar.y.label = "Proteins")
 ```
 
+# Statistical tests (Fisher's exact / hypergeometric)
+
+```{r statistics}
+# Universe for all tests = proteins with T30/T00 fold-change data in our
+# C starvation WT data (fc_C). These are the proteins that could potentially
+# be called regulated in our study; Paulo set sizes are conditioned on
+# those proteins overlapping our detectable universe.
+
+N <- nrow(fc_C)   # total testable proteins in our study
+
+# Helper: run Fisher's exact test and return a tidy summary.
+# Contingency table:
+#   [ a  b ]   a = in both sets
+#   [ c  d ]   b = in set2 only
+#              c = in set1 only
+#              d = in neither
+fisher_overlap <- function(set1_orfs, set2_orfs, universe_orfs, label) {
+  a <- sum(universe_orfs %in% set1_orfs & universe_orfs %in% set2_orfs)
+  b <- sum(!universe_orfs %in% set1_orfs & universe_orfs %in% set2_orfs)
+  c <- sum(universe_orfs %in% set1_orfs & !universe_orfs %in% set2_orfs)
+  d <- sum(!universe_orfs %in% set1_orfs & !universe_orfs %in% set2_orfs)
+  ft <- fisher.test(matrix(c(a, c, b, d), nrow = 2), alternative = "greater")
+  tibble(comparison = label,
+         n_set1 = a + c, n_set2 = a + b, n_overlap = a, N = N,
+         odds_ratio = ft$estimate, p_value = ft$p.value)
+}
+
+universe <- fc_C$orf   # all proteins with quantifiable FC in our C starvation data
+
+tests <- bind_rows(
+  fisher_overlap(ours_up$orf,   paulo_q_up$orf,   universe,
+                 "ThisStudy_up vs Paulo_q_up (both increase in quiescence)"),
+  fisher_overlap(ours_down$orf, paulo_log_up$orf, universe,
+                 "ThisStudy_down vs Paulo_log_up (both decrease in quiescence)")
+)
+
+print(tests)
+
+# Coverage test: is the detection overlap greater than expected?
+# Universe = union of both studies (total unique ORFs detected)
+N_cov <- nrow(coverage)
+ft_cov <- fisher.test(
+  matrix(c(n_overlap,
+           n_paulo_only,
+           n_ours_only,
+           N_cov - n_overlap - n_paulo_only - n_ours_only),
+         nrow = 2),
+  alternative = "greater")
+cat(sprintf("\nCoverage overlap Fisher test: OR=%.1f, p=%s\n",
+            ft_cov$estimate,
+            formatC(ft_cov$p.value, format = "e", digits = 2)))
+```
+
 # Summary paragraph
 
 ```{r paragraph, results='asis'}
 pct_cov  <- round(100 * n_overlap / n_ours)
 pct_up   <- round(100 * n_up_shared   / sum(regulation$ThisStudy_up))
 pct_down <- round(100 * n_down_shared / sum(regulation$ThisStudy_down))
+p_up     <- tests$p_value[1]
+p_down   <- tests$p_value[2]
+or_up    <- round(tests$odds_ratio[1], 1)
+or_down  <- round(tests$odds_ratio[2], 1)
+
+fmt_p <- function(p) {
+  if (p < 0.001) formatC(p, format = "e", digits = 1) else round(p, 3)
+}
 
 cat(sprintf(
 "To evaluate the comprehensiveness of our proteome, we compared the proteins
@@ -222,17 +283,21 @@ detected in our carbon-starvation time course with those reported by Paulo et al
 carbon starvation, %d (%d%%) were also detected by Paulo et al. (2015), who
 identified %d proteins in total. The %d proteins detected only by Paulo et al.
 likely reflect the greater depth of label-free quantification relative to
-SILAC-based approaches. Among proteins regulated during carbon starvation in
-our study (≥2-fold change at 30 h relative to 0 h in WT), %d of %d proteins
-that increased in abundance (%d%%) were also enriched in quiescent cells by
-Paulo et al. (2015), and %d of %d proteins that decreased (%d%%) were enriched
-in log-phase cells by Paulo et al. (2015). Together, these results indicate
-that our approach detects a representative subset of the quiescence proteome
-and that the direction of starvation-induced changes is broadly consistent
-with an independent characterisation of quiescent yeast.",
+SILAC-based approaches. To determine whether the proteins regulated during
+carbon starvation in our study are consistent with those characterised as
+quiescence-specific by Paulo et al. (2015), we applied Fisher's exact test.
+Of proteins that increased ≥2-fold in abundance at 30 h in our study, %d of %d
+(%d%%) were also enriched in quiescent cells by Paulo et al. (2015)
+(OR = %.1f, p = %s). Similarly, %d of %d proteins that decreased ≥2-fold
+(%d%%) were enriched in log-phase cells by Paulo et al. (2015) — i.e., they
+decrease during quiescence entry in both studies (OR = %.1f, p = %s).
+Together, these results demonstrate that our approach detects a representative
+subset of the quiescence proteome and that starvation-induced abundance changes
+are directionally consistent with an independent characterisation of quiescent
+yeast.",
   n_ours, n_overlap, pct_cov, n_paulo, n_paulo_only,
-  n_up_shared,   sum(regulation$ThisStudy_up),   pct_up,
-  n_down_shared, sum(regulation$ThisStudy_down), pct_down))
+  n_up_shared,   sum(regulation$ThisStudy_up),   pct_up,   or_up,   fmt_p(p_up),
+  n_down_shared, sum(regulation$ThisStudy_down), pct_down, or_down, fmt_p(p_down)))
 ```
 
 ```{r session}
