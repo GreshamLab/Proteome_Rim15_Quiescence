@@ -40,8 +40,13 @@ name; *Protein names* — full UniProt protein name; *genotype* — strain
 (C = carbon, P = phosphorus; note that nitrogen starvation was not profiled
 by phosphoproteomics); *timepoint_h* — timepoint in hours (0, 6, 16, 30);
 *replicate* — biological replicate (R1, R2, R3); *normalized_ratio* —
-normalized SILAC ratio relative to the common mid-log spike-in reference.
-242,688 rows total.
+MaxQuant-normalized SILAC ratio of the phosphopeptide relative to the common
+mid-log spike-in reference (WT or rim15KO channel / spike-in). This ratio
+reflects phosphopeptide abundance and is **not** corrected for changes in total
+protein abundance; it therefore conflates changes in phosphorylation
+stoichiometry with changes in protein level. To isolate occupancy changes,
+subtract the corresponding protein log2FC (Table S16) from the phosphosite
+log2FC. 242,688 rows total.
 
 ---
 
@@ -230,7 +235,7 @@ quantification data type. Columns: *Protein IDs* — UniProt accession(s);
 is excluded); *data* — quantification type used (intensity, normed_intensity,
 normed_ratio, ratio); *pvalue* — nominal p-value; *qvalue* —
 Benjamini–Hochberg FDR-corrected q-value; *meanDF* — mean degrees of freedom
-across tests; *log2FC* — log2 fold change between nutrient conditions.
+across tests; *log2FC* — log2 fold change (carbon / phosphorus), i.e. log₂[mean(C) / mean(P)]; positive values indicate higher abundance in carbon starvation.
 
 ---
 
@@ -241,7 +246,10 @@ Fig. 3B–C. Columns: *network* — network identifier (C_WT, C_rim15, P_WT,
 P_rim15); *nutrient* — starvation condition (C, P); *genotype* — strain (WT,
 rim15 = *rim15Δ*); *timepoint_h* — timepoint in hours (0, 6, 16, 30);
 *replicate* — biological replicate (R1, R2, R3); *module* — color-coded
-module label; *eigengene* — module eigengene value for this sample (positive
+module label (arbitrary WGCNA color identifier; same color in different
+networks reflects different biology); *module_description* — plain-language
+summary of the module's eigengene trajectory (e.g. "Upregulated during carbon
+starvation"); *eigengene* — module eigengene value for this sample (positive
 values indicate above-average module expression).
 
 ---
