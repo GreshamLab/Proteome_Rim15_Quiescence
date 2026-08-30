@@ -132,9 +132,10 @@ UniProt accession(s); *comparison* — experimental pairing
 (ProtoWT_H_vs_AuxoWT_H = prototrophic WT grown in heavy medium vs.
 auxotrophic WT grown in heavy medium; ProtoWT_M_vs_AuxoWT_M = same comparison
 in medium-isotope channel; ProtoWT_H_vs_rim15_M = prototrophic WT heavy
-channel vs. *rim15Δ* medium channel); *normalized_ratio_mean* — mean
-normalized SILAC ratio across replicates; *normalized_ratio_rep1*,
-*normalized_ratio_rep2* — per-replicate normalized ratios.
+channel vs. *rim15Δ* medium channel); *normalized_ratio* — MaxQuant normalized
+SILAC ratio computed across all peptide-level evidence from both experimental
+runs simultaneously (peptide-median approach); more robust than per-replicate
+ratios and is the value used in the figures.
 
 ---
 
