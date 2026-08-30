@@ -1,0 +1,85 @@
+func_class,subloc,samplingTime,mean_log2fc,sem_log2fc,n_proteins,time_h
+Carriers,IMS/IM,T00,0.981,0.082,3,0
+Carriers,Matrix/IM,T00,1.023,0.236,3,0
+Carriers,Unassigned,T00,0.948,0.063,5,0
+Carriers,IMS/IM,T06,3.922,0.154,2,6
+Carriers,Matrix/IM,T06,2.008,0.154,2,6
+Carriers,Unassigned,T06,1.665,0.255,4,6
+Carriers,IMS/IM,T16,7.639,1.016,2,16
+Carriers,Matrix/IM,T16,3.502,0.45,2,16
+Carriers,Unassigned,T16,2.418,0.646,4,16
+Carriers,IMS/IM,T30,6.9,0.912,2,30
+Carriers,Matrix/IM,T30,3.292,0.422,2,30
+Carriers,Unassigned,T30,2.225,0.652,4,30
+MICOS,IMS/IM,T00,1.005,0.041,7,0
+MICOS,Matrix/IM,T00,0.984,0.023,4,0
+MICOS,Unassigned,T00,0.91,0.045,6,0
+MICOS,IMS/IM,T06,1.491,0.156,6,6
+MICOS,Matrix/IM,T06,1.547,0.16,4,6
+MICOS,Unassigned,T06,1.215,0.075,5,6
+MICOS,IMS/IM,T16,1.741,0.452,5,16
+MICOS,Matrix/IM,T16,1.766,0.29,4,16
+MICOS,Unassigned,T16,1.59,0.175,5,16
+MICOS,IMS/IM,T30,2.013,0.237,5,30
+MICOS,Matrix/IM,T30,1.774,0.33,4,30
+MICOS,Unassigned,T30,1.513,0.206,5,30
+Mitoribosome,Matrix/IM,T00,0.934,0.024,23,0
+Mitoribosome,Unassigned,T00,0.882,0.016,6,0
+Mitoribosome,Matrix/IM,T06,1.138,0.048,19,6
+Mitoribosome,Unassigned,T06,1.315,0.138,2,6
+Mitoribosome,Matrix/IM,T16,1.151,0.104,11,16
+Mitoribosome,Unassigned,T16,1.16,NA,1,16
+Mitoribosome,Matrix/IM,T30,1.128,0.076,9,30
+Mitoribosome,Unassigned,T30,1.096,0.136,2,30
+OXPHOS,IMS/IM,T00,0.939,NA,1,0
+OXPHOS,Matrix/IM,T00,0.949,NA,1,0
+OXPHOS,Unassigned,T00,0.955,0.035,7,0
+OXPHOS,IMS/IM,T06,1.743,NA,1,6
+OXPHOS,Matrix/IM,T06,2.281,NA,1,6
+OXPHOS,Unassigned,T06,1.999,0.175,5,6
+OXPHOS,IMS/IM,T16,2.423,NA,1,16
+OXPHOS,Matrix/IM,T16,3.626,NA,1,16
+OXPHOS,Unassigned,T16,2.314,0.312,6,16
+OXPHOS,IMS/IM,T30,2.055,NA,1,30
+OXPHOS,Matrix/IM,T30,3.922,NA,1,30
+OXPHOS,Unassigned,T30,2.599,0.521,4,30
+Other mito,IMS/IM,T00,0.976,0.014,49,0
+Other mito,Matrix/IM,T00,0.99,0.013,69,0
+Other mito,OM,T00,0.971,0.017,21,0
+Other mito,Unassigned,T00,0.981,0.008,132,0
+Other mito,IMS/IM,T06,1.878,0.37,41,6
+Other mito,Matrix/IM,T06,1.287,0.097,59,6
+Other mito,OM,T06,1.231,0.092,19,6
+Other mito,Unassigned,T06,1.441,0.079,114,6
+Other mito,IMS/IM,T16,2.6,0.681,35,16
+Other mito,Matrix/IM,T16,1.465,0.17,48,16
+Other mito,OM,T16,1.476,0.175,15,16
+Other mito,Unassigned,T16,1.948,0.191,107,16
+Other mito,IMS/IM,T30,2.567,0.63,34,30
+Other mito,Matrix/IM,T30,1.205,0.104,49,30
+Other mito,OM,T30,1.412,0.153,18,30
+Other mito,Unassigned,T30,1.887,0.177,98,30
+TCA,Matrix/IM,T00,0.9,0.035,2,0
+TCA,Unassigned,T00,0.934,0.026,14,0
+TCA,Matrix/IM,T06,4.541,0.509,2,6
+TCA,Unassigned,T06,1.57,0.16,13,6
+TCA,Matrix/IM,T16,7.372,1.691,2,16
+TCA,Unassigned,T16,2.439,0.258,13,16
+TCA,Matrix/IM,T30,5.074,0.201,2,30
+TCA,Unassigned,T30,2.384,0.296,13,30
+TIM/TOM,IMS/IM,T00,0.951,0.013,5,0
+TIM/TOM,Matrix/IM,T00,0.964,0.008,2,0
+TIM/TOM,OM,T00,0.901,0.01,4,0
+TIM/TOM,Unassigned,T00,0.787,0.242,2,0
+TIM/TOM,IMS/IM,T06,1.192,0.031,5,6
+TIM/TOM,Matrix/IM,T06,1.103,0.026,2,6
+TIM/TOM,OM,T06,1.003,0.077,4,6
+TIM/TOM,Unassigned,T06,1.454,0.915,2,6
+TIM/TOM,IMS/IM,T16,1.19,0.038,5,16
+TIM/TOM,Matrix/IM,T16,1.102,0.132,2,16
+TIM/TOM,OM,T16,0.95,0.1,4,16
+TIM/TOM,Unassigned,T16,3.884,NA,1,16
+TIM/TOM,IMS/IM,T30,1.156,0.065,5,30
+TIM/TOM,Matrix/IM,T30,1.201,NA,1,30
+TIM/TOM,OM,T30,1.61,0.675,4,30
+TIM/TOM,Unassigned,T30,3.14,NA,1,30

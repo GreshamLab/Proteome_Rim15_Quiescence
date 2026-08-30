@@ -7,23 +7,23 @@ Both reviewers asked for a quantitative overlap of our Rim15-dependent
 phosphosites with published Rim15 / PP2A-Cdc55 / quiescence phosphoproteomes:
 an UpSet plot (plus optional 3-set Venn) and a supplementary membership table.
 
-Datasets (supplement files in `data/published/`, kept locally / gitignored;
-sources listed in `data/published/README.md`):
+Datasets (supplement files in `data/Publications for comparative analysis/`, kept
+locally / gitignored; sources listed in `data/Publications for comparative analysis/README.md`):
 
 - **This study** — significant sites from `tables/DE_pSites_byGenotype.csv`
   (q <= 0.05 in any nutrient x time contrast); residue letter and leading
   UniProt accession recovered from `data/Phospho (STY)Sites.csv`.
-- **Li et al. 2019** (`li2019/mmc5.xlsx`, "Phospho Regulation Network") —
+- **Li et al. 2019** (`Phosphoproteome/li2019/mmc5.xlsx`, "Phospho Regulation Network") —
   phosphosites regulated in the rim15 deletion strain; multi-site keys
   (e.g. `POL12_pT153pS168`) are exploded into individual residues.
-- **Dokladal et al. 2021** (`dokladal2021/mmc3.xlsx`, "Exclusive") — high
+- **Dokladal et al. 2021** (`Phosphoproteome/dokladal2021/mmc3.xlsx`, "Exclusive") — high
   confidence Rim15 target sites (rim15∆ block, columns 24-29); residue letter
   taken from the center of the 15-mer sequence motif.
-- **Baro et al. 2018** (`baro2018/Additional file 3.xlsx`) — hyperphosphorylated
+- **Baro et al. 2018** (`Phosphoproteome/baro2018/Additional file 3.xlsx`) — hyperphosphorylated
   peptides of putative PP2A-Cdc55 regulated proteins; exact positions parsed
   from the Modifications column (e.g. `S9(Phospho)`), mapped to absolute
   coordinates by locating the peptide in the UniProt protein sequence.
-- **Plank et al. (Cdc55-AID)** (`plank2020/pmic13349-sup-0002-tables1.xlsx`) —
+- **Plank et al. (Cdc55-AID)** (`Phosphoproteome/plank2020/pmic13349-sup-0002-tables1.xlsx`) —
   acute Cdc55 depletion (auxin vs mock). Two caveats. (a) At the study's own
   FDR threshold essentially nothing is significant (min pAdj = 0.0496, their
   `below0.05FDR` flag is FALSE for every peptide) — 10 min of Cdc55 depletion
@@ -52,7 +52,7 @@ used different reference proteomes; Igo1 S64 is checked by hand below):
    Discussion rewrite and the response letter.
 
 Peptide-to-protein mapping uses the UniProt reference proteome UP000002311
-(`data/published/UP000002311_559292.fasta`, downloaded 2026-08-24).
+(`data/Publications for comparative analysis/UP000002311_559292.fasta`, downloaded 2026-08-24).
 
 ```{r setup, message=FALSE}
 library(tidyverse)
@@ -62,7 +62,9 @@ library(Biostrings)
 library(org.Sc.sgd.db)
 library(UpSetR)
 
-dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+repo_root <- "/Users/david/Projects/Proteome_Rim15_Quiescence"
+out_dir   <- file.path(repo_root, "revision3/output")
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 # ORF-shaped identifiers (Y-ORFs incl. dubious suffixes, Q-ORFs) pass through
 is_orf <- function(x) grepl("^(Y[A-P][LR]\\d{3}[WC](-[A-Z])?|Q\\d{4})$", x)
@@ -104,7 +106,8 @@ site_key <- function(orf, aa, pos) paste0(orf, "_", aa, pos)
 ```
 
 ```{r fasta}
-proteome <- readAAStringSet("./data/published/UP000002311_559292.fasta")
+pub_dir <- file.path(repo_root, "data/Publications for comparative analysis")
+proteome <- readAAStringSet(file.path(pub_dir, "UP000002311_559292.fasta"))
 # index by accession (header: sp|P17065|SEC2_YEAST ...)
 names(proteome) <- sub("^..\\|([^|]+)\\|.*$", "\\1", names(proteome))
 proteome_chr <- setNames(as.character(proteome), names(proteome))
@@ -125,13 +128,13 @@ locate_peptide <- function(peptide, accession) {
 # This study
 
 ```{r ours}
-de <- read_csv("./tables/DE_pSites_byGenotype.csv", show_col_types = FALSE)
+de <- read_csv(file.path(repo_root, "tables/DE_pSites_byGenotype.csv"), show_col_types = FALSE)
 ours_sig <- de %>%
   filter(!is.na(qvalue), qvalue <= 0.05) %>%
   distinct(gene = `Gene names`, pSite, leading = `Leading proteins`)
 
 # Residue letter + leading accession from the MaxQuant site table.
-sty <- fread("./data/Phospho (STY)Sites.csv",
+sty <- fread(file.path(repo_root, "data/Phospho (STY)Sites.csv"),
              select = c("Protein", "Gene names", "Amino acid", "Position")) %>%
   as_tibble() %>%
   mutate(pSite = paste(`Gene names`, Position, sep = "_")) %>%
@@ -169,7 +172,7 @@ ours_sites <- ours %>%
 # Li et al. 2019
 
 ```{r li2019}
-li_raw <- read_excel("./data/published/li2019/mmc5.xlsx",
+li_raw <- read_excel(file.path(pub_dir, "Phosphoproteome/li2019/mmc5.xlsx"),
                      sheet = "Phospho Regulation Network") %>%
   setNames(c("del_gene", "psite_key", "log2fc")) %>%
   filter(grepl("rim15", del_gene, ignore.case = TRUE))
@@ -194,7 +197,7 @@ cat("Li 2019 (∆rim15 regulated): rows:", nrow(li_raw),
 
 ```{r dokladal2021}
 dok_raw <- suppressMessages(
-  read_excel("./data/published/dokladal2021/mmc3.xlsx", sheet = "Exclusive",
+  read_excel(file.path(pub_dir, "Phosphoproteome/dokladal2021/mmc3.xlsx"), sheet = "Exclusive",
              col_names = FALSE, skip = 3))
 # rim15∆ block (after skipping the 3 header rows the empty first column is
 # dropped, shifting everything left by one): col 23 = Protein, col 24 =
@@ -217,7 +220,7 @@ cat("Dokladal 2021 (Rim15 high-confidence targets): unique sites:",
 
 ```{r baro2018}
 baro_raw <- suppressMessages(
-  read_excel("./data/published/baro2018/Additional file 3.xlsx",
+  read_excel(file.path(pub_dir, "Phosphoproteome/baro2018/Additional file 3.xlsx"),
              sheet = "Hoja1", col_names = FALSE, skip = 2)) %>%
   setNames(paste0("c", seq_len(ncol(.))))
 # c1 Sequence | c2 Modifications | c7-c9 accessions (TiSH/SIMAC/TiO2) |
@@ -256,7 +259,7 @@ cat("Baro 2018 (PP2A-Cdc55 hyperphosphorylated): unique sites:",
 
 ```{r plank}
 plank_raw <- suppressWarnings(
-  read_excel("./data/published/plank2020/pmic13349-sup-0002-tables1.xlsx"))
+  read_excel(file.path(pub_dir, "Phosphoproteome/plank2020/pmic13349-sup-0002-tables1.xlsx")))
 plank_sig <- plank_raw %>%
   filter(is.na(Reverse), is.na(Potential.contaminant),
          Phospho..STY. >= 1,
@@ -323,7 +326,7 @@ site_membership <- all_sites %>%
            ThisStudy == 1                    ~ "novel_this_study",
            TRUE                              ~ "published_only")) %>%
   arrange(desc(ThisStudy), desc(n_published), orf, position)
-write_csv(site_membership, "./revision3/output/phosphosite_membership.csv")
+write_csv(site_membership, file.path(out_dir, "phosphosite_membership.csv"))
 
 # --- protein-level membership (Plank contributes all phosphoproteins) ---
 protein_sets <- bind_rows(
@@ -337,16 +340,16 @@ protein_membership <- protein_sets %>%
   relocate(orf, gene) %>%
   mutate(n_published = Li2019 + Dokladal2021 + Baro2018 + Plank_Cdc55AID) %>%
   arrange(desc(ThisStudy), desc(n_published), orf)
-write_csv(protein_membership, "./revision3/output/phosphoprotein_membership.csv")
+write_csv(protein_membership, file.path(out_dir, "phosphoprotein_membership.csv"))
 
-pdf("./revision3/output/phosphosite_overlap_upset.pdf", width = 8, height = 5)
+pdf(file.path(out_dir, "phosphosite_overlap_upset.pdf"), width = 8, height = 5)
 print(upset(as.data.frame(site_membership), sets = set_names_ordered,
             keep.order = TRUE, order.by = "freq",
             mainbar.y.label = "Exact phosphosites (ORF + residue)",
             sets.x.label = "Sites per dataset"))
 dev.off()
 
-pdf("./revision3/output/phosphoprotein_overlap_upset.pdf", width = 8, height = 5)
+pdf(file.path(out_dir, "phosphoprotein_overlap_upset.pdf"), width = 8, height = 5)
 print(upset(as.data.frame(protein_membership), sets = set_names_ordered,
             keep.order = TRUE, order.by = "freq",
             mainbar.y.label = "Phosphoproteins (ORF)",
