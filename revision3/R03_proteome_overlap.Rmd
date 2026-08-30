@@ -228,10 +228,10 @@ fisher_overlap <- function(set1_orfs, set2_orfs, universe_orfs, label) {
   b <- sum(!universe_orfs %in% set1_orfs & universe_orfs %in% set2_orfs)
   c <- sum(universe_orfs %in% set1_orfs & !universe_orfs %in% set2_orfs)
   d <- sum(!universe_orfs %in% set1_orfs & !universe_orfs %in% set2_orfs)
-  ft <- fisher.test(matrix(c(a, c, b, d), nrow = 2), alternative = "greater")
+  ct <- chisq.test(matrix(c(a, c, b, d), nrow = 2))
   tibble(comparison = label,
          n_set1 = a + c, n_set2 = a + b, n_overlap = a, N = N,
-         odds_ratio = ft$estimate, p_value = ft$p.value)
+         chi_sq = ct$statistic, p_value = ct$p.value)
 }
 
 universe <- fc_C$orf   # all proteins with quantifiable FC in our C starvation data
@@ -248,16 +248,15 @@ print(tests)
 # Coverage test: is the detection overlap greater than expected?
 # Universe = union of both studies (total unique ORFs detected)
 N_cov <- nrow(coverage)
-ft_cov <- fisher.test(
+ct_cov <- chisq.test(
   matrix(c(n_overlap,
            n_paulo_only,
            n_ours_only,
            N_cov - n_overlap - n_paulo_only - n_ours_only),
-         nrow = 2),
-  alternative = "greater")
-cat(sprintf("\nCoverage overlap Fisher test: OR=%.1f, p=%s\n",
-            ft_cov$estimate,
-            formatC(ft_cov$p.value, format = "e", digits = 2)))
+         nrow = 2))
+cat(sprintf("\nCoverage overlap chi-square test: X²=%.1f, p=%s\n",
+            ct_cov$statistic,
+            formatC(ct_cov$p.value, format = "e", digits = 2)))
 ```
 
 # Summary paragraph
@@ -266,10 +265,10 @@ cat(sprintf("\nCoverage overlap Fisher test: OR=%.1f, p=%s\n",
 pct_cov  <- round(100 * n_overlap / n_ours)
 pct_up   <- round(100 * n_up_shared   / sum(regulation$ThisStudy_up))
 pct_down <- round(100 * n_down_shared / sum(regulation$ThisStudy_down))
-p_up     <- tests$p_value[1]
-p_down   <- tests$p_value[2]
-or_up    <- round(tests$odds_ratio[1], 1)
-or_down  <- round(tests$odds_ratio[2], 1)
+p_up    <- tests$p_value[1]
+p_down  <- tests$p_value[2]
+chi_up  <- round(tests$chi_sq[1], 1)
+chi_down <- round(tests$chi_sq[2], 1)
 
 fmt_p <- function(p) {
   if (p < 0.001) formatC(p, format = "e", digits = 1) else round(p, 3)
@@ -288,16 +287,16 @@ carbon starvation in our study are consistent with those characterised as
 quiescence-specific by Paulo et al. (2015), we applied Fisher's exact test.
 Of proteins that increased ≥2-fold in abundance at 30 h in our study, %d of %d
 (%d%%) were also enriched in quiescent cells by Paulo et al. (2015)
-(OR = %.1f, p = %s). Similarly, %d of %d proteins that decreased ≥2-fold
+(χ² = %.1f, p = %s). Similarly, %d of %d proteins that decreased ≥2-fold
 (%d%%) were enriched in log-phase cells by Paulo et al. (2015) — i.e., they
-decrease during quiescence entry in both studies (OR = %.1f, p = %s).
+decrease during quiescence entry in both studies (χ² = %.1f, p = %s).
 Together, these results demonstrate that our approach detects a representative
 subset of the quiescence proteome and that starvation-induced abundance changes
 are directionally consistent with an independent characterisation of quiescent
 yeast.",
   n_ours, n_overlap, pct_cov, n_paulo, n_paulo_only,
-  n_up_shared,   sum(regulation$ThisStudy_up),   pct_up,   or_up,   fmt_p(p_up),
-  n_down_shared, sum(regulation$ThisStudy_down), pct_down, or_down, fmt_p(p_down)))
+  n_up_shared,   sum(regulation$ThisStudy_up),   pct_up,   chi_up,   fmt_p(p_up),
+  n_down_shared, sum(regulation$ThisStudy_down), pct_down, chi_down, fmt_p(p_down)))
 ```
 
 ```{r session}
