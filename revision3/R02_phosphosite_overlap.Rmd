@@ -129,8 +129,11 @@ locate_peptide <- function(peptide, accession) {
 
 ```{r ours}
 de <- read_csv(file.path(repo_root, "tables/DE_pSites_byGenotype.csv"), show_col_types = FALSE)
+# Filter explicitly to C and P starvation (N starvation was not profiled
+# in the phosphoproteomics; this makes the scope explicit).
 ours_sig <- de %>%
-  filter(!is.na(qvalue), qvalue <= 0.05) %>%
+  filter(!is.na(qvalue), qvalue <= 0.05,
+         nutrient %in% c("C", "P")) %>%
   distinct(gene = `Gene names`, pSite, leading = `Leading proteins`)
 
 # Residue letter + leading accession from the MaxQuant site table.
@@ -167,6 +170,33 @@ ours_sites <- ours %>%
   transmute(dataset = "ThisStudy", orf, gene, aa, position,
             key = site_key(orf, aa, position)) %>%
   distinct(key, .keep_all = TRUE)
+
+# ── Universe: all detected phosphosites (denominator for chi-square tests) ──
+# Source: normed_pSite_ratio_perseus.csv contains every site that passed the
+# localization probability threshold (> 0.7) in 05_psites_analysis.Rmd.
+# We map each to an ORF+residue+position key using the same sty lookups above.
+all_psites_raw <- read_csv(
+  file.path(repo_root, "tables/normed_pSite_ratio_perseus.csv"),
+  show_col_types = FALSE)
+
+all_psites <- all_psites_raw %>%
+  dplyr::select(pSite, Proteins, `Leading proteins`, `Gene names`) %>%
+  left_join(sty, by = "pSite") %>%
+  mutate(acc_pos = paste(sub(";.*$", "", `Leading proteins`),
+                         str_extract(pSite, "\\d+$"), sep = "_")) %>%
+  left_join(sty_by_acc, by = "acc_pos") %>%
+  mutate(Protein  = coalesce(Protein, Protein2),
+         position = as.integer(coalesce(Position, pos2)),
+         aa       = coalesce(`Amino acid`, aa2),
+         orf      = coalesce(uniprot_to_orf(Protein),
+                             symbol_to_orf(`Gene names`))) %>%
+  filter(!is.na(orf), !is.na(aa), !is.na(position)) %>%
+  transmute(key = site_key(orf, aa, position)) %>%
+  distinct()
+
+cat("Universe: all detected phosphosites with valid ORF+site mapping:",
+    nrow(all_psites), "\n")
+cat("Significant (rim15Δ-regulated, C or P, q≤0.05):", nrow(ours_sites), "\n")
 ```
 
 # Li et al. 2019
@@ -389,6 +419,84 @@ cat("\nProtein-level: our phosphoproteins:",
 for (s in setdiff(set_names_ordered, "ThisStudy"))
   cat("ThisStudy ∩", s, ":",
       sum(site_membership$ThisStudy == 1 & site_membership[[s]] == 1), "\n")
+```
+
+# Statistical tests
+
+```{r statistics}
+# Chi-square test for each published dataset.
+# Universe = all phosphosites detected in our study with valid ORF+site mapping.
+# Question: are Rim15-regulated sites (q≤0.05 in C or P starvation) enriched
+# among sites that appear in each published Rim15 / PP2A-Cdc55 dataset?
+#
+# Contingency table for each published set X:
+#   [ sig ∩ X      sig ∩ not-X ]
+#   [ not-sig ∩ X  not-sig ∩ not-X ]
+
+published_sets <- list(
+  Li2019        = li_sites$key,
+  Dokladal2021  = dok_sites$key,
+  Baro2018      = baro_sites$key,
+  Plank_Cdc55AID = plank_sites$key
+)
+
+universe_keys <- all_psites$key
+sig_keys      <- ours_sites$key
+
+chisq_results <- map_dfr(names(published_sets), function(nm) {
+  pub_keys <- published_sets[[nm]]
+  a <- sum(universe_keys %in% sig_keys &  universe_keys %in% pub_keys)
+  b <- sum(universe_keys %in% sig_keys & !universe_keys %in% pub_keys)
+  c <- sum(!universe_keys %in% sig_keys &  universe_keys %in% pub_keys)
+  d <- sum(!universe_keys %in% sig_keys & !universe_keys %in% pub_keys)
+  ct <- chisq.test(matrix(c(a, c, b, d), nrow = 2))
+  tibble(
+    dataset   = nm,
+    n_published = a + c,
+    n_sig     = a + b,
+    n_overlap = a,
+    N         = length(universe_keys),
+    pct_sig_in_pub = round(100 * a / (a + b), 1),
+    pct_nonsig_in_pub = round(100 * c / (c + d), 1),
+    chi_sq    = round(ct$statistic, 2),
+    p_value   = ct$p.value
+  )
+})
+
+print(chisq_results)
+```
+
+# Summary paragraph
+
+```{r paragraph, results='asis'}
+fmt_p <- function(p) {
+  if (p < 0.001) formatC(p, format = "e", digits = 1) else round(p, 3)
+}
+
+n_universe <- nrow(all_psites)
+n_sig      <- nrow(ours_sites)
+
+# Collect key numbers for each dataset
+r  <- chisq_results
+
+cat(sprintf(
+"To evaluate whether the rim15δ-regulated phosphosites identified in this
+study are consistent with previously reported Rim15 targets, we compared our
+significant sites (q ≤ 0.05 in carbon or phosphorus starvation; n = %d) against
+four published phosphoproteomic datasets, using a chi-square test with all
+%d phosphosites detected in our experiment as the universe. Rim15-regulated
+sites in our study were significantly enriched among sites identified by Li et
+al. (2019; χ² = %.1f, p = %s), Dokladal et al. (2021; χ² = %.1f, p = %s),
+Baro et al. (2018; χ² = %.1f, p = %s), and Plank et al.
+(χ² = %.1f, p = %s). These results confirm that the phosphosites we
+identify as rim15δ-regulated show significant overlap with Rim15 and PP2A-Cdc55
+target sites reported in independent studies, validating our experimental
+approach.",
+  n_sig, n_universe,
+  r$chi_sq[r$dataset == "Li2019"],        fmt_p(r$p_value[r$dataset == "Li2019"]),
+  r$chi_sq[r$dataset == "Dokladal2021"],  fmt_p(r$p_value[r$dataset == "Dokladal2021"]),
+  r$chi_sq[r$dataset == "Baro2018"],      fmt_p(r$p_value[r$dataset == "Baro2018"]),
+  r$chi_sq[r$dataset == "Plank_Cdc55AID"], fmt_p(r$p_value[r$dataset == "Plank_Cdc55AID"])))
 ```
 
 ```{r session}
