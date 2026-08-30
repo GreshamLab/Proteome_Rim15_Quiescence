@@ -271,15 +271,20 @@ cat("Shared:", sum(regulation$category == "shared"), "\n")
 cat("Fraction of our regulated proteins in Paulo quiescent set:",
     round(sum(regulation$category == "shared") / sum(regulation$ThisStudy_rim15reg), 3), "\n")
 
-# Top shared proteins
+# Top shared proteins — rename space-containing columns via base R before piping
+# (S4Vectors::rename, loaded by AnnotationDbi, does not support backtick-quoted names)
 cat("\nTop shared proteins (both rim15Δ-regulated and Paulo quiescent-enriched):\n")
+de_slim <- de %>%
+  distinct(`Protein IDs`, `Gene names`, log2FC, qvalue) %>%
+  group_by(`Protein IDs`) %>%
+  slice_min(qvalue, n = 1) %>%
+  ungroup()
+names(de_slim)[names(de_slim) == "Protein IDs"] <- "accession"
+names(de_slim)[names(de_slim) == "Gene names"]  <- "gene_de"
+
 regulation %>%
   filter(category == "shared") %>%
-  left_join(de %>% distinct(`Protein IDs`, `Gene names`, log2FC, qvalue) %>%
-              group_by(`Protein IDs`) %>%
-              slice_min(qvalue, n=1) %>% ungroup() %>%
-              rename(accession = `Protein IDs`, gene_de = `Gene names`),
-            by = c("orf" = "accession")) %>%
+  left_join(de_slim, by = c("orf" = "accession")) %>%
   arrange(qvalue) %>%
   dplyr::select(orf, gene, log2FC, qvalue) %>%
   head(20) %>%
