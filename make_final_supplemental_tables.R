@@ -33,6 +33,8 @@
 # S24  Mitochondrial protein log2FC by class                    Revision Fig R2.7
 # S25  Cross-dataset proteome coverage (3 studies)             Revision Fig R2.3
 # S26  Quiescence-regulation overlap (this study vs Paulo 2015) Revision Fig R2.3
+# S27  Proteome overlap detailed: our log2FC vs Paulo 2015 metrics  Revision R2.3
+# S28  Phosphosite overlap quantitative: our FC vs published FCs    Revision R2.5
 
 library(tidyverse)
 
@@ -194,6 +196,10 @@ copy_table("revision3/output/proteome_coverage.csv",           25,
            "Cross-dataset proteome coverage (this study, Paulo 2015, den Ridder 2023)")
 copy_table("revision3/output/proteome_regulation_overlap.csv", 26,
            "Quiescence-regulation overlap (rim15Δ-regulated vs Paulo 2015 quiescent-enriched)")
+copy_table("revision3/output/proteome_overlap_detailed.csv",     27,
+           "Proteome overlap detailed: our log2FC + Paulo 2015 ratio and p-value")
+copy_table("revision3/output/phosphosite_overlap_quantitative.csv", 28,
+           "Phosphosite overlap quantitative: our log2FC/q + Li2019 + Plank fold-changes")
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 files_written <- list.files(out_dir, pattern = "^Table S.*\\.csv$")

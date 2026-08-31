@@ -167,7 +167,7 @@ cat("This study: significant site records:", nrow(ours_sig),
 
 ours_sites <- ours %>%
   filter(!is.na(orf), !is.na(aa), !is.na(position)) %>%
-  transmute(dataset = "ThisStudy", orf, gene, aa, position,
+  transmute(dataset = "ThisStudy", orf, gene, aa, position, pSite,
             key = site_key(orf, aa, position)) %>%
   distinct(key, .keep_all = TRUE)
 
@@ -179,17 +179,23 @@ all_psites_raw <- read_csv(
   file.path(repo_root, "tables/normed_pSite_ratio_perseus.csv"),
   show_col_types = FALSE)
 
-all_psites <- all_psites_raw %>%
-  dplyr::select(pSite, Proteins, `Leading proteins`, `Gene names`) %>%
+# Rename space-containing columns via base R before joining to sty (which also
+# has a "Gene names" column); avoids .x/.y suffix collision and S4Vectors mask.
+ap <- all_psites_raw %>%
+  dplyr::select(pSite, Proteins, `Leading proteins`, `Gene names`)
+names(ap)[names(ap) == "Gene names"]      <- "gene_name"
+names(ap)[names(ap) == "Leading proteins"] <- "leading"
+
+all_psites <- ap %>%
   left_join(sty, by = "pSite") %>%
-  mutate(acc_pos = paste(sub(";.*$", "", `Leading proteins`),
-                         str_extract(pSite, "\\d+$"), sep = "_")) %>%
+  mutate(acc_pos  = paste(sub(";.*$", "", leading),
+                          str_extract(pSite, "\\d+$"), sep = "_")) %>%
   left_join(sty_by_acc, by = "acc_pos") %>%
   mutate(Protein  = coalesce(Protein, Protein2),
          position = as.integer(coalesce(Position, pos2)),
          aa       = coalesce(`Amino acid`, aa2),
          orf      = coalesce(uniprot_to_orf(Protein),
-                             symbol_to_orf(`Gene names`))) %>%
+                             symbol_to_orf(gene_name))) %>%
   filter(!is.na(orf), !is.na(aa), !is.na(position)) %>%
   transmute(key = site_key(orf, aa, position)) %>%
   distinct()
@@ -217,6 +223,7 @@ li_sites <- li_raw %>%
          orf = symbol_to_orf(gene)) %>%
   filter(!is.na(orf)) %>%
   transmute(dataset = "Li2019", orf, gene, aa, position,
+            log2fc_Li2019 = log2fc,
             key = site_key(orf, aa, position)) %>%
   distinct(key, .keep_all = TRUE)
 cat("Li 2019 (∆rim15 regulated): rows:", nrow(li_raw),
@@ -298,7 +305,9 @@ plank_sig <- plank_raw %>%
   transmute(peptide = toupper(Sequence),
             n_phos = as.integer(Phospho..STY.),
             accession = sub("^..\\|([^|]+)\\|.*$", "\\1",
-                            sub(";.*$", "", Proteins)))
+                            sub(";.*$", "", Proteins)),
+            log2fc_Plank = meanlog2_aux_to_mock,
+            pval_Plank   = pVal_aux_to_mock)
 cat("Plank Cdc55-AID: peptides nominal p<=0.05 & up on depletion:",
     nrow(plank_sig), "(NB: 1 peptide at pAdj<=0.05)\n")
 
@@ -316,6 +325,7 @@ plank_sites <- plank_pep %>%
          aa = substr(peptide, within, within)) %>%
   transmute(dataset = "Plank_Cdc55AID", orf,
             gene = NA_character_, aa, position,
+            log2fc_Plank, pval_Plank,
             key = site_key(orf, aa, position)) %>%
   distinct(key, .keep_all = TRUE)
 
@@ -464,6 +474,59 @@ chisq_results <- map_dfr(names(published_sets), function(nm) {
 })
 
 print(chisq_results)
+```
+
+# Quantitative overlap table
+
+```{r quantitative_overlap}
+# Phosphosites in our significant set (q≤0.05, C or P) that appear in ≥1
+# published dataset, with fold-change from each study side by side.
+#
+# Our metrics: best (lowest-q) contrast per site from the DE table.
+# de columns: pSite, nutrient, time, pvalue, qvalue, log2FC
+de_best <- de %>%
+  filter(!is.na(qvalue)) %>%
+  group_by(pSite) %>%
+  slice_min(qvalue, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  transmute(pSite,
+            log2FC_thisStudy = log2FC,
+            qvalue_thisStudy = qvalue,
+            nutrient_thisStudy = nutrient,
+            time_thisStudy = time)
+
+# ours_sites carries pSite; join to get our quantitative values
+ours_fc <- ours_sites %>%
+  left_join(de_best, by = "pSite")
+
+# Lookup tables: quantitative metrics from published datasets (keyed on site_key)
+li_fc_lookup    <- li_sites    %>% transmute(key, log2fc_Li2019)
+plank_fc_lookup <- plank_sites %>% transmute(key, log2fc_Plank, pval_Plank)
+
+# Build the overlap table: our sig sites ∩ ≥1 published dataset
+overlap_psites <- site_membership %>%
+  filter(ThisStudy == 1, n_published >= 1) %>%
+  left_join(ours_fc %>%
+              transmute(key, log2FC_thisStudy, qvalue_thisStudy,
+                        nutrient_thisStudy, time_thisStudy),
+            by = "key") %>%
+  left_join(li_fc_lookup,    by = "key") %>%
+  left_join(plank_fc_lookup, by = "key") %>%
+  dplyr::select(key, orf, gene, aa, position,
+                log2FC_thisStudy, qvalue_thisStudy, nutrient_thisStudy, time_thisStudy,
+                Li2019, log2fc_Li2019,
+                Dokladal2021, Baro2018,
+                Plank_Cdc55AID, log2fc_Plank, pval_Plank,
+                n_published, category) %>%
+  arrange(desc(n_published), qvalue_thisStudy)
+
+write_csv(overlap_psites, file.path(out_dir, "phosphosite_overlap_quantitative.csv"))
+cat("Quantitative overlap table:", nrow(overlap_psites),
+    "sites (ThisStudy ∩ ≥1 published dataset)\n")
+cat("  Of these, log2fc_Li2019 available for:",
+    sum(!is.na(overlap_psites$log2fc_Li2019)), "sites\n")
+cat("  log2fc_Plank available for:",
+    sum(!is.na(overlap_psites$log2fc_Plank)), "sites\n")
 ```
 
 # Summary paragraph

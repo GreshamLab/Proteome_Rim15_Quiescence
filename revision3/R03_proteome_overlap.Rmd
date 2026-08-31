@@ -187,6 +187,48 @@ regulation <- bind_rows(
 
 write_csv(regulation, file.path(out_dir, "proteome_regulation_overlap.csv"))
 
+# ── Detailed overlap table ───────────────────────────────────────────────────
+# Proteins detected in both studies, with our log2FC (T30/T00 WT C starvation)
+# alongside Paulo 2015 quantitative metrics (ANOVA p-value and normalized
+# spectral-count log2 ratio; "ratio change 1/2" is Q-dense/Log in Paulo 2015).
+paulo_q_detail <- read_excel(
+  file.path(pub_dir, "Proteome/Paulo et al., 2015/NIHMS464126-supplement-3_si_003.xlsx"),
+  sheet = "2X or more Up in Quiescent") %>%
+  filter(is_orf(Accession)) %>%
+  transmute(orf = Accession,
+            paulo_pvalue    = `anova p value`,
+            log2FC_Paulo    = as.numeric(`norm spec count log(2) ratio change 1/2`),
+            paulo_category  = "quiescent_enriched")
+
+paulo_l_detail <- read_excel(
+  file.path(pub_dir, "Proteome/Paulo et al., 2015/NIHMS464126-supplement-3_si_003.xlsx"),
+  sheet = "2X or more Up in LOG") %>%
+  filter(is_orf(Accession)) %>%
+  transmute(orf = Accession,
+            paulo_pvalue    = `anova p value`,
+            log2FC_Paulo    = as.numeric(`norm spec count log(2) ratio change 1/2`),
+            paulo_category  = "log_enriched")
+
+paulo_detail <- bind_rows(paulo_q_detail, paulo_l_detail) %>%
+  distinct(orf, .keep_all = TRUE)
+
+# All proteins detected in both studies, annotated with direction + metrics
+overlap_detailed <- fc_C %>%
+  filter(orf %in% paulo_detected$orf) %>%
+  transmute(orf, gene, log2FC_thisStudy = log2FC) %>%
+  left_join(paulo_detail, by = "orf") %>%
+  mutate(paulo_category = replace_na(paulo_category, "detected_only")) %>%
+  arrange(paulo_category, desc(abs(log2FC_thisStudy)))
+
+write_csv(overlap_detailed, file.path(out_dir, "proteome_overlap_detailed.csv"))
+cat(sprintf("Detailed overlap: %d proteins in both studies\n", nrow(overlap_detailed)))
+cat(sprintf("  quiescent_enriched: %d  |  log_enriched: %d  |  detected_only: %d\n",
+            sum(overlap_detailed$paulo_category == "quiescent_enriched"),
+            sum(overlap_detailed$paulo_category == "log_enriched"),
+            sum(overlap_detailed$paulo_category == "detected_only")))
+cat(sprintf("  Paulo log2FC (ratio change 1/2) available for: %d proteins\n",
+            sum(!is.na(overlap_detailed$log2FC_Paulo))))
+
 n_up_shared   <- sum(regulation$ThisStudy_up   & regulation$Paulo_q_up)
 n_down_shared <- sum(regulation$ThisStudy_down & regulation$Paulo_log_up)
 
@@ -257,6 +299,75 @@ ct_cov <- chisq.test(
 cat(sprintf("\nCoverage overlap chi-square test: X²=%.1f, p=%s\n",
             ct_cov$statistic,
             formatC(ct_cov$p.value, format = "e", digits = 2)))
+```
+
+# GO enrichment of doubly-regulated proteins
+
+```{r go_enrichment, message=FALSE}
+library(GO.db)
+
+# Universe = proteins detected in both this study and Paulo 2015
+universe_orfs <- overlap_detailed$orf
+
+# Doubly-regulated sets
+up_orfs   <- regulation %>% filter(ThisStudy_up == 1,   Paulo_q_up == 1)   %>% pull(orf)
+down_orfs <- regulation %>% filter(ThisStudy_down == 1, Paulo_log_up == 1) %>% pull(orf)
+
+cat("Up overlap (ThisStudy_up ∩ Paulo_q_up):",   length(up_orfs),   "proteins\n")
+cat("Down overlap (ThisStudy_down ∩ Paulo_log_up):", length(down_orfs), "proteins\n")
+cat("Universe (detected in both studies):",       length(universe_orfs), "proteins\n\n")
+
+# GO BP annotations for the universe
+go_annot <- AnnotationDbi::select(
+  org.Sc.sgd.db, keys = universe_orfs, keytype = "ORF",
+  columns = c("GO", "ONTOLOGY")) %>%
+  filter(ONTOLOGY == "BP", !is.na(GO)) %>%
+  distinct(ORF, GO)
+
+# GO term descriptions
+go_desc <- AnnotationDbi::select(
+  GO.db, keys = unique(go_annot$GO),
+  keytype = "GOID", columns = "TERM") %>%
+  distinct(GOID, TERM)
+
+# Hypergeometric enrichment: are genes in gene_set over-represented in each GO term?
+# phyper(x-1, m, N-m, k, lower.tail=FALSE):
+#   x = overlap, m = term size in universe, N = universe size, k = gene-set size
+go_hyper <- function(gene_set, universe_annot, go_desc, min_size = 3, max_size = 500) {
+  N <- length(unique(universe_annot$ORF))
+  k <- length(gene_set)
+  map_dfr(unique(universe_annot$GO), function(term) {
+    in_term <- unique(universe_annot$ORF[universe_annot$GO == term])
+    m <- length(in_term)
+    if (m < min_size || m > max_size) return(NULL)
+    x <- sum(gene_set %in% in_term)
+    if (x == 0) return(NULL)
+    p <- phyper(x - 1L, m, N - m, k, lower.tail = FALSE)
+    tibble(GO = term, n_term = m, n_overlap = x,
+           fold_enrichment = round((x / k) / (m / N), 2),
+           p_value = p)
+  }) %>%
+    left_join(go_desc, by = c("GO" = "GOID")) %>%
+    mutate(p_adj = p.adjust(p_value, method = "BH"),
+           gene_set_n = k, universe_n = N) %>%
+    filter(p_adj < 0.05) %>%
+    arrange(p_adj) %>%
+    dplyr::select(GO, TERM, n_term, n_overlap, fold_enrichment,
+                  p_value, p_adj, gene_set_n, universe_n)
+}
+
+go_up   <- go_hyper(up_orfs,   go_annot, go_desc)
+go_down <- go_hyper(down_orfs, go_annot, go_desc)
+
+cat("GO BP terms significant at p_adj < 0.05:\n")
+cat("  Up overlap:", nrow(go_up), "terms\n")
+cat("  Down overlap:", nrow(go_down), "terms\n\n")
+
+if (nrow(go_up)   > 0) { cat("--- Up ---\n");   print(go_up   %>% head(20)) }
+if (nrow(go_down) > 0) { cat("--- Down ---\n"); print(go_down %>% head(20)) }
+
+write_csv(go_up,   file.path(out_dir, "go_up_overlap.csv"))
+write_csv(go_down, file.path(out_dir, "go_down_overlap.csv"))
 ```
 
 # Summary paragraph
