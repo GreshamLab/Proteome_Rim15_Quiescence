@@ -100,7 +100,58 @@ subcomp_df %>% count(subcompartment) %>%
   mutate(subcompartment = factor(subcompartment, levels = names(subcomp_terms))) %>%
   arrange(subcompartment) %>%
   print()
+
+# Coverage per subcompartment: reference size from raw GO annotations,
+# independent of priority assignment (so a protein in Mitoribosome AND
+# Inner membrane is counted in both reference sets).
+subcomp_terms_specific <- subcomp_terms[names(subcomp_terms) != "Other mito"]
+
+subcomp_coverage <- map_dfr(names(subcomp_terms_specific), function(cat) {
+  go_terms <- subcomp_terms_specific[[cat]]
+  ref_orfs <- AnnotationDbi::select(
+    org.Sc.sgd.db, keys = go_terms, keytype = "GO",
+    columns = c("ORF", "ONTOLOGY")
+  ) %>% filter(ONTOLOGY == "CC", !is.na(ORF)) %>% pull(ORF) %>% unique()
+  det_orfs <- intersect(mito_detected, ref_orfs)
+  tibble(
+    subcompartment = cat,
+    n_reference    = length(ref_orfs),
+    n_detected     = length(det_orfs),
+    pct_coverage   = round(100 * length(det_orfs) / length(ref_orfs))
+  )
+})
+
+cat("\nSubcompartment coverage (raw GO annotations, no priority filter):\n")
+print(subcomp_coverage)
+write_csv(subcomp_coverage, file.path(out_dir, "mito_subcompartment_coverage.csv"))
+
+# Coverage bar chart
+p_cov <- ggplot(subcomp_coverage,
+                aes(x = reorder(subcompartment, pct_coverage), y = pct_coverage,
+                    fill = pct_coverage)) +
+  geom_col(alpha = 0.85) +
+  geom_text(aes(label = sprintf("%d/%d\n(%d%%)", n_detected, n_reference, pct_coverage)),
+            hjust = -0.05, size = 3) +
+  coord_flip(ylim = c(0, 60)) +
+  scale_fill_gradient(low = "#d6e4f0", high = "#2980b9", guide = "none") +
+  labs(x = NULL, y = "Coverage (%)",
+       title = "Mitochondrial subcompartment coverage",
+       subtitle = sprintf("Detected %d of %d GO:0005739 proteins (%d%% overall)",
+                          length(mito_detected), length(mito_ref_orfs),
+                          round(100 * length(mito_detected) / length(mito_ref_orfs)))) +
+  theme_bw(base_size = 11)
+p_cov
+ggsave(file.path(out_dir, "mito_subcompartment_coverage.pdf"), p_cov, width = 7, height = 4)
 ```
+
+**Figure S_coverage legend.** Bar chart showing the fraction of proteins detected in our
+SILAC experiment relative to the full reference set for each mitochondrial subcompartment.
+The reference set for each subcompartment is the number of *S. cerevisiae* proteins
+annotated to the corresponding GO Cellular Component term(s) in the SGD database
+(version accessed via org.Sc.sgd.db). Numbers within each bar indicate detected /
+reference proteins and percent coverage. Overall coverage of the mitochondrial
+proteome (GO:0005739) is also shown. "Other mito" (proteins annotated to GO:0005739
+but not to a more specific child term) is excluded from this panel.
 
 ## 3. Build working data frame
 
@@ -135,6 +186,14 @@ is experimental / log-phase heavy reference, so log2 > 0 means enriched during
 starvation relative to exponential growth.
 
 ```{r trajectories, fig.width=10, fig.height=7}
+# Build facet labels that include per-subcompartment protein counts
+n_per_subcomp <- prot_mito %>%
+  filter(nutrient == "C") %>%
+  distinct(ORF, subcompartment) %>%
+  count(subcompartment) %>%
+  mutate(label = sprintf("%s\n(n = %d proteins)", subcompartment, n))
+label_vec <- setNames(n_per_subcomp$label, n_per_subcomp$subcompartment)
+
 summ <- prot_mito %>%
   filter(nutrient == "C", !is.na(log2_ratio)) %>%
   group_by(subcompartment, genotype, time) %>%
@@ -151,7 +210,7 @@ p_traj <- ggplot(summ, aes(time, mean_log2, color = genotype, group = genotype))
                   fill = genotype), alpha = 0.15, color = NA) +
   geom_line(linewidth = 0.8) +
   geom_point(size = 2) +
-  facet_wrap(~subcompartment, nrow = 2) +
+  facet_wrap(~subcompartment, nrow = 2, labeller = as_labeller(label_vec)) +
   scale_color_manual(values = c("WT" = "#E69F00", "rim15Δ" = "#56B4E9")) +
   scale_fill_manual( values = c("WT" = "#E69F00", "rim15Δ" = "#56B4E9")) +
   labs(x = "Time (h)", y = "Mean log₂(ratio vs log-phase)",
@@ -162,6 +221,17 @@ p_traj <- ggplot(summ, aes(time, mean_log2, color = genotype, group = genotype))
 p_traj
 ggsave(file.path(out_dir, "mito_trajectories_carbon.pdf"), p_traj, width = 10, height = 7)
 ```
+
+**Figure S_traj legend.** Mean log₂(normalized SILAC ratio) of detected mitochondrial
+proteins during carbon starvation, by subcompartment. Each timepoint (0, 6, 16, 30 h)
+represents the mean across all detected proteins in the subcompartment and all three
+biological replicates; ribbon = ±1 SEM. Log₂ ratio > 0 indicates enrichment relative
+to the exponential-growth (log-phase) heavy SILAC reference; log₂ ratio = 0 (dashed
+line) indicates no change. Amber = WT; blue = *rim15Δ*. Protein counts per subcompartment
+are shown in panel headings (n = proteins detected in our experiment assigned to that
+subcompartment by GO Cellular Component annotation). Proteins are assigned to
+subcompartments by a priority hierarchy: Mitoribosome > OXPHOS complexes > Inner
+membrane > Outer membrane > Matrix > Other mito.
 
 ## 5. rim15Δ vs WT genotype difference by subcompartment
 
@@ -203,25 +273,45 @@ p_box
 ggsave(file.path(out_dir, "mito_geno_diff_by_subcomp_carbon.pdf"), p_box, width = 10, height = 5)
 ```
 
-## 6. All three conditions: is the rim15Δ elevation carbon-specific?
+**Figure S_geno legend.** Per-protein genotype difference (rim15Δ − WT) in
+log₂(normalized SILAC ratio) for detected mitochondrial proteins during carbon
+starvation, shown at 16 h and 30 h. Each data point represents a single protein
+(mean log₂ ratio across replicates for each genotype, then differenced). Box plots
+show median, interquartile range, and 1.5× IQR whiskers; individual points are
+overlaid with jitter. Values above 0 indicate higher abundance in *rim15Δ* cells
+relative to the log-phase reference; values below 0 indicate higher abundance in WT.
+Dashed line at 0 indicates equal enrichment in both genotypes. Subcompartment
+assignment and protein counts as in Figure S_traj.
 
-```{r all-nutrients, fig.width=12, fig.height=5}
+## 6. C and P starvation comparison: is the rim15Δ elevation condition-specific?
+
+```{r cp-nutrients, fig.width=10, fig.height=5}
+# Nitrogen excluded — not in Fig S2 scope; analysis matches C and P starvation only
 p_nut <- ggplot(
-  geno_diff %>% filter(time %in% c("16","30")),
+  geno_diff %>% filter(nutrient %in% c("C","P"), time %in% c("16","30")),
   aes(subcompartment, diff_log2, fill = nutrient)
 ) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
   geom_boxplot(outlier.size = 0.8, alpha = 0.8, position = position_dodge(0.8)) +
   facet_wrap(~time, nrow = 1, labeller = label_both) +
-  scale_fill_manual(values = c("C" = "#a6beff", "N" = "#90EE90", "P" = "#ff7369")) +
+  scale_fill_manual(values = c("C" = "#a6beff", "P" = "#ff7369"),
+                    labels = c("C" = "Carbon", "P" = "Phosphorus")) +
   labs(x = NULL, y = "log₂(ratio): rim15Δ − WT",
-       title = "Genotype difference by subcompartment and starvation condition",
-       fill = "Nutrient") +
+       title = "Genotype difference by subcompartment — carbon vs phosphorus starvation",
+       fill = "Starvation") +
   theme_bw(base_size = 11) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
 p_nut
-ggsave(file.path(out_dir, "mito_geno_diff_all_nutrients.pdf"), p_nut, width = 12, height = 5)
+ggsave(file.path(out_dir, "mito_geno_diff_cp_nutrients.pdf"), p_nut, width = 10, height = 5)
 ```
+
+**Figure S_cp legend.** As Figure S_geno, but comparing carbon (C, blue) and
+phosphorus (P, red) starvation conditions. Box plots show the per-protein genotype
+difference (rim15Δ − WT) at 16 h and 30 h for each subcompartment and starvation
+condition. Nitrogen starvation is excluded because it is outside the main-text
+analysis scope (not in Fig. S2). Positive values indicate higher abundance in
+*rim15Δ* relative to the log-phase reference; dashed line at 0 indicates equal
+enrichment in both genotypes.
 
 ## 7. Heatmap: individual protein log2FC in carbon starvation
 
@@ -273,6 +363,17 @@ p_heat <- ggplot(heat_long, aes(col_id, ORF, fill = mean_log2)) +
 p_heat
 ggsave(file.path(out_dir, "mito_heatmap_carbon.pdf"), p_heat, width = 11, height = 9)
 ```
+
+**Figure S_heat legend.** Heatmap of normalized SILAC ratios for all detected
+mitochondrial proteins during carbon starvation. Each row is a single protein
+(gene name shown on the y-axis, font size 5 pt); columns are genotype × timepoint
+combinations (WT 0, 6, 16, 30 h; rim15Δ 0, 6, 16, 30 h). Color represents the
+mean log₂(normalized SILAC ratio) across biological replicates at each timepoint,
+with the color scale capped at ±3 log₂ units for readability (values outside this
+range are shown at the maximum color). Blue = depleted relative to log-phase;
+amber/orange = enriched; white = no change. Rows are grouped by mitochondrial
+subcompartment (right-axis facet labels) and ordered within each subcompartment
+by WT 30 h value (most depleted at top, most enriched at bottom).
 
 ## 8. Direction summary by subcompartment (trajectory-based)
 
@@ -364,12 +465,13 @@ enrichment than WT across all subcompartments except the mitoribosome. For OXPHO
 complexes, the mean log₂(ratio) at T30 is %.2f in WT vs %.2f in rim15Δ (difference:
 +%.2f log₂); inner membrane and matrix proteins follow the same pattern.
 
-The mitoribosome (proteins of the mitochondrial ribosome) shows a strikingly
-different pattern: in WT cells, mitoribosomal proteins are depleted below the
-log-phase reference level by T30 (mean log₂ = %.2f), consistent with reduced
-mitochondrial translation in quiescent cells. In rim15Δ cells, this depletion
-does not occur (mean log₂ = %.2f), suggesting that Rim15 is specifically required
-to downregulate the mitochondrial translational apparatus during quiescence.
+The mitoribosome (proteins of the mitochondrial ribosome) shows a different
+pattern: in WT cells, the four detected mitoribosomal proteins trend below the
+log-phase reference level by T30 (mean log₂ = %.2f), while in rim15Δ cells they
+remain near or above zero (mean log₂ = %.2f). This is consistent with reduced
+mitochondrial translation in quiescent WT cells and impaired downregulation in
+rim15Δ, but we caution that mitoribosome coverage is very low (4/85 reference
+proteins, 5%%), and this pattern should not be over-interpreted.
 
 This subcompartment-level analysis resolves the contradiction. The two Discussion
 statements address different biological quantities:
