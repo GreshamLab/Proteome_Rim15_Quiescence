@@ -564,7 +564,7 @@ phosphoproteomic approach for identifying Rim15-dependent phosphorylation events
   r_dok$n_overlap, r_dok$n_sig, r_dok$chi_sq, fmt_p(r_dok$p_value),
   r_bar$n_overlap, r_bar$n_sig, r_bar$chi_sq, fmt_p(r_bar$p_value),
   r_li$n_overlap,  r_li$n_sig,  r_li$chi_sq,  fmt_p(r_li$p_value),
-  r_plk$n_overlap, r_plk$n_sig, r_plk$chi_sq, fmt_p(r_plk$p_value))))
+  r_plk$n_overlap, r_plk$n_sig, r_plk$chi_sq, fmt_p(r_plk$p_value)))
 ```
 
 ```{r session}
