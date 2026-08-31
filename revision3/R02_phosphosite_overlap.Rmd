@@ -542,24 +542,29 @@ n_sig      <- nrow(ours_sites)
 # Collect key numbers for each dataset
 r  <- chisq_results
 
+r_li  <- r[r$dataset == "Li2019",]
+r_dok <- r[r$dataset == "Dokladal2021",]
+r_bar <- r[r$dataset == "Baro2018",]
+r_plk <- r[r$dataset == "Plank_Cdc55AID",]
+
 cat(sprintf(
-"To evaluate whether the rim15δ-regulated phosphosites identified in this
+"To evaluate whether the rim15Δ-regulated phosphosites identified in this
 study are consistent with previously reported Rim15 targets, we compared our
-significant sites (q ≤ 0.05 in carbon or phosphorus starvation; n = %d) against
+significant sites (q ≤ 0.05 in carbon or phosphorus starvation; n = %d) with
 four published phosphoproteomic datasets, using a chi-square test with all
-%d phosphosites detected in our experiment as the universe. Rim15-regulated
-sites in our study were significantly enriched among sites identified by Li et
-al. (2019; χ² = %.1f, p = %s), Dokladal et al. (2021; χ² = %.1f, p = %s),
-Baro et al. (2018; χ² = %.1f, p = %s), and Plank et al.
-(χ² = %.1f, p = %s). These results confirm that the phosphosites we
-identify as rim15δ-regulated show significant overlap with Rim15 and PP2A-Cdc55
-target sites reported in independent studies, validating our experimental
-approach.",
+%d phosphosites detected in our experiment as the universe. Our sites were
+significantly enriched among those identified by Dokladal et al. (2021;
+%d/%d overlap, χ² = %.1f, p = %s) and Baro et al. (2018; %d/%d overlap,
+χ² = %.1f, p = %s). Overlap with Li et al. (2019; %d/%d sites, χ² = %.1f,
+p = %s) and Plank et al. (2020; %d/%d sites, χ² = %.1f, p = %s) was not
+statistically significant. The significant enrichment with two independent
+datasets using distinct experimental strategies supports the validity of our
+phosphoproteomic approach for identifying Rim15-dependent phosphorylation events.",
   n_sig, n_universe,
-  r$chi_sq[r$dataset == "Li2019"],        fmt_p(r$p_value[r$dataset == "Li2019"]),
-  r$chi_sq[r$dataset == "Dokladal2021"],  fmt_p(r$p_value[r$dataset == "Dokladal2021"]),
-  r$chi_sq[r$dataset == "Baro2018"],      fmt_p(r$p_value[r$dataset == "Baro2018"]),
-  r$chi_sq[r$dataset == "Plank_Cdc55AID"], fmt_p(r$p_value[r$dataset == "Plank_Cdc55AID"])))
+  r_dok$n_overlap, r_dok$n_sig, r_dok$chi_sq, fmt_p(r_dok$p_value),
+  r_bar$n_overlap, r_bar$n_sig, r_bar$chi_sq, fmt_p(r_bar$p_value),
+  r_li$n_overlap,  r_li$n_sig,  r_li$chi_sq,  fmt_p(r_li$p_value),
+  r_plk$n_overlap, r_plk$n_sig, r_plk$chi_sq, fmt_p(r_plk$p_value))))
 ```
 
 ```{r session}
