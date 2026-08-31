@@ -10,6 +10,10 @@ together. Here we run PCA on the pooled WT + rim15KO normalized SILAC ratios,
 color by genotype / nutrient / time / replicate, and check sensitivity of the
 conclusions to the suspect WT carbon replicate.
 
+Nitrogen starvation samples are excluded from this analysis because they do not
+appear in Fig S2 or the main paper figures; the combined PCA covers carbon (C)
+and phosphorus (P) starvation only, matching the scope of the per-genotype PCA.
+
 **Interpretation of the per-genotype PCA (Fig S2C).**  The existing per-genotype
 PCA is run on WT-only (or rim15KO-only) samples within each starvation condition.
 When only one genotype and one nutrient are included, the dominant axes of
@@ -33,7 +37,9 @@ ratios <- read_csv(file.path(repo_root, "tables/normed_ratio_perseus.csv"),
 ```
 
 ```{r prepare-matrix}
-sample_cols <- grep("^(WT|rim15KO)_", names(ratios), value = TRUE)
+# Nitrogen starvation is excluded: it does not appear in Fig S2 or the main
+# paper figures, so the combined PCA matches the scope of the per-genotype PCA.
+sample_cols <- grep("^(WT|rim15KO)_[CP]_", names(ratios), value = TRUE)
 
 mat <- ratios %>%
   select(`Protein IDs`, all_of(sample_cols)) %>%
@@ -165,9 +171,10 @@ ggsave(file.path(out_dir, "combined_pca_sensitivity.pdf"), p_sens, width = 6, he
 
 ```{r paragraph, results='asis'}
 # Key numbers
-pc1_pct  <- round(var_expl[1], 1)
-pc2_pct  <- round(var_expl[2], 1)
+pc1_pct    <- round(var_expl[1], 1)
+pc2_pct    <- round(var_expl[2], 1)
 n_proteins <- nrow(complete)
+n_samples  <- ncol(complete)
 mean_offset <- round(mean(offset$offset), 1)
 
 # Genotype effect size on PC2 (rim15KO - WT at late C starvation)
@@ -175,16 +182,16 @@ geno_eff <- round(abs(diff(geno_diff$PC2_mean[order(geno_diff$genotype)])), 1)
 
 cat(sprintf(
 "We performed PCA on the combined WT and rim15Δ normalized SILAC proteome
-(%d proteins with complete quantification across all 72 samples from both
-genotypes and all conditions). PC1 (%.1f%% of variance) separated starvation
-conditions, with phosphorus-starved samples at strongly positive PC1 scores
-and carbon- and nitrogen-starved samples at negative values, consistent with
-the known rewiring of phosphate-related proteome programs. PC2 (%.1f%% of
-variance) captured the genotype × time interaction during quiescence entry:
-rim15Δ cells in late carbon and nitrogen starvation (T16 and T30) diverged
+(%d proteins with complete quantification across all %d samples, spanning
+both genotypes and carbon and phosphorus starvation). PC1 (%.1f%% of variance)
+separated starvation conditions, with phosphorus-starved samples at strongly
+positive PC1 scores and carbon-starved samples at negative values, consistent
+with the distinct proteome remodeling programs of these two conditions. PC2
+(%.1f%% of variance) captured the genotype × time interaction during quiescence
+entry: rim15Δ cells in late carbon starvation (T16 and T30) diverged
 substantially from WT cells on PC2, with a mean difference of %.1f PC2 units
-between genotypes at these time points. This confirms that genotype separates
-more than replicate scatter in the combined analysis.
+between genotypes. This confirms that genotype separates more than replicate
+scatter in the combined analysis.
 
 The reviewer is correct that in the per-genotype PCA (Fig S2C), PC2 appears to
 separate replicates, particularly under carbon starvation. We can now identify
@@ -197,7 +204,7 @@ more prominent. We confirmed that excluding WT_C_R2 does not alter the overall
 PC structure or the main conclusions (sensitivity analysis, Figure SX). No
 replicates were excluded from the reported analyses; all three WT carbon replicates
 are retained in every figure and statistical test in the paper.",
-  n_proteins, pc1_pct, pc2_pct, geno_eff,
+  n_proteins, n_samples, pc1_pct, pc2_pct, geno_eff,
   abs(mean_offset),
   round(geno_eff / abs(mean_offset), 1),
   geno_eff))
