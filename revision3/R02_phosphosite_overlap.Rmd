@@ -401,10 +401,34 @@ dev.off()
 upset(as.data.frame(site_membership), sets = set_names_ordered,
       keep.order = TRUE, order.by = "freq",
       mainbar.y.label = "Exact phosphosites (ORF + residue)")
+```
+
+**Figure legend — Phosphosite-level UpSet plot.**
+UpSet plot showing the intersection of the 10 Rim15-dependent phosphosites
+common to carbon and phosphorus starvation (this study, Fig 4D; "ThisStudy")
+with four published phosphoproteomic datasets: Li et al. (2019), rim15Δ-regulated
+sites; Dokladal et al. (2021), high-confidence Rim15 substrate sites; Baro et al.
+(2018), hyperphosphorylated peptides in PP2A-Cdc55-regulated proteins; Plank et al.
+(2020), phosphosites increased upon acute Cdc55 depletion (nominal p ≤ 0.05).
+Overlap is assessed at the exact-site level (same systematic ORF, amino acid,
+and residue position). Bar heights indicate the number of sites in each
+intersection; horizontal bars show the total site count per dataset.
+
+```{r protein_upset_inline}
 upset(as.data.frame(protein_membership), sets = set_names_ordered,
       keep.order = TRUE, order.by = "freq",
       mainbar.y.label = "Phosphoproteins (ORF)")
 ```
+
+**Figure legend — Phosphoprotein-level UpSet plot.**
+As above, but overlap is assessed at the protein level: a protein contributes
+to an intersection if any phosphosite on that protein was reported in each
+respective dataset, regardless of residue position. Because the Plank et al.
+(2020) supplement does not report site positions for all peptides, that dataset
+contributes only at the protein level. The broader protein-level overlap
+relative to the exact-site-level plot reflects cases where the same protein
+carries Rim15- or PP2A-Cdc55-regulated phosphorylation in multiple studies
+but at distinct residues.
 
 # Sanity check: Igo1 S64 and headline numbers
 
