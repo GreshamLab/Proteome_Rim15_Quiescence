@@ -30,7 +30,6 @@ cran_pkgs <- c(
   "WGCNA",          # weighted gene co-expression network analysis
   "mosaicData",
   "SuperExactTest",
-  "devtools",       # loaded by 01_data_preparation_qc.Rmd
   "remotes",        # for GitHub installs below
   "rmarkdown"
 )
