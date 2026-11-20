@@ -324,10 +324,13 @@ pheatmap(psite_P, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(leng
     unite(cond, nutrient, genotype, samplingTime, remove = FALSE)
   dim(dz)
   l<-length(dz)-6
-  
+  # Remove zero-variance columns — prcomp(scale=T) cannot rescale constant columns
+  pca_mat <- dz[,c(1:l)]
+  pca_mat <- pca_mat[, apply(pca_mat, 2, var) > 0]
+
 pdf("./plots/pSite_ratio_normed_PCA_time.pdf",width=7,height=5)
 #the numbers in the range here is subject to the strains left after pre-filtering steps
-autoplot(prcomp(dz[,c(1:l)], scale = T), data = dz, colour = 'genotype', size = 3) +
+autoplot(prcomp(pca_mat, scale = T), data = dz, colour = 'genotype', size = 3) +
   #theme_classic() +
   theme(legend.position = "bottom") +
   facet_grid(nutrient~samplingTime)+
@@ -337,7 +340,7 @@ dev.off()
 
 #3D PCA plot
 #compute PCA
-df<-dz[,c(1:l)]
+df <- pca_mat
 rownames(df) <- rownames(dz)
 res.pca <- prcomp(df, scale = TRUE)
 
