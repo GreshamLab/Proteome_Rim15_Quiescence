@@ -1,0 +1,122 @@
+---
+title: "S3 Fig — Rim15 effect on WPM expression dynamics"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figure 3.
+Extracted and reorganized from `04_protein_de_go_analysis.Rmd`.
+
+**S3 Fig:** Rim15 effect on WPM expression dynamics, separated by starvation condition.
+ANCOVA volcano plots showing genotype × time interaction term.
+
+**Inputs:**
+- `tables/anova_genotype.csv` — ANCOVA results
+- `tables/master_tidy_protein.csv` — normalized protein expression
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_3.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(ggrepel)
+library(cowplot)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+ancova_genotype <- read_csv("./tables/anova_genotype.csv", show_col_types = FALSE)
+master          <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE)
+```
+
+---
+
+## S3A — ANCOVA volcano: genotype × time interaction (normalized ratio)
+
+Volcano plot of the `samplingTime:genotypeWT` coefficient from the ANCOVA model
+(protein expression ~ time × genotype), faceted by nutrient and data type.
+
+```{r s3a-volcano}
+# Focus on normalized ratio data type
+volcano_data <- ancova_genotype %>%
+  dplyr::filter(term == "samplingTime:genotypeWT",
+                data == "normed_ratio",
+                nutrient %in% c("C", "P"))
+
+sig_up_wt    <- volcano_data %>% dplyr::filter(qvalue < 0.05, estimate > 0)
+sig_up_rim15 <- volcano_data %>% dplyr::filter(qvalue < 0.05, estimate < 0)
+
+p_S3A <- ggplot(volcano_data, aes(x = estimate, y = -log10(qvalue))) +
+  geom_point(data = dplyr::filter(volcano_data, qvalue >= 0.05),
+             alpha = 1 / 5, size = 0.8, color = "grey60") +
+  geom_point(data = sig_up_wt,    alpha = 0.9, size = 1.5, color = "#e7b800") +
+  geom_point(data = sig_up_rim15, alpha = 0.9, size = 1.5, color = "#00afbb") +
+  geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "grey60") +
+  xlab("ANCOVA coefficient (WT slope − rim15Δ slope)") +
+  ylab(expression(-log[10] * "(q-value)")) +
+  facet_wrap(~ nutrient,
+             labeller = as_labeller(c("C" = "Carbon starvation",
+                                      "P" = "Phosphorus starvation"))) +
+  theme_cowplot(font_size = 12) +
+  theme(strip.background = element_blank(),
+        strip.text       = element_text(face = "bold"))
+
+p_S3A
+ggsave(file.path(out_dir, "SFig3A_ANCOVA_volcano_genotype.pdf"),
+       p_S3A, width = 8, height = 4, useDingbats = FALSE)
+
+write_csv(volcano_data %>%
+            dplyr::select(`Protein IDs`, `Gene names`, nutrient,
+                          term, estimate, std.error, statistic, p.value, qvalue),
+          file.path(data_dir, "SFig3A_source_data.csv"))
+message("SFig3A: ", nrow(volcano_data), " ANCOVA terms exported")
+```
+
+## S3B — Summary of Rim15-dependent proteins (count per nutrient × direction)
+
+```{r s3b-summary}
+sig_summary <- ancova_genotype %>%
+  dplyr::filter(term == "samplingTime:genotypeWT",
+                data == "normed_ratio",
+                qvalue < 0.05,
+                nutrient %in% c("C", "P")) %>%
+  mutate(direction = ifelse(estimate > 0, "Higher slope in WT",
+                             "Higher slope in rim15Δ")) %>%
+  group_by(nutrient, direction) %>%
+  summarise(n_proteins = n(), .groups = "drop")
+
+p_S3B <- ggplot(sig_summary,
+                aes(x = nutrient, y = n_proteins, fill = direction)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_fill_manual(values = c("Higher slope in WT"       = "#e7b800",
+                                "Higher slope in rim15Δ"  = "#00afbb")) +
+  scale_x_discrete(labels = c("C" = "Carbon starvation",
+                               "P" = "Phosphorus starvation")) +
+  xlab(NULL) +
+  ylab("Number of proteins (q < 0.05)") +
+  theme_cowplot(font_size = 12) +
+  theme(legend.position = "bottom", legend.title = element_blank())
+
+p_S3B
+ggsave(file.path(out_dir, "SFig3B_DE_counts.pdf"),
+       p_S3B, width = 5, height = 4, useDingbats = FALSE)
+
+write_csv(sig_summary, file.path(data_dir, "SFig3B_source_data.csv"))
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

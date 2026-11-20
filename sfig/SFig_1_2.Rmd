@@ -1,0 +1,257 @@
+---
+title: "S1 Fig and S2 Fig — SILAC validation and technical/biological variation QC"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figures 1 and 2.
+Extracted and reorganized from `01_data_preparation_qc.Rmd`.
+
+**S1 Fig:** SILAC label incorporation validation — auxotrophic vs prototrophic comparison,
+MS scan counts, m/z spectra comparison.
+
+**S2 Fig:** Technical vs biological variation — proteome + phosphoproteome replicate
+scatter plots, PCA.
+
+**Inputs:**
+- `tables/master_tidy_protein.csv`
+- `tables/normed_ratio_perseus.csv`
+- `data/proteinGroups.csv` (raw MaxQuant output)
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_1_2.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(reshape2)
+library(ggpubr)
+library(ggfortify)
+library(pheatmap)
+library(RColorBrewer)
+library(cowplot)
+library(GGally)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+master        <- read_csv("./tables/master_tidy_protein.csv",
+                          show_col_types = FALSE)
+normed_ratio  <- read_csv("./tables/normed_ratio_perseus.csv",
+                          show_col_types = FALSE)
+```
+
+---
+
+# S1 Fig — SILAC label incorporation validation
+
+## S1A — Label incorporation efficiency (auxotrophic vs prototrophic)
+
+```{r s1a-incorporation}
+# Heavy/medium label incorporation efficiency is quantified as the fraction of
+# peptide signal in the labeled channels vs total signal for each protein.
+# Data comes from the special prototrophic/auxotrophic comparison experiments
+# (proteinGroups_pro_auxo_M.csv and proteinGroups_pro_auxo_H.csv in figure1/).
+# If those files are not in this repo, adapt the path accordingly.
+
+auxo_path_M <- "./figure1/proteinGroups_pro_auxo_M.csv"
+auxo_path_H <- "./figure1/proteinGroups_pro_auxo_H.csv"
+
+if (file.exists(auxo_path_M) && file.exists(auxo_path_H)) {
+  wt_M <- read_csv(auxo_path_M, show_col_types = FALSE) %>%
+    dplyr::select(`Protein IDs`, contains("Intensity")) %>%
+    dplyr::select(`Protein IDs`, contains(c("4", "5"))) %>%
+    filter(if_any(-`Protein IDs`, ~ . != 0))
+
+  wt_H <- read_csv(auxo_path_H, show_col_types = FALSE) %>%
+    dplyr::select(`Protein IDs`, contains("Intensity")) %>%
+    dplyr::select(`Protein IDs`, contains(c("4", "5"))) %>%
+    filter(if_any(-`Protein IDs`, ~ . != 0))
+
+  # Compute fraction labeled per protein
+  calc_frac <- function(df, label) {
+    # Assumes columns: Intensity [H/M] X, Intensity X (total)
+    df %>%
+      pivot_longer(-`Protein IDs`) %>%
+      mutate(channel = ifelse(grepl(paste0("Intensity ", label, " "), name),
+                              "labeled", "total")) %>%
+      group_by(`Protein IDs`, channel) %>%
+      summarise(val = sum(value, na.rm = TRUE), .groups = "drop") %>%
+      pivot_wider(names_from = channel, values_from = val) %>%
+      mutate(frac_labeled = labeled / total,
+             isotope_label = label) %>%
+      filter(!is.na(frac_labeled), is.finite(frac_labeled))
+  }
+
+  frac_H <- calc_frac(wt_H, "H")
+  frac_M <- calc_frac(wt_M, "M")
+  frac_df <- bind_rows(frac_H, frac_M)
+
+  p_S1A <- ggplot(frac_df, aes(x = frac_labeled, fill = isotope_label,
+                                color = isotope_label)) +
+    geom_density(alpha = 0.5) +
+    scale_fill_manual(values = c("H" = "#4b006e", "M" = "#ae00ff"),
+                      labels = c("H" = "Heavy (Arg10/Lys8)",
+                                 "M" = "Medium (Arg6/Lys4)")) +
+    scale_color_manual(values = c("H" = "#4b006e", "M" = "#ae00ff"),
+                       labels = c("H" = "Heavy (Arg10/Lys8)",
+                                  "M" = "Medium (Arg6/Lys4)")) +
+    xlim(0.9, 1.0) +
+    xlab("Fraction of peptide signal from labeled amino acids") +
+    ylab("Density") +
+    theme_cowplot(font_size = 12) +
+    theme(legend.position = "bottom", legend.title = element_blank())
+
+  p_S1A
+  ggsave(file.path(out_dir, "SFig1A_label_incorporation.pdf"),
+         p_S1A, width = 6, height = 4, useDingbats = FALSE)
+
+  write_csv(frac_df %>%
+              dplyr::select(`Protein IDs`, isotope_label, frac_labeled),
+            file.path(data_dir, "SFig1A_source_data.csv"))
+  message("SFig1A: ", nrow(frac_df), " proteins")
+} else {
+  message("SFig1A: auxotrophic comparison files not found — skipping.\n",
+          "  Expected: ", auxo_path_M, " and ", auxo_path_H)
+}
+```
+
+## S1B — MS scan counts per sample
+
+```{r s1b-scan-counts}
+# Scan counts (number of identified proteins / phosphosites) per sample
+# Extracted from normed_ratio table as number of non-NA entries per condition
+scan_counts <- normed_ratio %>%
+  pivot_longer(-c(`Protein IDs`, `Gene names`, `Protein names`,
+                  `Fasta headers`),
+               names_to = "sample", values_to = "ratio") %>%
+  dplyr::filter(!is.na(ratio)) %>%
+  separate(sample, c("genotype", "nutrient", "time", "replicate"),
+           sep = "_", extra = "drop") %>%
+  group_by(genotype, nutrient, time, replicate) %>%
+  summarise(n_proteins = n(), .groups = "drop") %>%
+  dplyr::filter(!is.na(genotype), genotype %in% c("WT", "rim15KO"))
+
+p_S1B <- ggplot(scan_counts,
+                aes(x = time, y = n_proteins,
+                    group = replicate, color = replicate)) +
+  geom_line(linewidth = 0.8, alpha = 0.8) +
+  geom_point(size = 2) +
+  facet_grid(nutrient ~ genotype,
+             labeller = labeller(
+               genotype = c("WT" = "WT", "rim15KO" = "rim15Δ"),
+               nutrient = c("C" = "Carbon", "P" = "Phosphorus"))) +
+  scale_color_manual(values = c("R1" = "#789cff", "R2" = "#656371", "R3" = "#ff7369")) +
+  xlab("Timepoint") +
+  ylab("Number of proteins quantified") +
+  theme_cowplot(font_size = 11) +
+  theme(legend.position  = "bottom",
+        strip.background = element_blank(),
+        strip.text       = element_text(face = "bold"))
+
+p_S1B
+ggsave(file.path(out_dir, "SFig1B_scan_counts.pdf"),
+       p_S1B, width = 8, height = 5, useDingbats = FALSE)
+
+write_csv(scan_counts, file.path(data_dir, "SFig1B_source_data.csv"))
+```
+
+---
+
+# S2 Fig — Technical vs biological variation
+
+## S2A — Replicate scatter plots (proteome)
+
+```{r s2a-replicate-scatter}
+# Pairwise scatter of replicate normalized ratios to show technical reproducibility
+# Using WT + carbon starvation T16 as a representative condition
+rep_scatter <- normed_ratio %>%
+  dplyr::select(`Protein IDs`, `Gene names`,
+                matches("WT_C_T16_R[123]")) %>%
+  drop_na()
+
+if (ncol(rep_scatter) >= 4) {
+  names(rep_scatter) <- c("Protein IDs", "Gene names", "Rep1", "Rep2", "Rep3")
+
+  p_S2A_12 <- ggscatter(rep_scatter, x = "Rep1", y = "Rep2",
+                         alpha = 0.4, size = 0.8) +
+    stat_cor(method = "pearson") +
+    scale_x_log10() + scale_y_log10() +
+    xlab("Replicate 1") + ylab("Replicate 2") +
+    ggtitle("WT, C starvation, T=16 h") +
+    theme_cowplot(font_size = 11)
+
+  p_S2A_13 <- ggscatter(rep_scatter, x = "Rep1", y = "Rep3",
+                         alpha = 0.4, size = 0.8) +
+    stat_cor(method = "pearson") +
+    scale_x_log10() + scale_y_log10() +
+    xlab("Replicate 1") + ylab("Replicate 3") +
+    ggtitle("WT, C starvation, T=16 h") +
+    theme_cowplot(font_size = 11)
+
+  p_S2A <- plot_grid(p_S2A_12, p_S2A_13, ncol = 2)
+  p_S2A
+  ggsave(file.path(out_dir, "SFig2A_replicate_scatter.pdf"),
+         p_S2A, width = 10, height = 5, useDingbats = FALSE)
+
+  write_csv(rep_scatter, file.path(data_dir, "SFig2A_source_data.csv"))
+}
+```
+
+## S2B — PCA of proteome samples
+
+```{r s2b-pca}
+# PCA on normalized ratio matrix (wide: columns = samples, rows = proteins)
+nr_wide <- normed_ratio %>%
+  dplyr::select(`Protein IDs`, matches("(WT|rim15KO)_(C|P)_T[0-9]+_R[123]$")) %>%
+  column_to_rownames("Protein IDs")
+
+# Remove columns (samples) or rows (proteins) with excessive NAs
+nr_wide <- nr_wide[, colSums(is.na(nr_wide)) < nrow(nr_wide) * 0.5]
+nr_wide <- nr_wide[rowSums(is.na(nr_wide)) < ncol(nr_wide) * 0.5, ]
+# Replace remaining NAs with column means
+for (j in seq_along(nr_wide)) {
+  nr_wide[is.na(nr_wide[, j]), j] <- mean(nr_wide[, j], na.rm = TRUE)
+}
+
+pca_res <- prcomp(t(nr_wide), scale. = TRUE)
+pca_df  <- as.data.frame(pca_res$x[, 1:3]) %>%
+  rownames_to_column("sample") %>%
+  separate(sample, c("genotype", "nutrient", "time", "replicate"),
+           sep = "_", remove = FALSE)
+
+pct_var <- round(100 * pca_res$sdev^2 / sum(pca_res$sdev^2), 1)
+
+p_S2B <- ggplot(pca_df, aes(x = PC1, y = PC2,
+                              color = genotype, shape = nutrient)) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+                     labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+  xlab(paste0("PC1 (", pct_var[1], "%)")) +
+  ylab(paste0("PC2 (", pct_var[2], "%)")) +
+  theme_cowplot(font_size = 12) +
+  theme(legend.position = "right")
+
+p_S2B
+ggsave(file.path(out_dir, "SFig2B_proteome_PCA.pdf"),
+       p_S2B, width = 7, height = 5, useDingbats = FALSE)
+
+write_csv(pca_df, file.path(data_dir, "SFig2B_source_data.csv"))
+message("SFig2B PCA saved")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```
