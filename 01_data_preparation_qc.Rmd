@@ -539,8 +539,9 @@ rm(has_ratio, master_tidy)
 
 ## PCA analysis for each data type
 ```{r, echo = FALSE, warning = FALSE, message=FALSE, fig.height=5, fig.width=8}
+dir.create("./Figure 3", showWarnings = FALSE)
 #heatmap of core data
-##specify the component you are interested in 
+##specify the component you are interested in
 n = 1
 m = 2
 for (i in c("intensity","normed_intensity","ratio","normed_ratio")) {
@@ -728,6 +729,7 @@ write_csv (filtered, "./tables/filtered_norm_ratios_WP.csv")
 
 ## T-test for DE at each timepoint 
 ```{r, echo = FALSE, warning = FALSE, message=FALSE}
+dir.create("./plots", showWarnings = FALSE)
 #drop na function
 delete.na <- function(DF, n=0) {DF[rowSums(is.na(DF)) <= n,]}
 
