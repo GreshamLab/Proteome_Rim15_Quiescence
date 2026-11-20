@@ -750,7 +750,7 @@ ttest_pG <- pG_filtered %>%
   melt() %>%
   separate(variable, c("genotype","replicate")) %>%
   group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, samplingTime, data) %>%
-  summarise_each(funs(t.test(.[genotype == "WT"], .[genotype == "rim15KO"], var.equal=TRUE)$p.value), pvalue = value) 
+  summarise(pvalue = t.test(value[genotype == "WT"], value[genotype == "rim15KO"], var.equal=TRUE)$p.value)
 
 ttest_pG$qvalue <- p.adjust(ttest_pG$pvalue,method="BH") 
 
@@ -758,7 +758,7 @@ log2FC_pG <- pG_filtered %>%
   melt() %>%
   separate(variable, c("genotype","replicate")) %>%
   group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, nutrient, samplingTime, data) %>%
-  summarise_each(funs(mean(.[genotype=="WT"], na.rm=TRUE)/mean(.[genotype == "rim15KO"], na.rm=TRUE)), meanDF = value) %>%
+  summarise(meanDF = mean(value[genotype=="WT"], na.rm=TRUE)/mean(value[genotype == "rim15KO"], na.rm=TRUE)) %>%
   mutate(log2FC = log2(meanDF))
 
 logFC_ttest_pG <-left_join(ttest_pG, log2FC_pG) %>% 
@@ -816,7 +816,7 @@ ttest_pG <- pG_filtered %>%
   melt() %>%
   separate(variable, c("nutrient","replicate")) %>%
   group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, genotype, samplingTime, data) %>%
-  summarise_each(funs(t.test(.[nutrient == "C"], .[nutrient == "P"], var.equal=TRUE)$p.value), pvalue = value) 
+  summarise(pvalue = t.test(value[nutrient == "C"], value[nutrient == "P"], var.equal=TRUE)$p.value)
 
 ttest_pG$qvalue <- p.adjust(ttest_pG$pvalue,method="BH") 
 
@@ -824,7 +824,7 @@ log2FC_pG <- pG_filtered %>%
   melt() %>%
   separate(variable, c("nutrient","replicate")) %>%
   group_by(`Protein IDs`, `Protein names`,`Gene names`,`Fasta headers`, genotype, samplingTime, data) %>%
-  summarise_each(funs(mean(.[nutrient=="C"], na.rm=TRUE)/mean(.[nutrient == "P"], na.rm=TRUE)), meanDF = value) %>%
+  summarise(meanDF = mean(value[nutrient=="C"], na.rm=TRUE)/mean(value[nutrient == "P"], na.rm=TRUE)) %>%
   mutate(log2FC = log2(meanDF))
 
 logFC_ttest_pG <-left_join(ttest_pG, log2FC_pG) %>% 
