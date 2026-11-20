@@ -401,7 +401,7 @@ log2FC_pS <- pS_filtered %>%
   melt() %>%
   separate(variable, c("genotype","replicate")) %>%
   group_by(`Proteins`, `Leading proteins`, `Protein names`,`Gene names`, pSite, `Fasta headers`, nutrient, time) %>%
-  summarise_each(funs(log2(mean(.[genotype=="WT"], na.rm=TRUE)-mean(.[genotype == "rim15KO"], na.rm=TRUE))), log2FC = value)
+  summarise_each(funs(log2(mean(.[genotype=="WT"], na.rm=TRUE)/mean(.[genotype == "rim15KO"], na.rm=TRUE))), log2FC = value)
 
 logFC_ttest_pS <-left_join(ttest_pS, log2FC_pS, by = c( "Proteins", "Leading proteins", "Protein names", "Gene names","pSite","Fasta headers", "nutrient","time")) %>%
     mutate(qvalue = round(qvalue, digits = 4))
