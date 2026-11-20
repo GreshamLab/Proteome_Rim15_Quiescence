@@ -532,7 +532,7 @@ ratio_sequence <- phosphosites %>%
   dplyr::select(-contains("type")) 
 
 n=9
-m=22
+m=23  # width = m-n+1 = 15 (must be odd for motifx); phosphosite at position 16 of MaxQuant 31-char window → position 8 of extracted motif
 ##gets the phophosite and 14aa window for the background
 ratio_sequence$motif <- substr(ratio_sequence$`Sequence window`, n, m)
 ratio_sequence$shortmotif <- substr(ratio_sequence$`Sequence window`, 16, 17)
