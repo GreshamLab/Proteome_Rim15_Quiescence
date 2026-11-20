@@ -139,12 +139,11 @@ with annotation as mitochondrial (from Morgenstern 2017 or GO:mitochondrion).
 ```{r panel-B}
 # Representative mitochondrial proteins (selected to illustrate key biological points)
 # Edit this list to match the specific proteins shown in the published figure
-rep_mito_genes <- c("TOM40", "CYT1", "SDH1", "COX5A", "ATP2",
-                     "GDH2", "CIT1", "ACO1", "MDH1", "POR1")
+rep_mito_genes <- c("CYT1", "COX6", "ATP4", "ATP5", "CIT1")
 
 mito_traj <- master %>%
   dplyr::filter(`Gene names` %in% rep_mito_genes) %>%
-  dplyr::filter(genotype != "spike-in", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(genotype != "spike-in", nutrient == "C") %>%
   dplyr::filter(data == "normed_ratio") %>%
   dplyr::filter(!is.na(value), is.finite(value)) %>%
   mutate(samplingTime = as.integer(sub("T", "", samplingTime)),
@@ -193,7 +192,7 @@ ggsave(file.path(out_dir, "Fig2B_mito_protein_trajectories.pdf"),
 # Source data export (replicate-level)
 Fig2B_source <- master %>%
   dplyr::filter(`Gene names` %in% rep_mito_genes) %>%
-  dplyr::filter(genotype != "spike-in", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(genotype != "spike-in", nutrient == "C") %>%
   dplyr::filter(data == "normed_ratio") %>%
   dplyr::select(`Gene names`, `Protein IDs`, genotype, nutrient, samplingTime, replicate, value) %>%
   dplyr::rename(normalized_ratio = value) %>%
