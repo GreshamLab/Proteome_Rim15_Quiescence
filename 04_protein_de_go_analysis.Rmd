@@ -483,7 +483,7 @@ write_csv(sig_3way, "./tables/anova_genotype_nutrient_sig.csv")
 
 ### DE expression visualization
 ```{r}
-sig_3way <- read_csv("./tables/anova_nutrient_sig.csv")
+sig_3way <- read_csv("./tables/ancova_nutrient_sig.csv")
 sig_3way_proteins <- sig_3way %>% filter(data == "normed_ratio")
 gene_list <- sig_3way_proteins$`Gene names`
 
