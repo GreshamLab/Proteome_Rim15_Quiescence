@@ -143,38 +143,32 @@ rep_mito_genes <- c("CYT1", "COX6", "ATP4", "ATP5", "CIT1")
 
 mito_traj <- master %>%
   dplyr::filter(`Gene names` %in% rep_mito_genes) %>%
-  dplyr::filter(genotype != "spike-in", nutrient == "C") %>%
+  dplyr::filter(genotype == "WT", nutrient %in% c("C", "P")) %>%
   dplyr::filter(data == "normed_ratio") %>%
   dplyr::filter(!is.na(value), is.finite(value)) %>%
-  mutate(samplingTime = as.integer(sub("T", "", samplingTime)),
-         genotype = factor(genotype, levels = c("WT", "rim15KO")))
+  mutate(samplingTime = as.integer(sub("T", "", samplingTime)))
 
 mito_summary <- mito_traj %>%
-  group_by(`Gene names`, genotype, nutrient, samplingTime) %>%
+  group_by(`Gene names`, nutrient, samplingTime) %>%
   summarise(mean_val = mean(value, na.rm = TRUE),
             sd_val   = sd(value,   na.rm = TRUE),
             .groups  = "drop")
 
+nutrient_colors <- c("C" = "#ff9500", "P" = "#8300ab")
 nutrient_labels <- c("C" = "Carbon starvation", "P" = "Phosphorus starvation")
-genotype_colors <- c("WT" = "#E7B800", "rim15KO" = "#00AFBB")
 
 p_B <- ggplot(mito_summary,
               aes(x = samplingTime, y = mean_val,
-                  group = genotype, color = genotype)) +
+                  group = nutrient, color = nutrient, fill = nutrient)) +
   geom_ribbon(aes(ymin = mean_val - sd_val,
-                  ymax = mean_val + sd_val,
-                  fill = genotype),
+                  ymax = mean_val + sd_val),
               alpha = 0.15, color = NA) +
   geom_line(linewidth = 0.9) +
   geom_point(size = 2) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
-  facet_grid(`Gene names` ~ nutrient,
-             labeller = labeller(nutrient = as_labeller(nutrient_labels)),
-             scales = "free_y") +
-  scale_color_manual(values = genotype_colors,
-                     labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
-  scale_fill_manual(values  = genotype_colors,
-                    labels  = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+  facet_wrap(~ `Gene names`, scales = "free_y", ncol = 1) +
+  scale_color_manual(values = nutrient_colors, labels = nutrient_labels) +
+  scale_fill_manual(values  = nutrient_colors, labels = nutrient_labels) +
   scale_x_continuous(breaks = c(0, 6, 16, 30)) +
   xlab("Hours post nutrient depletion") +
   ylab(expression(log[2] * " (normalized SILAC ratio)")) +
@@ -182,8 +176,7 @@ p_B <- ggplot(mito_summary,
   theme(legend.position  = "bottom",
         legend.title     = element_blank(),
         strip.background = element_blank(),
-        strip.text.y     = element_text(face = "italic", size = 7),
-        strip.text.x     = element_text(face = "bold"))
+        strip.text       = element_text(face = "italic", size = 9))
 
 p_B
 ggsave(file.path(out_dir, "Fig2B_mito_protein_trajectories.pdf"),
@@ -192,7 +185,7 @@ ggsave(file.path(out_dir, "Fig2B_mito_protein_trajectories.pdf"),
 # Source data export (replicate-level)
 Fig2B_source <- master %>%
   dplyr::filter(`Gene names` %in% rep_mito_genes) %>%
-  dplyr::filter(genotype != "spike-in", nutrient == "C") %>%
+  dplyr::filter(genotype == "WT", nutrient %in% c("C", "P")) %>%
   dplyr::filter(data == "normed_ratio") %>%
   dplyr::select(`Gene names`, `Protein IDs`, genotype, nutrient, samplingTime, replicate, value) %>%
   dplyr::rename(normalized_ratio = value) %>%
