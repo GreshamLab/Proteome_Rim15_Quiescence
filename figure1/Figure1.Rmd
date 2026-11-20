@@ -22,6 +22,7 @@ library(scales)
 library(broom)
 library(dplyr)
 library(growthcurver)
+library(ggpubr)
 ```
 
 #read in protein groups that have been converted into .csv
