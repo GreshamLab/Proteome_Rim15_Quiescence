@@ -393,7 +393,7 @@ ttest_pS <- pS_filtered %>%
   melt() %>%
   separate(variable, c("genotype","replicate")) %>%
   group_by(`Proteins`, `Leading proteins`, `Protein names`,`Gene names`, pSite, `Fasta headers`, nutrient, time) %>%
-  summarise_each(funs(t.test(.[genotype == "WT"], .[genotype == "rim15KO"], var.equal=TRUE)$p.value), pvalue = value) 
+  summarise(pvalue = t.test(value[genotype == "WT"], value[genotype == "rim15KO"], var.equal=TRUE)$p.value)
 
 ttest_pS$qvalue <- p.adjust(ttest_pS$pvalue,method="BH") 
 
@@ -401,7 +401,7 @@ log2FC_pS <- pS_filtered %>%
   melt() %>%
   separate(variable, c("genotype","replicate")) %>%
   group_by(`Proteins`, `Leading proteins`, `Protein names`,`Gene names`, pSite, `Fasta headers`, nutrient, time) %>%
-  summarise_each(funs(log2(mean(.[genotype=="WT"], na.rm=TRUE)/mean(.[genotype == "rim15KO"], na.rm=TRUE))), log2FC = value)
+  summarise(log2FC = log2(mean(value[genotype=="WT"], na.rm=TRUE)/mean(value[genotype == "rim15KO"], na.rm=TRUE)))
 
 logFC_ttest_pS <-left_join(ttest_pS, log2FC_pS, by = c( "Proteins", "Leading proteins", "Protein names", "Gene names","pSite","Fasta headers", "nutrient","time")) %>%
     mutate(qvalue = round(qvalue, digits = 4))
@@ -742,7 +742,7 @@ ttest_pSite <- pSite_filtered %>%
   melt() %>%
   separate(variable, c("nutrient","replicate")) %>%
   group_by(pSite, `Protein names`,`Gene names`,`Fasta headers`,genotype, time) %>%
-  summarise_each(funs(t.test(.[nutrient == "C"], .[nutrient == "P"], var.equal=TRUE)$p.value), pvalue = value) 
+  summarise(pvalue = t.test(value[nutrient == "C"], value[nutrient == "P"], var.equal=TRUE)$p.value)
 
 ttest_pSite$qvalue <- p.adjust(ttest_pSite$pvalue,method="BH") 
 
@@ -750,7 +750,7 @@ log2FC_pSite <- pSite_filtered %>%
   melt() %>%
   separate(variable, c("nutrient","replicate")) %>%
   group_by(pSite, `Protein names`,`Gene names`,`Fasta headers`, genotype, time) %>%
-  summarise_each(funs(mean(.[nutrient=="C"], na.rm=TRUE)-mean(.[nutrient == "P"], na.rm=TRUE)), log2FC = value)
+  summarise(log2FC = mean(value[nutrient=="C"], na.rm=TRUE)-mean(value[nutrient == "P"], na.rm=TRUE))
 
 logFC_ttest_pSite <-left_join(ttest_pSite, log2FC_pSite, by = c("pSite","Protein names","Gene names","Fasta headers","time","genotype")) %>%
   dplyr::filter(genotype %in% c("WT","rim15KO"))
