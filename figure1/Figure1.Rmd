@@ -21,6 +21,7 @@ library(cowplot)
 library(scales)
 library(broom)
 library(dplyr)
+library(growthcurver)
 ```
 
 #read in protein groups that have been converted into .csv

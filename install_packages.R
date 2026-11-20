@@ -29,6 +29,7 @@ cran_pkgs <- c(
   "UpSetR",
   "WGCNA",          # weighted gene co-expression network analysis
   "mosaicData",
+  "growthcurver",    # SummarizeGrowth — figure1/Figure1.Rmd
   "SuperExactTest",
   "remotes",        # for GitHub installs below
   "rmarkdown"
