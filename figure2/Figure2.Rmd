@@ -70,26 +70,38 @@ qsc_long <- master %>%
   dplyr::filter(data == "normed_ratio") %>%
   dplyr::filter(!is.na(value), is.finite(value))
 
-# Average across replicates for the heatmap
-qsc_mean <- qsc_long %>%
-  group_by(`Gene names`, `Protein IDs`, genotype, nutrient, samplingTime) %>%
-  summarise(mean_val = mean(value, na.rm = TRUE), .groups = "drop") %>%
-  unite(col_key, nutrient, genotype, samplingTime) %>%
-  pivot_wider(names_from = col_key, values_from = mean_val,
+# Keep individual replicates — triplicates per timepoint shown side-by-side
+qsc_wide <- qsc_long %>%
+  unite(col_key, nutrient, genotype, samplingTime, replicate, remove = FALSE) %>%
+  pivot_wider(names_from = col_key, values_from = value,
               id_cols = c(`Gene names`, `Protein IDs`))
 
-heatmap_df <- qsc_mean %>%
+# Order columns: nutrient → genotype → timepoint → replicate
+col_order <- expand.grid(
+  nutrient     = c("C", "P"),
+  genotype     = c("WT", "rim15KO"),
+  samplingTime = c("T00", "T06", "T16", "T30"),
+  replicate    = c("R1", "R2", "R3"),
+  stringsAsFactors = FALSE) %>%
+  unite(col_key, nutrient, genotype, samplingTime, replicate) %>%
+  pull(col_key)
+col_order <- col_order[col_order %in% colnames(qsc_wide)]
+
+heatmap_df <- qsc_wide %>%
   column_to_rownames("Gene names") %>%
-  dplyr::select(-`Protein IDs`)
+  dplyr::select(-`Protein IDs`) %>%
+  dplyr::select(all_of(col_order))
 
 # Remove rows with too many NAs
 heatmap_df <- heatmap_df[rowSums(is.na(heatmap_df)) < ncol(heatmap_df) / 2, ]
+# Remove zero-variance rows (required for scale="row")
+heatmap_df <- heatmap_df[apply(heatmap_df, 1, function(x) var(x, na.rm=TRUE) > 0), ]
 
-# Column annotation
+# Column annotation — parse from col_key (nutrient_genotype_time_rep)
 ann_col <- data.frame(
   nutrient = sub("_.*", "", colnames(heatmap_df)),
   genotype = sub("^[^_]+_([^_]+)_.*", "\\1", colnames(heatmap_df)),
-  time     = sub(".*_", "", colnames(heatmap_df)),
+  time     = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", colnames(heatmap_df)),
   row.names = colnames(heatmap_df))
 
 ann_colors <- list(
@@ -118,8 +130,8 @@ grid::grid.draw(p_A$gtable)
 dev.off()
 grid::grid.draw(p_A$gtable)
 
-# Source data export — mean normalized ratio per gene × condition
-Fig2A_source <- qsc_mean %>%
+# Source data export — per-replicate normalized ratio per gene × condition
+Fig2A_source <- qsc_wide %>%
   dplyr::select(`Gene names`, `Protein IDs`, everything()) %>%
   arrange(`Gene names`)
 
