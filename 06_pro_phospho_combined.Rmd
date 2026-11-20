@@ -67,7 +67,8 @@ protein abundance.
 logFC_ttest <- left_join(
   logFC_ttest_pS,
   logFC_ttest_pG,
-  by     = c("Protein names", "Gene names", "Fasta headers", "nutrient", "time"),
+  by     = c("Protein names", "Gene names", "Fasta headers", "nutrient",
+             "time" = "samplingTime"),
   suffix = c(".phospho", ".protein")
 )
 
