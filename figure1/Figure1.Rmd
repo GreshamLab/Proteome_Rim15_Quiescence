@@ -189,14 +189,14 @@ ggsave("Fig1C.pdf",width = 12, height = 4.5)
 ##incorperation efficiency between prototrophic wt and lysarg auxothrope
 ```{r}
 
-wt_M <- read_csv("./proteinGroups_pro_auxo_M.csv") %>%
+wt_M <- read_csv("./proteinGroups_pro_auxo_M.csv", na = c("", "NA", "NaN")) %>%
   #only keep the protein id columns and columns with column names contain "proteome" and "Intensity"
   dplyr::select(`Protein IDs`, contains("Intensity")) %>%
   dplyr::select(`Protein IDs`, contains(c("4","5"))) %>%
   #remove rows with all 0 readings in every column
   filter_at(vars(-`Protein IDs`), any_vars(. != 0)) 
 
-wt_H <- read_csv("./proteinGroups_pro_auxo_H.csv") %>%
+wt_H <- read_csv("./proteinGroups_pro_auxo_H.csv", na = c("", "NA", "NaN")) %>%
   #only keep the protein id columns and columns with column names contain "proteome" and "Intensity"
   dplyr::select(`Protein IDs`, contains("Intensity")) %>%
   dplyr::select(`Protein IDs`, contains(c("4","5"))) %>%
@@ -209,7 +209,7 @@ wt_H <- read_csv("./proteinGroups_pro_auxo_H.csv") %>%
 ##incoperation efficiency if rim15
 ```{r}
 #read in rim15KO data
-protein_rim15 <- read_csv("./proteinGroups_rim15_HM.csv")
+protein_rim15 <- read_csv("./proteinGroups_rim15_HM.csv", na = c("", "NA", "NaN"))
 
 df <- protein_rim15 %>%
   #only keep the protein id columns and columns with column names contain "proteome" and "Intensity"
