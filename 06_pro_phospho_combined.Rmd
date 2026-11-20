@@ -115,7 +115,9 @@ ggsave("./plots/phospho_vs_protein_logFC.pdf",
 
 The next three chunks generate multi-page PDFs of protein trajectories for proteins
 significant by genotype, nutrient, and the 3-way interaction respectively.
-Set `eval=TRUE` to regenerate; they are slow for large protein lists.
+They are set to `eval=FALSE` by default because they are slow to render (one panel
+per significant protein). To regenerate these PDFs, open this file and change
+`eval=FALSE` to `eval=TRUE` in each chunk header before knitting.
 
 ```{r traj-sig-genotype, eval=FALSE}
 master_long <- master %>%
