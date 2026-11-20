@@ -6,7 +6,7 @@ output: html_document
 ---
 
 #Load essential packages
-```{r,cache=TRUE}
+```{r}
 library(ggplot2)
 library(tidyverse)
 library(reshape2)
