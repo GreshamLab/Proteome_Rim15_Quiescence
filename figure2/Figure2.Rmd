@@ -96,6 +96,10 @@ heatmap_df <- heatmap_df[rowSums(is.na(heatmap_df)) < ncol(heatmap_df) / 2, ]
 # Remove zero-variance rows (required for scale="row")
 heatmap_df <- heatmap_df[apply(heatmap_df, 1, function(x) var(x, na.rm=TRUE) > 0), ]
 
+# Fix row order to match the specified gene order (top to bottom)
+row_order <- quiescence_genes[quiescence_genes %in% rownames(heatmap_df)]
+heatmap_df <- heatmap_df[row_order, ]
+
 # Column annotation — parse from col_key (nutrient_time_rep)
 ann_col <- data.frame(
   nutrient = sub("_.*", "", colnames(heatmap_df)),
@@ -110,7 +114,7 @@ ann_colors <- list(
 p_A <- pheatmap(
   heatmap_df,
   colorRampPalette(rev(brewer.pal(n = 10, name = "RdBu")))(100),
-  cluster_rows    = TRUE,
+  cluster_rows    = FALSE,
   cluster_cols    = FALSE,
   scale           = "row",
   annotation_col  = ann_col,
