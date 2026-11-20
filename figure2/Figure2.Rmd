@@ -55,15 +55,13 @@ SILAC quantification. Proteins are ordered by hierarchical clustering of their
 normalized expression trajectories.
 
 ```{r panel-A}
-# GFP-screen quiescence-required proteins (Davidson et al. list)
-# These are proteins whose deletion reduces quiescence survival; obtained from
-# published GFP-screen data referenced in the manuscript.
-# Key proteins with known mitochondrial roles are included.
-quiescence_genes <- c("RIM15", "IGO1", "IGO2", "GIS1", "PHO85", "PDE2",
-                       "TOR1", "SCH9", "CDC55", "SAP185", "SAP190",
-                       "SIT4", "PPH21", "PPH22", "RRD1", "RRD2",
-                       "TAP42", "TIP41", "HOG1", "PBS2", "SSK1",
-                       "SSK2", "STE50", "NCA3", "RTG1")
+# Proteins shown in published Figure 2A — selected from the SILAC dataset
+# to represent mitochondrial and metabolic remodeling during quiescence entry.
+quiescence_genes <- c("ABP1", "UGA1", "LEU4", "IDH2", "CIT1",
+                       "YRA1", "ATP4", "SAC6", "ATP3", "PCS60",
+                       "CYT1", "ATP5", "FAA1", "KGD1", "COX4",
+                       "PIL1", "GDH2", "PTC3", "AIP1", "KGD2",
+                       "SDH2", "ILV2", "COX6", "TPS1")
 
 # Extract normalized ratio data for these proteins
 qsc_long <- master %>%
