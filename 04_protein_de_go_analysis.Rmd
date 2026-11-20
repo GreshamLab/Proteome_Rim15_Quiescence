@@ -527,7 +527,8 @@ ego_3way <- clusterProfiler::enrichGO(gene = sig_3way_proteins$`Protein IDs`,
  
 if (!is.null(ego_3way)) {
   print(dotplot(ego_3way, ~ONTOLOGY))
-  write_csv(summary(ego_3way),"./tables/GOterm/ego_3way_ANCOVA.csv")
+  dir.create("./tables/GOterm", showWarnings = FALSE, recursive = TRUE)
+  write_csv(as.data.frame(ego_3way),"./tables/GOterm/ego_3way_ANCOVA.csv")
 } else {
   message("ego_3way: no GO enrichment results (enrichGO returned NULL)")
 }
