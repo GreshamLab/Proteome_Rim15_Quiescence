@@ -1,0 +1,32 @@
+---
+title: "S6 Fig — Cell volume and mitochondrial/cell volume ratio"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figure 6.
+Analysis code will be in `revision3/R04_mito_volume_norm.Rmd` once data is available.
+
+**BLOCKED — awaiting per-cell segmentation data from Ying Xie (Cellpose masks /
+MitoGraph output).**
+
+**Run from repo root (once data is available):** `rmarkdown::render("sfig/SFig_6.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r placeholder}
+message(
+  "S6 Fig is BLOCKED pending per-cell volume data from Ying Xie.\n",
+  "Analysis code is in revision3/R04_mito_volume_norm.Rmd.\n",
+  "Once data is received, adapt that script to generate the panels:\n",
+  "  - S6A: Cell volume (FSC-proxy or geometric estimate) WT vs rim15Δ\n",
+  "  - S6B: Mito volume / cell volume ratio WT vs rim15Δ"
+)
+
+# --- Uncomment and adapt once data arrives ---
+# source("revision3/R04_mito_volume_norm.Rmd", local = TRUE)
+# (or copy relevant chunks here and save output to sfig/plots/ and sfig/source_data/)
+```

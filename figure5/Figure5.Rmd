@@ -1,0 +1,106 @@
+---
+title: "Figure 5 — Mitochondrial network imaging in quiescent cells"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Self-contained reproduction of Figure 5 panels.
+
+**Run from repo root:** `rmarkdown::render("figure5/Figure5.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(cowplot)
+library(ggpubr)
+
+out_dir  <- "figure5/plots"
+data_dir <- "figure5/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+---
+
+## Panel A — Representative fluorescence images
+
+Panel A contains representative fluorescence microscopy images (mito-GFP in WT vs
+rim15Δ quiescent cells). These are not R-generated.
+
+Raw images are available on Mendeley Data (doi: [INSERT DOI]).
+
+---
+
+## Panel B — Mitochondrial volume quantification
+
+**BLOCKED — awaiting data from Ying Xie (Cellpose segmentation masks /
+MitoGraph per-cell output).**
+
+Analysis code for this panel is in `revision3/R04_mito_volume_norm.Rmd`.
+Once the segmentation data is received, run that script from the repo root
+to generate `revision3/output/mito_volume_per_cellvol.pdf`, then update
+this section with the final plot code.
+
+The analysis plan (per reviewer response):
+1. From each Cellpose mask: extract cell area and major/minor axis lengths.
+2. Estimate cell volume assuming a prolate ellipsoid geometry (state assumption in Methods).
+3. Compute MitoGraph mitochondrial volume / cell volume per cell.
+4. Plot per-cell distributions (boxplot) for WT vs rim15Δ in C and P starvation.
+5. Run the same paired test as the original Fig 5B to confirm the reduction persists
+   after normalization.
+
+```{r panel-B-placeholder}
+# BLOCKED: data not yet available from collaborator.
+# Remove this message and uncomment the code below once
+# `revision3/output/mito_per_cell_volume.csv` is available.
+
+message(
+  "Panel B is BLOCKED pending per-cell mitochondrial volume data from Ying Xie.\n",
+  "See revision3/R04_mito_volume_norm.Rmd for the analysis code."
+)
+
+# --- Uncomment and adapt once data arrives ---
+# mito_vol <- read_csv("revision3/output/mito_per_cell_volume.csv",
+#                      show_col_types = FALSE)
+#
+# p_B <- ggplot(mito_vol, aes(x = genotype, y = mito_per_cell_vol,
+#                              fill = genotype)) +
+#   geom_boxplot(outlier.shape = NA, width = 0.5) +
+#   geom_jitter(width = 0.1, size = 0.5, alpha = 0.5) +
+#   stat_compare_means(comparisons = list(c("WT", "rim15KO")),
+#                      method = "wilcox.test", label = "p.format") +
+#   facet_wrap(~ nutrient,
+#              labeller = as_labeller(c("C" = "Carbon starvation",
+#                                       "P" = "Phosphorus starvation"))) +
+#   scale_fill_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+#                     labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+#   xlab(NULL) +
+#   ylab("Mitochondrial volume / cell volume") +
+#   theme_cowplot(font_size = 12) +
+#   theme(legend.position = "none",
+#         strip.background = element_blank(),
+#         strip.text       = element_text(face = "bold"))
+#
+# p_B
+# ggsave(file.path(out_dir, "Fig5B_mito_volume_normalized.pdf"),
+#        p_B, width = 6, height = 4, useDingbats = FALSE)
+#
+# write_csv(mito_vol %>%
+#             dplyr::select(cell_id, genotype, nutrient, timepoint,
+#                           cell_volume_um3, mito_volume_um3,
+#                           mito_per_cell_vol),
+#           file.path(data_dir, "Fig5B_source_data.csv"))
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

@@ -1,0 +1,119 @@
+---
+title: "Figure 6 — Cytoplasmic biophysics: GEM nanoparticle tracking"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Self-contained reproduction of Figure 6 panels.
+
+**Run from repo root:** `rmarkdown::render("figure6/Figure6.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(cowplot)
+library(ggpubr)
+
+out_dir  <- "figure6/plots"
+data_dir <- "figure6/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+---
+
+## Panel A — Representative fluorescence images of GEMs
+
+Panel A contains representative fluorescence microscopy images of genetically encoded
+multimeric nanoparticles (GEMs) in WT vs rim15Δ cells. Not R-generated.
+
+Raw images are available on Mendeley Data (doi: [INSERT DOI]).
+
+---
+
+## Panels B, C, D — GEM diffusion analysis
+
+**BLOCKED — awaiting per-trajectory GEM tracking data from Ying Xie.**
+
+Analysis code for Panels B–D is in `revision3/R05_gem_monomer_gated.Rmd`.
+The reanalysis gates on monomeric GEM particles (single-particle intensity window
+from proliferating-cell data) to address the reviewer concern that larger aggregated
+particles diffuse more slowly by Stokes-Einstein.
+
+Once the data is received, run `revision3/R05_gem_monomer_gated.Rmd` from the
+repo root to generate figures in `revision3/output/`, then update this section.
+
+**Panel B:** Mean squared displacement (MSD) vs lag time τ for WT vs rim15Δ
+(monomer-gated GEMs).
+
+**Panel C:** Mean GEM intensity vs effective diffusion coefficient (Deff) scatter
+plot — illustrates the monomer-gating strategy.
+
+**Panel D:** Deff(100 ms) boxplots for WT vs rim15Δ in proliferating (T=0) and
+quiescent (T=16) cells.
+
+```{r panels-BCD-placeholder}
+# BLOCKED: GEM trajectory data with per-particle intensities not yet available.
+# Remove this message and adapt the code below once data arrives.
+
+message(
+  "Panels B–D are BLOCKED pending GEM tracking data from Ying Xie.\n",
+  "See revision3/R05_gem_monomer_gated.Rmd for the analysis code."
+)
+
+# --- Uncomment and adapt once data arrives ---
+# Note: soften "decreased particle diffusion" to "reduced effective mobility /
+# increased confinement" per reviewer response, regardless of monomer-gating result.
+
+# gem_traj <- read_csv("revision3/output/gem_monomer_deff.csv",
+#                      show_col_types = FALSE)
+#
+# # Panel B — MSD vs tau
+# p_B <- ggplot(gem_traj, aes(x = lag_s, y = msd_um2, color = genotype,
+#                              group = interaction(genotype, replicate))) +
+#   geom_line(alpha = 0.5, linewidth = 0.5) +
+#   stat_summary(aes(group = genotype), fun = mean,
+#                geom = "line", linewidth = 1.5) +
+#   scale_x_log10() + scale_y_log10() +
+#   scale_color_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+#                      labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+#   xlab("Lag time τ (s)") +
+#   ylab(expression("MSD (μm"^2 * ")")) +
+#   theme_cowplot(font_size = 12) +
+#   theme(legend.position = "bottom", legend.title = element_blank())
+#
+# # Panel D — Deff(100ms) boxplots
+# p_D <- gem_traj %>%
+#   dplyr::filter(near(lag_s, 0.1)) %>%
+#   mutate(genotype = factor(genotype, levels = c("WT", "rim15KO"))) %>%
+#   ggplot(aes(x = genotype, y = deff_um2_s, fill = genotype)) +
+#   geom_boxplot(outlier.shape = NA, width = 0.5) +
+#   geom_jitter(width = 0.1, size = 0.5, alpha = 0.3) +
+#   stat_compare_means(comparisons = list(c("WT", "rim15KO")),
+#                      method = "wilcox.test", label = "p.format") +
+#   facet_wrap(~ timepoint) +
+#   scale_fill_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+#                     labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+#   xlab(NULL) +
+#   ylab(expression(D[eff] * "(100 ms) (μm"^2 * "/s)")) +
+#   theme_cowplot(font_size = 12) +
+#   theme(legend.position = "none")
+#
+# ggsave(file.path(out_dir, "Fig6B_MSD_vs_tau.pdf"),    p_B, width=6, height=4)
+# ggsave(file.path(out_dir, "Fig6D_Deff_boxplots.pdf"), p_D, width=6, height=4)
+#
+# write_csv(gem_traj, file.path(data_dir, "Fig6BD_source_data.csv"))
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

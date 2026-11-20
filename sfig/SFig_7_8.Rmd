@@ -1,0 +1,191 @@
+---
+title: "S7 Fig and S8 Fig — Flow cytometry ridge plots (DNA content and cell size)"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figures 7 and 8.
+Extracted and reorganized from `revision3/R01b_ridge_plots.Rmd`.
+
+**S7 Fig:** DNA staining distribution (SYTOX Green B2-A) over 46 h starvation,
+ridge plots for WT vs rim15Δ in C, N, P conditions with haploid/diploid controls.
+
+**S8 Fig:** Cell size (FSC-A) distribution over 46 h starvation, same layout.
+
+**Inputs:**
+- `revision3/output/dna_b2a_raw.csv` (from `revision3/R01_dna_content.Rmd`)
+- `revision3/output/fsc_raw.csv` (from `revision3/R01_dna_content.Rmd`)
+
+**Prerequisite:** `revision3/R01_dna_content.Rmd` must be run first (requires
+an interactive RStudio session for the CytoExploreR gating steps).
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_7_8.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2, fig.width = 12, fig.height = 9)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(ggridges)
+library(cowplot)
+library(scales)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r constants}
+STRAIN_LABELS <- c("WT"      = "WT",
+                   "rim15Δ0" = "rim15Δ",
+                   "DGY1"    = "WT (haploid ctrl)",
+                   "DGY3"    = "Diploid ctrl")
+
+COND_LABELS <- c("C" = "Carbon starvation",
+                 "N" = "Nitrogen starvation",
+                 "P" = "Phosphorus starvation")
+
+GENO_COLORS <- c("WT"      = "#E69F00",
+                 "rim15Δ0" = "#56B4E9",
+                 "DGY1"    = "#999999",
+                 "DGY3"    = "#cccccc")
+
+out_base <- "./revision3/output"
+```
+
+```{r load-data}
+dna_path <- file.path(out_base, "dna_b2a_raw.csv")
+fsc_path <- file.path(out_base, "fsc_raw.csv")
+
+if (!file.exists(dna_path) || !file.exists(fsc_path)) {
+  stop("Flow cytometry data not found.\n",
+       "Run revision3/R01_dna_content.Rmd first to generate:\n",
+       "  ", dna_path, "\n  ", fsc_path)
+}
+
+tidy_ridge <- function(raw_path) {
+  read_csv(raw_path, show_col_types = FALSE) %>%
+    mutate(
+      Strain = recode(Strain, "RIM15Δ0" = "rim15Δ0"),
+      ridge  = case_when(
+        Strain == "DGY3"               ~ "Diploid control",
+        Strain == "DGY1"               ~ "Haploid control",
+        Time %in% c(0, 6, 16, 30, 46) ~ paste0(Time, " h"),
+        TRUE                           ~ NA_character_
+      ),
+      ridge = factor(ridge,
+                     levels = rev(c("Diploid control", "Haploid control",
+                                    "0 h", "6 h", "16 h", "30 h", "46 h")))
+    ) %>%
+    dplyr::filter(!is.na(ridge),
+                  Strain %in% c("WT", "rim15Δ0") |
+                    ridge %in% c("Diploid control", "Haploid control"))
+}
+
+b2a_raw <- tidy_ridge(dna_path)
+fsc_raw <- tidy_ridge(fsc_path)
+```
+
+---
+
+# S7 Fig — DNA content ridge plots
+
+```{r dna-ridge-function}
+make_dna_ridge <- function(genotype, condition) {
+  ctrl <- b2a_raw %>%
+    dplyr::filter(ridge %in% c("Diploid control", "Haploid control"))
+  expt <- b2a_raw %>%
+    dplyr::filter(Strain == genotype, Media == condition)
+  df   <- bind_rows(ctrl, expt)
+
+  ggplot(df, aes(x = value, y = ridge, fill = Strain, color = Strain)) +
+    geom_density_ridges(alpha = 0.7, scale = 1.5,
+                        bandwidth = 500, rel_min_height = 0.005) +
+    scale_x_continuous(limits = c(0, 1e5),
+                       labels = label_number(scale = 1e-3, suffix = "k")) +
+    scale_fill_manual(values  = GENO_COLORS, guide = "none") +
+    scale_color_manual(values = GENO_COLORS, guide = "none") +
+    geom_vline(xintercept = 37500, color = "steelblue",
+               linetype = "dashed", linewidth = 0.4) +
+    labs(x     = "SYTOX Green fluorescence (B2-A)",
+         y     = NULL,
+         title = paste0(STRAIN_LABELS[genotype], " — ", COND_LABELS[condition])) +
+    theme_cowplot(font_size = 11) +
+    theme(plot.title = element_text(size = 11, face = "bold"))
+}
+```
+
+```{r s7-dna-ridges, fig.height=10}
+conditions <- c("C", "N", "P")
+genotypes  <- c("WT", "rim15Δ0")
+
+dna_plots <- map(genotypes, function(gt) {
+  map(conditions, function(cond) make_dna_ridge(gt, cond))
+}) %>% unlist(recursive = FALSE)
+
+dna_page <- plot_grid(plotlist = dna_plots, ncol = 3, nrow = 2)
+dna_page
+
+ggsave(file.path(out_dir, "SFig7_dna_ridges.pdf"),
+       dna_page, width = 12, height = 9)
+
+write_csv(b2a_raw %>%
+            dplyr::select(Strain, Media, Time, ridge, value),
+          file.path(data_dir, "SFig7_source_data.csv"))
+message("SFig7: DNA ridge plots saved")
+```
+
+---
+
+# S8 Fig — Cell size (FSC) ridge plots
+
+```{r fsc-ridge-function}
+make_fsc_ridge <- function(genotype, condition) {
+  ctrl <- fsc_raw %>%
+    dplyr::filter(ridge %in% c("Diploid control", "Haploid control"))
+  expt <- fsc_raw %>%
+    dplyr::filter(Strain == genotype, Media == condition)
+  df   <- bind_rows(ctrl, expt)
+
+  ggplot(df, aes(x = value, y = ridge, fill = Strain, color = Strain)) +
+    geom_density_ridges(alpha = 0.7, scale = 1.5, rel_min_height = 0.005) +
+    scale_x_continuous(limits = c(0, 2e6),
+                       labels = label_number(scale = 1e-3, suffix = "k")) +
+    scale_fill_manual(values  = GENO_COLORS, guide = "none") +
+    scale_color_manual(values = GENO_COLORS, guide = "none") +
+    labs(x     = "FSC-A (cell size)",
+         y     = NULL,
+         title = paste0(STRAIN_LABELS[genotype], " — ", COND_LABELS[condition])) +
+    theme_cowplot(font_size = 11) +
+    theme(plot.title = element_text(size = 11, face = "bold"))
+}
+```
+
+```{r s8-fsc-ridges, fig.height=9}
+fsc_plots <- map(genotypes, function(gt) {
+  map(conditions, function(cond) make_fsc_ridge(gt, cond))
+}) %>% unlist(recursive = FALSE)
+
+fsc_page <- plot_grid(plotlist = fsc_plots, ncol = 3, nrow = 2)
+fsc_page
+
+ggsave(file.path(out_dir, "SFig8_fsc_ridges.pdf"),
+       fsc_page, width = 12, height = 8)
+
+write_csv(fsc_raw %>%
+            dplyr::select(Strain, Media, Time, ridge, value),
+          file.path(data_dir, "SFig8_source_data.csv"))
+message("SFig8: FSC ridge plots saved")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```
