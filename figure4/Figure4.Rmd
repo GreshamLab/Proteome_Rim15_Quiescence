@@ -366,6 +366,11 @@ sig_ttest_pS_P <- right_join(
   drop_na() %>%
   dplyr::filter(nutrient == "P")
 
+# Deduplicate: keep one entry per gene (largest |log2FC|); fgsea requires unique names
+sig_ttest_pS_P <- sig_ttest_pS_P %>%
+  group_by(`Gene names`) %>%
+  slice_max(abs(log2FC), n = 1, with_ties = FALSE) %>%
+  ungroup()
 gene_list_P <- sig_ttest_pS_P$log2FC
 names(gene_list_P) <- sig_ttest_pS_P$`Gene names`
 gene_list_P <- sort(na.omit(gene_list_P), decreasing = TRUE)
@@ -393,6 +398,11 @@ sig_ttest_pS_C <- right_join(
   drop_na() %>%
   dplyr::filter(nutrient == "C")
 
+# Deduplicate: keep one entry per gene (largest |log2FC|); fgsea requires unique names
+sig_ttest_pS_C <- sig_ttest_pS_C %>%
+  group_by(`Gene names`) %>%
+  slice_max(abs(log2FC), n = 1, with_ties = FALSE) %>%
+  ungroup()
 gene_list_C <- sig_ttest_pS_C$log2FC
 names(gene_list_C) <- sig_ttest_pS_C$`Gene names`
 gene_list_C <- sort(na.omit(gene_list_C), decreasing = TRUE)

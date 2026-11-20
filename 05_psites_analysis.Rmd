@@ -656,13 +656,20 @@ require(DOSE)
 sig_ttest_pS_P <- right_join(ratio_sequence,logFC_ttest_pS %>% dplyr::filter(qvalue < 0.05), by = c("pSite","Proteins","Leading proteins","Protein names","Gene names","Fasta headers")) %>%drop_na() %>%
   filter(nutrient == "P")
 
-# we want the log2 fold change 
-original_gene_list <- sig_ttest_pS_P$log2FC
+# One entry per gene: keep the phosphosite with the largest |log2FC|
+# (a gene can have multiple phosphosites; fgsea requires unique names)
+sig_ttest_pS_P_dedup <- sig_ttest_pS_P %>%
+  group_by(`Gene names`) %>%
+  slice_max(abs(log2FC), n = 1, with_ties = FALSE) %>%
+  ungroup()
+
+# we want the log2 fold change
+original_gene_list <- sig_ttest_pS_P_dedup$log2FC
 
 # name the vector
-names(original_gene_list) <- sig_ttest_pS_P$`Gene names`
+names(original_gene_list) <- sig_ttest_pS_P_dedup$`Gene names`
 
-# omit any NA values 
+# omit any NA values
 gene_list<-na.omit(original_gene_list)
 
 # sort the list in decreasing order (required for clusterProfiler)
