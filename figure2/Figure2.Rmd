@@ -34,7 +34,12 @@ dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
 ```
 
 ```{r load-data}
-master <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE)
+master <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE) %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity, ratio, intensity),
+               names_to = "data", values_to = "value") %>%
+  mutate(data = recode(data,
+    "normalized_ratio"     = "normed_ratio",
+    "normalized_intensity" = "normed_intensity"))
 
 # ANCOVA results for identifying Rim15-dependent proteins
 anova_genotype <- read_csv("./tables/anova_genotype.csv", show_col_types = FALSE)

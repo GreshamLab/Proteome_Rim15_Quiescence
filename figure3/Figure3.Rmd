@@ -45,7 +45,12 @@ dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
 ```
 
 ```{r load-data}
-master <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE)
+master <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE) %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity, ratio, intensity),
+               names_to = "data", values_to = "value") %>%
+  mutate(data = recode(data,
+    "normalized_ratio"     = "normed_ratio",
+    "normalized_intensity" = "normed_intensity"))
 
 # WGCNA summary tables (produced by extract_wgcna_tables.R)
 wgcna_me       <- tryCatch(read_csv("./tables/wgcna_module_eigengenes.csv",

@@ -44,7 +44,12 @@ logFC_pG <- read_csv("./tables/DE_proteins_byGenotype.csv",
 logFC_pS <- read_csv("./tables/DE_pSites_byGenotype.csv",
                      show_col_types = FALSE)
 master   <- read_csv("./tables/master_tidy_protein.csv",
-                     show_col_types = FALSE)
+                     show_col_types = FALSE) %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity, ratio, intensity),
+               names_to = "data", values_to = "value") %>%
+  mutate(data = recode(data,
+    "normalized_ratio"     = "normed_ratio",
+    "normalized_intensity" = "normed_intensity"))
 ```
 
 ---
@@ -55,7 +60,8 @@ master   <- read_csv("./tables/master_tidy_protein.csv",
 logFC_joined <- left_join(
   logFC_pS,
   logFC_pG,
-  by     = c("Protein names", "Gene names", "Fasta headers", "nutrient", "time"),
+  by     = c("Protein names", "Gene names", "Fasta headers", "nutrient",
+             "time" = "samplingTime"),
   suffix = c(".phospho", ".protein"))
 
 p_S4A <- ggplot(logFC_joined,
