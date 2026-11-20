@@ -46,20 +46,14 @@ as working directory.
 
 ### R package dependencies
 
-Core: `tidyverse`, `reshape2`, `broom`.
+Run the provided installer script once before executing any pipeline scripts:
 
-Statistics/omics: `limma`, `qvalue`, `WGCNA`, `clusterProfiler`, `DOSE`,
-`org.Sc.sgd.db`, `rmotifx`, `psych`.
+```r
+source("install_packages.R")
+```
 
-Visualization: `pheatmap`, `gplots`, `ggpubr`, `ggrepel`, `ggfortify`,
-`factoextra`, `cowplot`, `gridExtra`, `RColorBrewer`, `scales`, `UpSetR`,
-`plotly`, `GGally`, `ggformula`, `ggridges`.
-
-Bioconductor packages install via `BiocManager::install()`.
-`rmotifx` installs from GitHub:
-`devtools::install_github("omarwagih/rmotifx")`.
-
-For Figure 4G: `install.packages("STRINGdb")`.
+This installs all CRAN, Bioconductor, and GitHub dependencies in one step.
+See `install_packages.R` for the full package list.
 
 ### Execution order
 
