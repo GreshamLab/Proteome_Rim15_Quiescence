@@ -409,7 +409,10 @@ ttest_pS <- pS_filtered %>%
   melt() %>%
   separate(variable, c("genotype","replicate")) %>%
   group_by(`Proteins`, `Leading proteins`, `Protein names`,`Gene names`, pSite, `Fasta headers`, nutrient, time) %>%
-  summarise(pvalue = t.test(value[genotype == "WT"], value[genotype == "rim15KO"], var.equal=TRUE)$p.value)
+  summarise(pvalue = tryCatch(
+    t.test(value[genotype == "WT"], value[genotype == "rim15KO"], var.equal=TRUE)$p.value,
+    error = function(e) NA_real_
+  ))
 
 ttest_pS$qvalue <- p.adjust(ttest_pS$pvalue,method="BH") 
 
@@ -758,7 +761,10 @@ ttest_pSite <- pSite_filtered %>%
   melt() %>%
   separate(variable, c("nutrient","replicate")) %>%
   group_by(pSite, `Protein names`,`Gene names`,`Fasta headers`,genotype, time) %>%
-  summarise(pvalue = t.test(value[nutrient == "C"], value[nutrient == "P"], var.equal=TRUE)$p.value)
+  summarise(pvalue = tryCatch(
+    t.test(value[nutrient == "C"], value[nutrient == "P"], var.equal=TRUE)$p.value,
+    error = function(e) NA_real_
+  ))
 
 ttest_pSite$qvalue <- p.adjust(ttest_pSite$pvalue,method="BH") 
 
