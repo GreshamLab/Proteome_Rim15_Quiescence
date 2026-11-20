@@ -32,8 +32,7 @@ cran_pkgs <- c(
   "SuperExactTest",
   "devtools",       # loaded by 01_data_preparation_qc.Rmd
   "remotes",        # for GitHub installs below
-  "rmarkdown",
-  "STRINGdb"        # Figure 4G protein interaction network
+  "rmarkdown"
 )
 
 to_install <- cran_pkgs[!cran_pkgs %in% rownames(installed.packages())]
@@ -57,6 +56,7 @@ bioc_pkgs <- c(
   "GO.db",
   "AnnotationDbi",
   "Biostrings",
+  "STRINGdb",       # Figure 4G protein interaction network
   # Flow cytometry (only needed for analyses/flow_cytometry_gating.Rmd)
   "cytolib",
   "flowCore",
