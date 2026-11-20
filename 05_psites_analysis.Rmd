@@ -40,7 +40,8 @@ library(pheatmap)
 
 #read in pSite table
 ```{r, include=FALSE}
-#read in pSite groups 
+#read in pSite groups
+Sys.setenv("VROOM_CONNECTION_SIZE" = 131072 * 20)
 phosphosites <- read_csv("./data/Phospho (STY)Sites.csv")
 #View(phosphosites)
 ```
