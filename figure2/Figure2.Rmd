@@ -66,24 +66,23 @@ quiescence_genes <- c("ABP1", "UGA1", "LEU4", "IDH2", "CIT1",
 # Extract normalized ratio data for these proteins
 qsc_long <- master %>%
   dplyr::filter(`Gene names` %in% quiescence_genes) %>%
-  dplyr::filter(genotype != "spike-in", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(genotype == "WT", nutrient %in% c("C", "P")) %>%
   dplyr::filter(data == "normed_ratio") %>%
   dplyr::filter(!is.na(value), is.finite(value))
 
 # Keep individual replicates — triplicates per timepoint shown side-by-side
 qsc_wide <- qsc_long %>%
-  unite(col_key, nutrient, genotype, samplingTime, replicate, remove = FALSE) %>%
+  unite(col_key, nutrient, samplingTime, replicate, remove = FALSE) %>%
   pivot_wider(names_from = col_key, values_from = value,
               id_cols = c(`Gene names`, `Protein IDs`))
 
-# Order columns: nutrient → genotype → timepoint → replicate
+# Order columns: nutrient → timepoint → replicate
 col_order <- expand.grid(
   nutrient     = c("C", "P"),
-  genotype     = c("WT", "rim15KO"),
   samplingTime = c("T00", "T06", "T16", "T30"),
   replicate    = c("R1", "R2", "R3"),
   stringsAsFactors = FALSE) %>%
-  unite(col_key, nutrient, genotype, samplingTime, replicate) %>%
+  unite(col_key, nutrient, samplingTime, replicate) %>%
   pull(col_key)
 col_order <- col_order[col_order %in% colnames(qsc_wide)]
 
@@ -97,16 +96,14 @@ heatmap_df <- heatmap_df[rowSums(is.na(heatmap_df)) < ncol(heatmap_df) / 2, ]
 # Remove zero-variance rows (required for scale="row")
 heatmap_df <- heatmap_df[apply(heatmap_df, 1, function(x) var(x, na.rm=TRUE) > 0), ]
 
-# Column annotation — parse from col_key (nutrient_genotype_time_rep)
+# Column annotation — parse from col_key (nutrient_time_rep)
 ann_col <- data.frame(
   nutrient = sub("_.*", "", colnames(heatmap_df)),
-  genotype = sub("^[^_]+_([^_]+)_.*", "\\1", colnames(heatmap_df)),
-  time     = sub("^[^_]+_[^_]+_([^_]+)_.*", "\\1", colnames(heatmap_df)),
+  time     = sub("^[^_]+_([^_]+)_.*", "\\1", colnames(heatmap_df)),
   row.names = colnames(heatmap_df))
 
 ann_colors <- list(
   nutrient = c("C" = "#ff9500", "P" = "#8300ab"),
-  genotype = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
   time     = c("T00" = "#fee8d0", "T06" = "#fdad60",
                "T16" = "#e85d04", "T30" = "#7f1900"))
 
