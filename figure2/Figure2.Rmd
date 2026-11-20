@@ -76,11 +76,11 @@ qsc_wide <- qsc_long %>%
   pivot_wider(names_from = col_key, values_from = value,
               id_cols = c(`Gene names`, `Protein IDs`))
 
-# Order columns: nutrient → timepoint → replicate
+# Order columns: C then P; within each nutrient T00→T30; replicates adjacent
 col_order <- expand.grid(
-  nutrient     = c("C", "P"),
+  replicate    = c("R1", "R2", "R3"),          # fastest-varying
   samplingTime = c("T00", "T06", "T16", "T30"),
-  replicate    = c("R1", "R2", "R3"),
+  nutrient     = c("C", "P"),                  # slowest-varying
   stringsAsFactors = FALSE) %>%
   unite(col_key, nutrient, samplingTime, replicate) %>%
   pull(col_key)
