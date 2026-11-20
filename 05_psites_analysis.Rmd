@@ -273,34 +273,46 @@ annotation_col <- names(df)[-1] %>% as.tibble() %>%
 library(RColorBrewer)
 breaksList = seq(-0.07, 0.07, by = 0.0001)
 
+psite_mat <- df[,-1] %>% drop_na()
+# Remove rows with zero variance — scale="row" produces NaN for constant rows,
+# which breaks hclust.
+psite_mat <- psite_mat[apply(psite_mat, 1, var) > 0, ]
+
 pdf("./plots/pSite_ratio_normed_heat_all.pdf", width = 13, height = 13)
-pheatmap(df[,-1] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
-                   cluster_cols = T, scale = "row", 
+pheatmap(psite_mat, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row",
                    annotation_col = annotation_col)
 dev.off()
 
-pheatmap(df[,-1] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
-                   cluster_cols = T, scale = "row", 
+pheatmap(psite_mat, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row",
                    annotation_col = annotation_col)
+
+psite_light <- df[,c(2:25,38:61)] %>% drop_na()
+psite_light <- psite_light[apply(psite_light, 1, var) > 0, ]
 
 pdf("./plots/pSite_ratio_normed_heat_light.pdf", width = 10, height = 8)
-pheatmap(df[,c(2:25,38:61)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
-                   cluster_cols = T, scale = "row", 
+pheatmap(psite_light, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row",
                    annotation_col = annotation_col)
 dev.off()
 
-pheatmap(df[,c(2:25,38:61)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
-                   cluster_cols = T, scale = "row", 
+pheatmap(psite_light, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row",
                    annotation_col = annotation_col)
 
 #look at C sample alone
-pheatmap(df[,c(2:25)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
-                   cluster_cols = T, scale = "row", 
+psite_C <- df[,c(2:25)] %>% drop_na()
+psite_C <- psite_C[apply(psite_C, 1, var) > 0, ]
+pheatmap(psite_C, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row",
                    annotation_col = annotation_col)
 
 #look at P sample alone
-pheatmap(df[,c(38:61)] %>% drop_na(), colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
-                   cluster_cols = T, scale = "row", 
+psite_P <- df[,c(38:61)] %>% drop_na()
+psite_P <- psite_P[apply(psite_P, 1, var) > 0, ]
+pheatmap(psite_P, colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+                   cluster_cols = T, scale = "row",
                    annotation_col = annotation_col)
 #PCA overtime
 #the column number here is determined by the conditions + replicates + mutant libraries
