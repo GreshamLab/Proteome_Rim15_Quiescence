@@ -1,11 +1,11 @@
 ---
-title: "Cross-dataset comparison of Rim15-dependent phosphosites (R1.3 / R2.5)"
+title: "Cross-dataset comparison of Rim15-dependent phosphosites"
 output: html_document
 ---
 
-Both reviewers asked for a quantitative overlap of our Rim15-dependent
-phosphosites with published Rim15 / PP2A-Cdc55 / quiescence phosphoproteomes:
-an UpSet plot (plus optional 3-set Venn) and a supplementary membership table.
+Quantitative overlap of our Rim15-dependent phosphosites with published
+Rim15 / PP2A-Cdc55 / quiescence phosphoproteomes: UpSet plot and supplementary
+membership table.
 
 Datasets (supplement files in `data/Publications for comparative analysis/`, kept
 locally / gitignored; sources listed in `data/Publications for comparative analysis/README.md`):
@@ -43,10 +43,10 @@ used different reference proteomes; Igo1 S64 is checked by hand below):
    GENENAME/COMMON/ALIAS fallbacks). Site key = `ORF_residueLetter+position`.
 2. Overlap at two resolutions: (i) protein-level, (ii) exact-site-level.
 3. UpSet plots (UpSetR) + full membership tables
-   -> `revision3/output/phosphosite_overlap_upset.pdf` (site-level),
-   `revision3/output/phosphoprotein_overlap_upset.pdf` (protein-level),
-   `revision3/output/phosphosite_membership.csv`,
-   `revision3/output/phosphoprotein_membership.csv`.
+   → `analyses/output/phosphosite_overlap_upset.pdf` (site-level),
+   `analyses/output/phosphoprotein_overlap_upset.pdf` (protein-level),
+   `analyses/output/phosphosite_membership.csv`,
+   `analyses/output/phosphoprotein_membership.csv`.
 4. Consensus set = our sites recovered in >= 2 published datasets; novel set
    = our sites in none of them. Headline numbers printed at the end feed the
    Discussion rewrite and the response letter.
@@ -62,8 +62,8 @@ library(Biostrings)
 library(org.Sc.sgd.db)
 library(UpSetR)
 
-repo_root <- "/Users/david/Projects/Proteome_Rim15_Quiescence"
-out_dir   <- file.path(repo_root, "revision3/output")
+repo_root <- "."
+out_dir   <- file.path(repo_root, "analyses/output")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 # ORF-shaped identifiers (Y-ORFs incl. dubious suffixes, Q-ORFs) pass through

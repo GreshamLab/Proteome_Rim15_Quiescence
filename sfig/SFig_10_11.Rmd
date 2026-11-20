@@ -5,7 +5,6 @@ output: html_document
 ---
 
 **Purpose:** Supplemental Figures 10 and 11.
-Extracted and reorganized from `revision3/R02_phosphosite_overlap.Rmd`.
 
 **S10 Fig:** UpSet plot comparing Rim15-dependent phosphosites (this study) with
 4 published datasets at exact-site resolution (ORF + residue + position).
@@ -16,12 +15,12 @@ Extracted and reorganized from `revision3/R02_phosphosite_overlap.Rmd`.
 - `tables/DE_pSites_byGenotype.csv`
 - `data/Phospho (STY)Sites.csv`
 - `tables/normed_pSite_ratio_perseus.csv`
-- Published dataset files in `data/Publications for comparative analysis/` (local only)
+- Published dataset files in `data/Publications for comparative analysis/`
 - UniProt reference proteome `data/Publications for comparative analysis/UP000002311_559292.fasta`
 
 **Run from repo root:** `rmarkdown::render("sfig/SFig_10_11.Rmd")`
 
-This script is a thin wrapper around `revision3/R02_phosphosite_overlap.Rmd`, which
+This script is a thin wrapper around `analyses/phosphosite_crossstudy.Rmd`, which
 performs the full analysis. Run that script first to generate the membership CSVs,
 then this script reads them and produces the final formatted figures.
 
@@ -41,7 +40,7 @@ data_dir <- "sfig/source_data"
 dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
 dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
 
-out_r02 <- "./revision3/output"
+out_r02 <- "./analyses/output"
 ```
 
 ```{r check-inputs}
@@ -50,7 +49,7 @@ protein_path <- file.path(out_r02, "phosphoprotein_membership.csv")
 
 if (!file.exists(site_path) || !file.exists(protein_path)) {
   stop("Membership tables not found.\n",
-       "Run revision3/R02_phosphosite_overlap.Rmd first to generate:\n",
+       "Run analyses/phosphosite_crossstudy.Rmd first to generate:\n",
        "  ", site_path, "\n  ", protein_path)
 }
 

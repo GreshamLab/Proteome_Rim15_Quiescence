@@ -40,13 +40,13 @@ Raw images are available on Mendeley Data (doi: [INSERT DOI]).
 
 **BLOCKED — awaiting per-trajectory GEM tracking data from Ying Xie.**
 
-Analysis code for Panels B–D is in `revision3/R05_gem_monomer_gated.Rmd`.
+Analysis code for Panels B–D is in `analyses/gem_diffusion.Rmd`.
 The reanalysis gates on monomeric GEM particles (single-particle intensity window
-from proliferating-cell data) to address the reviewer concern that larger aggregated
-particles diffuse more slowly by Stokes-Einstein.
+from proliferating-cell data) to ensure larger aggregated particles do not bias
+the diffusion estimates.
 
-Once the data is received, run `revision3/R05_gem_monomer_gated.Rmd` from the
-repo root to generate figures in `revision3/output/`, then update this section.
+Once the data is received, run `analyses/gem_diffusion.Rmd` from the
+repo root to generate figures in `analyses/output/`, then update this section.
 
 **Panel B:** Mean squared displacement (MSD) vs lag time τ for WT vs rim15Δ
 (monomer-gated GEMs).
@@ -63,14 +63,11 @@ quiescent (T=16) cells.
 
 message(
   "Panels B–D are BLOCKED pending GEM tracking data from Ying Xie.\n",
-  "See revision3/R05_gem_monomer_gated.Rmd for the analysis code."
+  "See analyses/gem_diffusion.Rmd for the analysis code."
 )
 
 # --- Uncomment and adapt once data arrives ---
-# Note: soften "decreased particle diffusion" to "reduced effective mobility /
-# increased confinement" per reviewer response, regardless of monomer-gating result.
-
-# gem_traj <- read_csv("revision3/output/gem_monomer_deff.csv",
+# gem_traj <- read_csv("analyses/output/gem_monomer_deff.csv",
 #                      show_col_types = FALSE)
 #
 # # Panel B — MSD vs tau

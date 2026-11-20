@@ -5,7 +5,6 @@ output: html_document
 ---
 
 **Purpose:** Supplemental Figures 7 and 8.
-Extracted and reorganized from `revision3/R01b_ridge_plots.Rmd`.
 
 **S7 Fig:** DNA staining distribution (SYTOX Green B2-A) over 46 h starvation,
 ridge plots for WT vs rim15Δ in C, N, P conditions with haploid/diploid controls.
@@ -13,10 +12,10 @@ ridge plots for WT vs rim15Δ in C, N, P conditions with haploid/diploid control
 **S8 Fig:** Cell size (FSC-A) distribution over 46 h starvation, same layout.
 
 **Inputs:**
-- `revision3/output/dna_b2a_raw.csv` (from `revision3/R01_dna_content.Rmd`)
-- `revision3/output/fsc_raw.csv` (from `revision3/R01_dna_content.Rmd`)
+- `analyses/output/dna_b2a_raw.csv` (from `analyses/flow_cytometry_gating.Rmd`)
+- `analyses/output/fsc_raw.csv` (from `analyses/flow_cytometry_gating.Rmd`)
 
-**Prerequisite:** `revision3/R01_dna_content.Rmd` must be run first (requires
+**Prerequisite:** `analyses/flow_cytometry_gating.Rmd` must be run first (requires
 an interactive RStudio session for the CytoExploreR gating steps).
 
 **Run from repo root:** `rmarkdown::render("sfig/SFig_7_8.Rmd")`
@@ -54,7 +53,7 @@ GENO_COLORS <- c("WT"      = "#E69F00",
                  "DGY1"    = "#999999",
                  "DGY3"    = "#cccccc")
 
-out_base <- "./revision3/output"
+out_base <- "./analyses/output"
 ```
 
 ```{r load-data}
@@ -63,7 +62,7 @@ fsc_path <- file.path(out_base, "fsc_raw.csv")
 
 if (!file.exists(dna_path) || !file.exists(fsc_path)) {
   stop("Flow cytometry data not found.\n",
-       "Run revision3/R01_dna_content.Rmd first to generate:\n",
+       "Run analyses/flow_cytometry_gating.Rmd first to generate:\n",
        "  ", dna_path, "\n  ", fsc_path)
 }
 

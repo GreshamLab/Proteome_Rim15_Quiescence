@@ -24,18 +24,5 @@ tables/master_protein.csv
 # Table S1 (copy of master_protein.csv) exceeds GitHub's 100 MB file limit
 Final_Supplemental_Tables/Table S1.csv
 
-# Published third-party supplements (local copies only; see README in each folder)
-# Folder was renamed from data/published/ to data/Publications for comparative analysis/
-data/Publications for comparative analysis/Phosphoproteome/
-data/Publications for comparative analysis/Proteome/
-data/Publications for comparative analysis/UP000002311_559292.fasta
-
 # Large raw data — not committed (regenerable or too large for GitHub)
 data/Flow cytometry data/
-data/mitochondrial proteome/
-
-# Student working file archived to rescue/V2_Plot_Design.Rmd (leading / = root only)
-/V2_Plot_Design.Rmd
-
-# Shiny app preprocessed data (regenerable via Rscript shiny/prep_data.R)
-shiny/data/

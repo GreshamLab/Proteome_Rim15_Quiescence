@@ -5,7 +5,7 @@ output: html_document
 ---
 
 **Purpose:** Supplemental Figure 9.
-Extracted and reorganized from `revision3/R03_mito_reconciliation.Rmd`.
+Script: `analyses/mito_subcompartment.Rmd`.
 
 **S9 Fig:** Mean log2(SILAC ratio) of mitochondrial proteins during carbon starvation,
 separated by subcompartment (Matrix/IM, IMS/IM, OM) using the Morgenstern 2017

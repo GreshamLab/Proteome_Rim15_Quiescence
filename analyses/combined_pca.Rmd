@@ -1,21 +1,17 @@
 ---
-title: "Combined-genotype PCA of the proteome (reviewer point R2.6)"
+title: "Combined-genotype PCA of the proteome"
 output: html_document
 ---
 
-Reviewer 2 noted that in the per-genotype PCA (Fig S2C) PC2 appears to separate
-replicates on carbon, with one WT carbon replicate offset, and asked whether
-genotype separates more than replicate scatter when WT and rim15KO are analyzed
-together. Here we run PCA on the pooled WT + rim15KO normalized SILAC ratios,
-color by genotype / nutrient / time / replicate, and check sensitivity of the
-conclusions to the suspect WT carbon replicate.
+PCA on the pooled WT + rim15KO normalized SILAC ratios, colored by
+genotype / nutrient / time / replicate.
 
 ```{r setup, message=FALSE}
 library(tidyverse)
 
 ratios <- read_csv("./tables/normed_ratio_perseus.csv")
 
-dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+dir.create("./analyses/output", showWarnings = FALSE, recursive = TRUE)
 ```
 
 ```{r prepare-matrix}
@@ -59,7 +55,7 @@ plot_pca <- function(color_by) {
 p <- cowplot::plot_grid(plot_pca("genotype"), plot_pca("nutrient"),
                         plot_pca("time"), plot_pca("replicate"), nrow = 2)
 p
-ggsave("./revision3/output/combined_pca.pdf", p, width = 10, height = 8)
+ggsave("./analyses/output/combined_pca.pdf", p, width = 10, height = 8)
 
 # Which PC captures genotype? Correlate PCs with genotype indicator.
 scores %>%

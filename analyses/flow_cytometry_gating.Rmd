@@ -1,5 +1,5 @@
 ---
-title: "DNA-content and cell-size reanalysis: gating, histograms, 1N-fraction ANOVA (R1.2 / R2.1)"
+title: "Flow cytometry: DNA content and cell size — gating, histograms, 1N-fraction ANOVA"
 output: html_document
 ---
 
@@ -8,15 +8,11 @@ claim. The reanalysis strategy (from `Sun_et_al_response_plan.docx`) is to conce
 on kinetics while defending the terminal phenotype: both WT and rim15Δ ultimately
 arrest as unbudded 1N cells, but rim15Δ delays and desynchronizes G1 arrest.
 
-This script is the production version derived from `rescue/V2_Plot_Design.Rmd`
-(written by Ozan Berk Imir, January 2026). It runs from the repo root
-(`knit_root_dir = getwd()`).
+Runs from the repo root (`knit_root_dir = getwd()`).
 
-**Prerequisite data files (committed to `revision3/`):**
-- `revision3/flow_gating_template.csv` — CytoExploreR polygon gate definitions
-  (original: `cytek_gating_OzanImir_20260115_v2.csv`, received from Ozan Berk Imir)
-- `revision3/flow_sample_metadata.csv` — per-FCS-file metadata (Strain / Media / Time / Bio_rep / Sample_type)
-  (original: `Vignette-Experiment-Details.csv`)
+**Prerequisite data files (in `analyses/`):**
+- `analyses/flow_gating_template.csv` — CytoExploreR polygon gate definitions
+- `analyses/flow_sample_metadata.csv` — per-FCS-file metadata (Strain / Media / Time / Bio_rep / Sample_type)
 
 Raw FCS files (177 files, 745 MB) are in `data/Flow cytometry data/` (gitignored).
 
@@ -60,13 +56,13 @@ library(CytoExploreR)
 # CytoExploreR masks dplyr::filter with stats::filter; restore it
 filter <- dplyr::filter
 
-dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+dir.create("./analyses/output", showWarnings = FALSE, recursive = TRUE)
 
 # --- Path constants (all relative to repo root) ---
 fcs_path        <- "./data/Flow cytometry data/"
-gating_template <- "./revision3/flow_gating_template.csv"
-exp_details_csv <- "./revision3/flow_sample_metadata.csv"
-out_dir         <- "./revision3/output/"
+gating_template <- "./analyses/flow_gating_template.csv"
+exp_details_csv <- "./analyses/flow_sample_metadata.csv"
+out_dir         <- "./analyses/output/"
 
 # Strain labels and colour palette used throughout
 # Metadata uses "WT" directly (not DGY1); only RIM15Δ0 needs recoding

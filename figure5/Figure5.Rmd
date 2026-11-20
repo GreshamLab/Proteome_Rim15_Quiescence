@@ -41,9 +41,9 @@ Raw images are available on Mendeley Data (doi: [INSERT DOI]).
 **BLOCKED — awaiting data from Ying Xie (Cellpose segmentation masks /
 MitoGraph per-cell output).**
 
-Analysis code for this panel is in `revision3/R04_mito_volume_norm.Rmd`.
+Analysis code for this panel is in `analyses/mito_volume.Rmd`.
 Once the segmentation data is received, run that script from the repo root
-to generate `revision3/output/mito_volume_per_cellvol.pdf`, then update
+to generate `analyses/output/mito_volume_per_cellvol.pdf`, then update
 this section with the final plot code.
 
 The analysis plan (per reviewer response):
@@ -57,15 +57,15 @@ The analysis plan (per reviewer response):
 ```{r panel-B-placeholder}
 # BLOCKED: data not yet available from collaborator.
 # Remove this message and uncomment the code below once
-# `revision3/output/mito_per_cell_volume.csv` is available.
+# `analyses/output/mito_per_cell_volume.csv` is available.
 
 message(
   "Panel B is BLOCKED pending per-cell mitochondrial volume data from Ying Xie.\n",
-  "See revision3/R04_mito_volume_norm.Rmd for the analysis code."
+  "See analyses/mito_volume.Rmd for the analysis code."
 )
 
 # --- Uncomment and adapt once data arrives ---
-# mito_vol <- read_csv("revision3/output/mito_per_cell_volume.csv",
+# mito_vol <- read_csv("analyses/output/mito_per_cell_volume.csv",
 #                      show_col_types = FALSE)
 #
 # p_B <- ggplot(mito_vol, aes(x = genotype, y = mito_per_cell_vol,

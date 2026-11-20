@@ -166,13 +166,13 @@ copy_table("figure1/growth_long.csv",                          10,
            "Growth curves (OD600/counts vs time)")
 copy_table("figure1/budindex_short.csv",                       11,
            "Bud index vs time")
-copy_table("revision3/output/dna_1n_percent_summary.csv",      12,
+copy_table("analyses/output/dna_1n_percent_summary.csv",      12,
            "1N DNA content percentage per genotype/condition/time")
-copy_table("revision3/output/dna_1N_anova.csv",                13,
+copy_table("analyses/output/dna_1N_anova.csv",                13,
            "Two-way ANOVA on 1N DNA content trajectories")
 copy_table("figure1/viability.csv",                            14,
            "Viability (PI/Syto9) vs time")
-copy_table("revision3/output/cellsize_summary.csv",            15,
+copy_table("analyses/output/cellsize_summary.csv",            15,
            "Cell size (FSC-A) vs time")
 copy_table("tables/DE_proteins_byGenotype.csv",                16,
            "Differentially expressed proteins by genotype")
@@ -184,21 +184,21 @@ copy_table("tables/DE_pSites_byGenotype.csv",                  19,
            "Differentially expressed phosphosites by genotype")
 copy_table("tables/motif_sig(q<0.01).csv",                     20,
            "Phosphorylation motif enrichment (q < 0.01)")
-copy_table("revision3/output/phosphosite_membership.csv",      21,
+copy_table("analyses/output/phosphosite_membership.csv",      21,
            "Cross-dataset phosphosite overlap membership")
-copy_table("revision3/output/phosphoprotein_membership.csv",   22,
+copy_table("analyses/output/phosphoprotein_membership.csv",   22,
            "Cross-dataset phosphoprotein overlap membership")
-copy_table("revision3/output/mito_coverage_table.csv",         23,
+copy_table("analyses/output/mito_coverage_table.csv",         23,
            "Mitochondrial proteome coverage vs reference")
-copy_table("revision3/output/mito_class_log2fc.csv",           24,
+copy_table("analyses/output/mito_class_log2fc.csv",           24,
            "Mitochondrial protein log2FC by subclass")
-copy_table("revision3/output/proteome_coverage.csv",           25,
+copy_table("analyses/output/proteome_coverage.csv",           25,
            "Cross-dataset proteome coverage (this study, Paulo 2015, den Ridder 2023)")
-copy_table("revision3/output/proteome_regulation_overlap.csv", 26,
+copy_table("analyses/output/proteome_regulation_overlap.csv", 26,
            "Quiescence-regulation overlap (rim15Δ-regulated vs Paulo 2015 quiescent-enriched)")
-copy_table("revision3/output/proteome_overlap_detailed.csv",     27,
+copy_table("analyses/output/proteome_overlap_detailed.csv",     27,
            "Proteome overlap detailed: our log2FC + Paulo 2015 ratio and p-value")
-copy_table("revision3/output/phosphosite_overlap_quantitative.csv", 28,
+copy_table("analyses/output/phosphosite_overlap_quantitative.csv", 28,
            "Phosphosite overlap quantitative: our log2FC/q + Li2019 + Plank fold-changes")
 
 # ── Summary ───────────────────────────────────────────────────────────────────

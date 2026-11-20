@@ -5,7 +5,7 @@ output: html_document
 ---
 
 **Purpose:** Supplemental Figure 6.
-Analysis code will be in `revision3/R04_mito_volume_norm.Rmd` once data is available.
+Analysis code will be in `analyses/mito_volume.Rmd` once data is available.
 
 **BLOCKED — awaiting per-cell segmentation data from Ying Xie (Cellpose masks /
 MitoGraph output).**
@@ -20,13 +20,13 @@ knitr::opts_knit$set(root.dir = normalizePath(".."))
 ```{r placeholder}
 message(
   "S6 Fig is BLOCKED pending per-cell volume data from Ying Xie.\n",
-  "Analysis code is in revision3/R04_mito_volume_norm.Rmd.\n",
+  "Analysis code is in analyses/mito_volume.Rmd.\n",
   "Once data is received, adapt that script to generate the panels:\n",
   "  - S6A: Cell volume (FSC-proxy or geometric estimate) WT vs rim15Δ\n",
   "  - S6B: Mito volume / cell volume ratio WT vs rim15Δ"
 )
 
 # --- Uncomment and adapt once data arrives ---
-# source("revision3/R04_mito_volume_norm.Rmd", local = TRUE)
+# source("analyses/mito_volume.Rmd", local = TRUE)
 # (or copy relevant chunks here and save output to sfig/plots/ and sfig/source_data/)
 ```

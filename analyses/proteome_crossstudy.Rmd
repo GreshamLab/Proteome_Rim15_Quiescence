@@ -1,13 +1,13 @@
 ---
-title: "Cross-dataset comparison of quiescence proteome — Paulo et al. 2015 (R2.3)"
+title: "Cross-dataset comparison of quiescence proteome — Paulo et al. 2015"
 output: html_document
 ---
 
-Reviewer 2 requested a comparison of our detected proteins and starvation-regulated
-proteins with those in published quiescence proteome studies. This script compares
-our carbon-starvation time course (WT cells, Table S5) with Paulo et al. 2015
-(Mol Cell Proteomics 14:1998–2015), which used sedimentation fractionation to
-compare quiescent vs log-phase *S. cerevisiae* proteomes.
+Comparison of our detected proteins and starvation-regulated proteins with those
+in published quiescence proteome studies. Compares our carbon-starvation time
+course (WT cells, Table S5) with Paulo et al. 2015 (Mol Cell Proteomics
+14:1998–2015), which used sedimentation fractionation to compare quiescent vs
+log-phase *S. cerevisiae* proteomes.
 
 **Source tables:**
 
@@ -19,8 +19,8 @@ compare quiescent vs log-phase *S. cerevisiae* proteomes.
   detected ORFs) and `NIHMS464126-supplement-3_si_003.xlsx` (quiescent-enriched
   and log-enriched protein lists, both ≥2-fold).
 
-Outputs → `revision3/output/proteome_coverage.csv` (Table S25) and
-`revision3/output/proteome_regulation_overlap.csv` (Table S26).
+Outputs → `analyses/output/proteome_coverage.csv` (Table S25) and
+`analyses/output/proteome_regulation_overlap.csv` (Table S26).
 
 ```{r setup, message=FALSE}
 library(tidyverse)
@@ -29,8 +29,8 @@ library(org.Sc.sgd.db)
 library(AnnotationDbi)
 library(UpSetR)
 
-repo_root <- "/Users/david/Projects/Proteome_Rim15_Quiescence"
-out_dir   <- file.path(repo_root, "revision3/output")
+repo_root <- "."
+out_dir   <- file.path(repo_root, "analyses/output")
 pub_dir   <- file.path(repo_root, "data/Publications for comparative analysis")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 

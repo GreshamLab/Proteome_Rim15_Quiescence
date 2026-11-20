@@ -31,7 +31,7 @@ GENO_COLORS <- c("WT"      = "#E69F00",
                  "DGY1"    = "#999999",
                  "DGY3"    = "#cccccc")
 
-out_dir <- "/Users/david/Projects/Proteome_Rim15_Quiescence/revision3/output"
+out_dir <- "./analyses/output"
 ```
 
 ```{r load-dna}

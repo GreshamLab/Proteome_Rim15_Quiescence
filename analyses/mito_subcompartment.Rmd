@@ -1,5 +1,5 @@
 ---
-title: "Reconciling the mitochondrial proteome and imaging phenotypes (R2.7)"
+title: "Mitochondrial proteome coverage and subcompartment analysis"
 output: html_document
 ---
 
@@ -20,12 +20,12 @@ Reference: Morgenstern et al. 2017 (Cell Rep 19:2836), high-confidence mitochond
 proteome with subcompartment annotation. Files in `data/mitochondrial proteome/`.
 
 Outputs:
-- `revision3/output/mito_coverage_table.csv` — n detected / n reference, per subcompartment
-- `revision3/output/mito_class_log2fc.csv` — per functional class log2(rim15Δ/WT) summary
-- `revision3/output/mito_coverage.pdf` — coverage bar chart
-- `revision3/output/mito_by_subcompartment.pdf` — WT vs rim15Δ trajectories by sublocalization
-- `revision3/output/mito_by_class.pdf` — WT vs rim15Δ trajectories by functional class
-- `revision3/output/mito_class_heatmap.pdf` — per-protein log2FC heatmap by class
+- `analyses/output/mito_coverage_table.csv` — n detected / n reference, per subcompartment
+- `analyses/output/mito_class_log2fc.csv` — per functional class log2(rim15Δ/WT) summary
+- `analyses/output/mito_coverage.pdf` — coverage bar chart
+- `analyses/output/mito_by_subcompartment.pdf` — WT vs rim15Δ trajectories by sublocalization
+- `analyses/output/mito_by_class.pdf` — WT vs rim15Δ trajectories by functional class
+- `analyses/output/mito_class_heatmap.pdf` — per-protein log2FC heatmap by class
 
 ```{r setup, message=FALSE, warning=FALSE}
 library(tidyverse)
@@ -33,9 +33,9 @@ library(readxl)
 library(cowplot)
 library(org.Sc.sgd.db)
 
-dir.create("./revision3/output", showWarnings = FALSE, recursive = TRUE)
+dir.create("./analyses/output", showWarnings = FALSE, recursive = TRUE)
 
-out_dir  <- "./revision3/output/"
+out_dir  <- "./analyses/output/"
 mito_dir <- "./data/mitochondrial proteome/"
 ```
 

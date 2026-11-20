@@ -12,9 +12,9 @@
 #   - R packages listed in README.md installed
 #
 # Outputs: tables/, plots/, tables/supplemental/, figure1/output/
-# Note: revision3/ scripts are run separately (R01 requires an interactive
-#       RStudio session for CytoExploreR gating; R01b/R02/R03/R06 can be
-#       knitted non-interactively after R01 has been run).
+# Note: analyses/ scripts are run separately (flow_cytometry_gating.Rmd requires
+#       an interactive RStudio session for CytoExploreR gating; other analyses/
+#       scripts can be knitted non-interactively after gating is complete).
 
 library(rmarkdown)
 
@@ -29,7 +29,7 @@ message("=== Step 2: WGCNA module table extraction ===")
 # render("02_protein_anova_wgcna.Rmd", quiet = TRUE)  # rerun WGCNA (~hours)
 source("extract_wgcna_tables.R")
 
-# 03_ancova_analysis.Rmd is retired — ANCOVA is run inside script 04.
+# ANCOVA is run inside script 04.
 
 message("=== Step 4: Differential abundance and GO/KEGG enrichment ===")
 render("04_protein_de_go_analysis.Rmd", quiet = TRUE)
@@ -50,4 +50,4 @@ source("make_supplemental_tables.R")
 
 message("\nPipeline complete.")
 message("Main outputs: tables/, plots/, tables/supplemental/")
-message("For revision3/ analyses, see revision3/README.md")
+message("For additional analyses (flow cytometry, cross-study comparisons), see analyses/README.md")
