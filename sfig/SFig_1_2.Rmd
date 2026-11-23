@@ -110,7 +110,7 @@ if (file.exists(auxo_path_M) && file.exists(auxo_path_H)) {
     theme_cowplot(font_size = 12) +
     theme(legend.position = "bottom", legend.title = element_blank())
 
-  p_S1A
+  print(p_S1A)
   ggsave(file.path(out_dir, "SFig1A_label_incorporation.pdf"),
          p_S1A, width = 6, height = 4, useDingbats = FALSE)
 
@@ -198,7 +198,7 @@ if (ncol(rep_scatter) >= 4) {
     theme_cowplot(font_size = 11)
 
   p_S2A <- plot_grid(p_S2A_12, p_S2A_13, ncol = 2)
-  p_S2A
+  print(p_S2A)
   ggsave(file.path(out_dir, "SFig2A_replicate_scatter.pdf"),
          p_S2A, width = 10, height = 5, useDingbats = FALSE)
 

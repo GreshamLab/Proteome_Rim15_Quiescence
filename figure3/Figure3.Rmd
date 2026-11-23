@@ -254,7 +254,7 @@ if (!is.null(wgcna_wide) && !is.null(wgcna_members)) {
 
     ggsave(file.path(out_dir, "Fig3D_GO_enrichment.pdf"),
            p_D, width = 12, height = 10, useDingbats = FALSE)
-    p_D
+    print(p_D)
 
     write_csv(enrich_df, file.path(data_dir, "Fig3D_source_data.csv"))
     message("Fig3D: ", nrow(enrich_df), " enrichment terms saved")
@@ -316,7 +316,7 @@ if (!is.null(wgcna_members)) {
   ggsave(file.path(out_dir, "Fig3E_module_trajectories.pdf"),
          p_E, width = 14, height = max(6, n_distinct(module_summary$module_label) * 1.5),
          useDingbats = FALSE)
-  p_E
+  print(p_E)
 
   write_csv(module_summary, file.path(data_dir, "Fig3E_source_data.csv"))
   message("Fig3E: module trajectory data saved")

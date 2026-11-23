@@ -187,7 +187,7 @@ if (nrow(hm_df) > 0) {
 
     ggsave(file.path(out_dir, "SFig5C_GO_enrichment.pdf"),
            p_S5C, width = 8, height = 8, useDingbats = FALSE)
-    p_S5C
+    print(p_S5C)
   }
 }
 ```
@@ -234,7 +234,7 @@ if (exists("cluster_assignments") && nrow(cluster_assignments) > 0) {
 
   ggsave(file.path(out_dir, "SFig5D_PEM_dynamics.pdf"),
          p_S5D, width = 8, height = 6, useDingbats = FALSE)
-  p_S5D
+  print(p_S5D)
 
   write_csv(pSite_clust_summary, file.path(data_dir, "SFig5D_source_data.csv"))
 }
