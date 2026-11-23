@@ -48,6 +48,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
 bioc_pkgs <- c(
+  "impute",         # required by WGCNA
+  "preprocessCore", # required by WGCNA
   "limma",
   "qvalue",
   "clusterProfiler",
