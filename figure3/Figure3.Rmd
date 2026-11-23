@@ -166,7 +166,8 @@ if (!is.null(wgcna_me)) {
       nutrient_num = as.integer(nutrient == "C")) %>%
     dplyr::select(time_num, genotype_num, nutrient_num)
 
-  me_values <- me_wide %>% dplyr::select(starts_with("ME"))
+  meta_cols <- c("network", "nutrient", "genotype", "timepoint_h", "replicate")
+  me_values <- me_wide %>% dplyr::select(-any_of(meta_cols))
 
   if (ncol(me_values) > 0 && nrow(meta_num) > 3) {
     cor_mat <- cor(me_values, meta_num, use = "pairwise.complete.obs")
