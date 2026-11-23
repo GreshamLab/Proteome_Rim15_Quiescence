@@ -111,8 +111,7 @@ for (net in networks) {
     separate(`rownames.MEs.`, c("nutrient", "genotype", "time", "replicate"))
   rownames(annotation) <- rownames(MEs)
 
-  pdf(file.path(out_dir, paste0("Fig3B_ME_", net, ".pdf")), width = 5, height = 6)
-  pheatmap(MEs,
+  ph <- pheatmap(MEs,
            colorRampPalette(rev(brewer.pal(n = 10, name = "RdBu")))(length(breaksList)),
            breaks           = breaksList,
            cluster_rows     = TRUE,
@@ -121,8 +120,11 @@ for (net in networks) {
            annotation_colors = ann_colors,
            main             = paste0("Module eigengenes — ", net),
            fontsize         = 8,
-           silent           = FALSE)
+           silent           = TRUE)
+  pdf(file.path(out_dir, paste0("Fig3B_ME_", net, ".pdf")), width = 5, height = 6)
+  grid::grid.draw(ph$gtable)
   dev.off()
+  grid::grid.draw(ph$gtable)   # render inline for HTML
 
   me_plots[[net]] <- MEs
 }
