@@ -213,12 +213,12 @@ if (!is.null(wgcna_wide) && !is.null(wgcna_members)) {
     for (mod in unique(net_members$module)) {
       mod_proteins <- net_members %>%
         dplyr::filter(module == mod) %>%
-        pull(`Protein IDs`)
+        pull(protein_id)
 
       ego <- tryCatch(
         clusterProfiler::enrichGO(
           gene          = mod_proteins,
-          universe      = unique(wgcna_members$`Protein IDs`),
+          universe      = unique(wgcna_members$protein_id),
           ont           = "BP",
           keyType       = "UNIPROT",
           OrgDb         = "org.Sc.sgd.db",
@@ -274,8 +274,8 @@ if (!is.null(wgcna_members)) {
     dplyr::filter(data == "normed_ratio") %>%
     dplyr::filter(!is.na(value), is.finite(value)) %>%
     inner_join(wgcna_members %>%
-                 dplyr::select(`Protein IDs`, network, module),
-               by = "Protein IDs") %>%
+                 dplyr::select(protein_id, network, module),
+               by = c("Protein IDs" = "protein_id")) %>%
     dplyr::filter(!is.na(module), module != 0) %>%
     mutate(samplingTime = as.integer(sub("T", "", samplingTime)))
 
