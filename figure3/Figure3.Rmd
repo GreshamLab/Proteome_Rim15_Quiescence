@@ -159,7 +159,7 @@ if (!is.null(wgcna_me)) {
   # Numeric encoding of metadata variables
   meta_num <- me_wide %>%
     mutate(
-      time_num     = as.integer(sub("T", "", time)),
+      time_num     = as.integer(timepoint_h),
       genotype_num = as.integer(genotype == "WT"),
       nutrient_num = as.integer(nutrient == "C")) %>%
     dplyr::select(time_num, genotype_num, nutrient_num)
