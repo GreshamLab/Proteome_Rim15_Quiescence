@@ -35,6 +35,13 @@ out_dir  <- "figure3/plots"
 data_dir <- "figure3/source_data"
 dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
 dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+
+# Remove PDFs from the previous per-condition version so only current outputs remain
+old_pdfs <- c("Fig3B_ME_C_rim15KO.pdf", "Fig3B_ME_C_WT.pdf",
+              "Fig3B_ME_P_rim15KO.pdf", "Fig3B_ME_P_WT.pdf",
+              "Fig3C_ME_variable_correlation.pdf",
+              "Fig3D_GO_enrichment.pdf", "Fig3E_module_trajectories.pdf")
+invisible(lapply(file.path(out_dir, old_pdfs), function(f) if (file.exists(f)) file.remove(f)))
 ```
 
 ```{r load-data}
@@ -152,7 +159,7 @@ message("Fig3B: ", nrow(me_mat), " samples × ", ncol(me_mat), " WPMs saved")
 
 ## Panel C — WPM eigengene × trait Pearson correlation
 
-Rows = WPM1–WPM6; columns = timepoint, carbon starvation, phosphorus starvation, WT, rim15Δ.
+Rows = traits (time, starvation type, genotype); columns = WPM1–WPM6.
 Cell text shows Pearson r (p-value).
 
 ```{r panel-C}
@@ -165,7 +172,7 @@ meta_df <- data.frame(
   rim15      = as.integer(sub("^[^_]+_([^_]+)_.*", "\\1", rownames(me_mat)) == "rim15KO"),
   row.names  = rownames(me_mat))
 
-# Pearson r and p
+# Pearson r and p  (cor_mat: rows = WPM, cols = traits)
 cor_mat  <- cor(me_mat, meta_df, use = "pairwise.complete.obs")
 pval_mat <- matrix(NA_real_, nrow(cor_mat), ncol(cor_mat),
                    dimnames = dimnames(cor_mat))
@@ -173,30 +180,31 @@ for (i in seq_len(nrow(cor_mat)))
   for (j in seq_len(ncol(cor_mat)))
     pval_mat[i, j] <- cor.test(me_mat[, i], meta_df[, j])$p.value
 
+# Rename trait columns before transposing
+colnames(cor_mat)  <- c("Time", "Carbon starvation", "Phosphorus starvation",
+                         "WT", "rim15\u0394")
+colnames(pval_mat) <- colnames(cor_mat)
+
 # Display text: r on first line, p on second
 display_txt <- matrix(
   paste0(sprintf("%.2f", cor_mat), "\n(", sprintf("%.1e", pval_mat), ")"),
   nrow = nrow(cor_mat), dimnames = dimnames(cor_mat))
 
-# Rename columns for display
-colnames(cor_mat) <- c("Time", "Carbon\nstarvation", "Phosphorus\nstarvation",
-                        "WT", "rim15\u0394")
-colnames(display_txt) <- colnames(cor_mat)
-
+# Transpose: WPMs become columns (x-axis), traits become rows (y-axis)
 ph_C <- pheatmap(
-  cor_mat,
+  t(cor_mat),
   color           = colorRampPalette(rev(brewer.pal(n = 7, name = "RdBu")))(100),
   breaks          = seq(-1, 1, length.out = 101),
   cluster_rows    = FALSE,
   cluster_cols    = FALSE,
-  display_numbers = display_txt,
+  display_numbers = t(display_txt),
   number_color    = "black",
   fontsize        = 9,
   fontsize_number = 6,
   main            = "WPM eigengene \u00d7 trait Pearson correlation",
   silent          = TRUE)
 
-pdf(file.path(out_dir, "Fig3C_ME_trait_correlation.pdf"), width = 5, height = 4)
+pdf(file.path(out_dir, "Fig3C_ME_trait_correlation.pdf"), width = 6, height = 4)
 grid::grid.draw(ph_C$gtable)
 dev.off()
 grid::grid.draw(ph_C$gtable)
@@ -255,8 +263,8 @@ if (nrow(go_data) > 0) {
 
 ## Panel E — Per-WPM expression trajectories
 
-Mean normalized ratio (± SEM) over time for each WPM, faceted by WPM and nutrient,
-with WT (gold) and rim15Δ (teal) overlaid.
+Mean normalized ratio (± SEM) over time. Layout: 6 WPM columns × 2 genotype rows.
+Carbon (orange) and phosphorus (purple) starvation overlaid within each panel.
 
 ```{r panel-E}
 module_traj <- master %>%
@@ -273,36 +281,38 @@ mod_n <- module_traj %>%
 
 module_summary <- module_traj %>%
   mutate(samplingTime = as.integer(sub("T", "", samplingTime)),
-         genotype     = factor(genotype, levels = c("WT", "rim15KO"))) %>%
+         genotype     = factor(genotype, levels = c("WT", "rim15KO")),
+         nutrient     = factor(nutrient, levels = c("C", "P"))) %>%
   group_by(wpm, genotype, nutrient, samplingTime) %>%
   summarise(mean_val = mean(value, na.rm = TRUE),
             sem_val  = sd(value,   na.rm = TRUE) / sqrt(n()),
             .groups  = "drop") %>%
   left_join(mod_n, by = "wpm") %>%
-  mutate(wpm_label = paste0(wpm, " (n=", n, ")"),
+  mutate(wpm_label = paste0(wpm, "\n(n=", n, ")"),
          wpm_label = factor(wpm_label,
-                            levels = paste0(paste0("WPM", 1:6),
-                                            " (n=", mod_n$n[order(mod_n$wpm)], ")")))
+                            levels = paste0(paste0("WPM", 1:6), "\n(n=",
+                                            mod_n$n[order(mod_n$wpm)], ")")))
 
 p_E <- ggplot(module_summary,
               aes(x = samplingTime, y = mean_val,
-                  group = genotype, color = genotype)) +
+                  group = nutrient, color = nutrient)) +
   geom_ribbon(aes(ymin = mean_val - sem_val,
                   ymax = mean_val + sem_val,
-                  fill = genotype),
+                  fill = nutrient),
               alpha = 0.15, color = NA) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
   geom_line(linewidth = 0.8) +
   geom_point(size = 1.5) +
-  facet_grid(wpm_label ~ nutrient,
+  facet_grid(genotype ~ wpm_label,
              labeller = labeller(
-               nutrient = c("C" = "Carbon starvation",
-                            "P" = "Phosphorus starvation")),
+               genotype = c("WT" = "WT", "rim15KO" = "rim15\u0394")),
              scales = "free_y") +
-  scale_color_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
-                     labels = c("WT" = "WT", "rim15KO" = "rim15\u0394")) +
-  scale_fill_manual(values  = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
-                    labels  = c("WT" = "WT", "rim15KO" = "rim15\u0394")) +
+  scale_color_manual(values = c("C" = "#ff9500", "P" = "#8300ab"),
+                     labels = c("C" = "Carbon starvation",
+                                "P" = "Phosphorus starvation")) +
+  scale_fill_manual(values  = c("C" = "#ff9500", "P" = "#8300ab"),
+                    labels  = c("C" = "Carbon starvation",
+                                "P" = "Phosphorus starvation")) +
   scale_x_continuous(breaks = c(0, 6, 16, 30)) +
   xlab("Hours post nutrient depletion") +
   ylab("Mean normalized ratio (\u00b1 SEM)") +
@@ -313,7 +323,7 @@ p_E <- ggplot(module_summary,
         strip.text       = element_text(size = 7))
 
 ggsave(file.path(out_dir, "Fig3E_WPM_trajectories.pdf"),
-       p_E, width = 6, height = 10, useDingbats = FALSE)
+       p_E, width = 14, height = 5, useDingbats = FALSE)
 print(p_E)
 
 write_csv(module_summary, file.path(data_dir, "Fig3E_source_data.csv"))
