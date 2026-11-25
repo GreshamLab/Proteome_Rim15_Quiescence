@@ -16,10 +16,15 @@ imaging, and GEM nanoparticle single-particle tracking.
 - Mass-spectrometry proteomics data: ProteomeXchange **PXD044239**.
 - MaxQuant summary tables used as pipeline inputs are included in `data/`:
   `proteinGroups.csv` and `Phospho (STY)Sites.csv`.
-- Reference datasets for cross-study comparisons are in
-  `data/Publications for comparative analysis/` (see `data/Publications for comparative analysis/README.md`).
+- Reference datasets for cross-study comparisons must be downloaded manually from
+  the original publications and placed in `data/Publications for comparative analysis/`
+  (see that directory's `README.md` for the required files and sources).
+  The derived output tables (`analyses/output/phosphosite_membership.csv` etc.) are
+  committed, so `sfig/SFig_10_11.Rmd` can be run without re-downloading the raw files.
 - Mitochondrial subcompartment annotation: `data/mitochondrial proteome/mmc4.xlsx`
-  (Morgenstern et al. 2017, *Cell* supplementary table).
+  (Morgenstern et al. 2017, *Cell* supplementary table S4) — download from the
+  original publication and place at that path before running
+  `analyses/mito_subcompartment.Rmd` or `sfig/SFig_9.Rmd`.
 - Mitochondrial imaging and GEM tracking raw data: Mendeley Data
   (doi: [INSERT DOI — Figs 5–6]).
 - **Source data:** Per-panel numerical data files are in `figureN/source_data/`
