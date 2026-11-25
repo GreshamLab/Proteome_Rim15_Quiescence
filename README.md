@@ -33,6 +33,7 @@ imaging, and GEM nanoparticle single-particle tracking.
 | `figure1/` – `figure6/` | Self-contained Rmd + `source_data/` + `plots/` per figure |
 | `sfig/` | Supplemental figure Rmds + `source_data/` + `plots/` |
 | `analyses/` | Flow cytometry, cross-study comparisons, and imaging analyses |
+| `Macro Script for imageJ/` | Fiji macro scripts for image preprocessing and particle tracking (Figs 5–6, S6 Fig) |
 | `tables/` | Intermediate and final output tables |
 | `output/wgcna/` | WGCNA network objects and module plots |
 | `Final_Supplemental_Tables/` | Assembled supplemental tables S1–S28 |
@@ -65,7 +66,8 @@ rmarkdown::render("02_protein_anova_wgcna.Rmd")  # computationally intensive (~2
 source("extract_wgcna_tables.R")                 # exports WGCNA CSVs
 rmarkdown::render("04_protein_de_go_analysis.Rmd")
 rmarkdown::render("05_psites_analysis.Rmd")
-rmarkdown::render("06_pro_phospho_combined.Rmd")
+
+
 ```
 
 #### Step 2 — Additional analyses (run after Step 1; some have prerequisites)
@@ -89,15 +91,16 @@ rmarkdown::render("figure1/Figure1.Rmd")
 rmarkdown::render("figure2/Figure2.Rmd")
 rmarkdown::render("figure3/Figure3.Rmd")
 rmarkdown::render("figure4/Figure4.Rmd")
-# figure5 and figure6: panels blocked pending collaborator data (see below)
+rmarkdown::render("figure5/Figure5.Rmd")
+rmarkdown::render("figure6/Figure6.Rmd")
 rmarkdown::render("sfig/SFig_1_2.Rmd")
 rmarkdown::render("sfig/SFig_3.Rmd")
 rmarkdown::render("sfig/SFig_4.Rmd")
 rmarkdown::render("sfig/SFig_5.Rmd")
 rmarkdown::render("sfig/SFig_7_8.Rmd")   # requires flow_cytometry_gating.Rmd first
+rmarkdown::render("sfig/SFig_6.Rmd")
 rmarkdown::render("sfig/SFig_9.Rmd")     # requires mmc4.xlsx (see Data)
 rmarkdown::render("sfig/SFig_10_11.Rmd") # requires phosphosite_crossstudy.Rmd first
-# SFig_6: blocked pending collaborator data (see below)
 ```
 
 #### Step 4 — Supplemental tables
@@ -107,15 +110,19 @@ source("make_supplemental_tables.R")
 source("make_final_supplemental_tables.R")
 ```
 
-### Figures 5 and 6, and S6 Fig (imaging data — BLOCKED)
+### Figures 5 and 6, and S6 Fig (imaging data)
 
-Panels requiring per-cell segmentation and GEM trajectory data from Ying Xie
-are marked **BLOCKED** in the respective Rmd files. Once the data is received:
+Panels in Figs 5–6 and S6 Fig were generated from fluorescence microscopy images
+using [Fiji](https://imagej.net/software/fiji/) macro scripts (in `Macro Script for imageJ/`)
+and the following open-source tools:
 
-- Mitochondrial volume (Fig 5B, S6 Fig): run `analyses/mito_volume.Rmd`, then
-  uncomment the placeholder chunks in `figure5/Figure5.Rmd`.
-- GEM diffusion (Fig 6B–D): run `analyses/gem_diffusion.Rmd`, then uncomment
-  the placeholder chunks in `figure6/Figure6.Rmd`.
+- [Cellpose](https://cellpose.readthedocs.io/en/latest/) — cell segmentation
+- [MitoGraph](https://github.com/vianamp/MitoGraph) — mitochondrial volume quantification
+- [GemSpa (napari-gemspa)](https://github.com/liamholtlab/napari-gemspa) — GEM particle tracking
+
+The figure Rmds (`figure5/Figure5.Rmd`, `figure6/Figure6.Rmd`, `sfig/SFig_6.Rmd`)
+load and validate the per-cell source data; they do not regenerate the figures.
+Raw images are on Mendeley Data (doi: [INSERT DOI]).
 
 ## Analysis pipeline (numbered scripts)
 
@@ -148,8 +155,8 @@ are marked **BLOCKED** in the respective Rmd files. Once the data is received:
 | `mito_subcompartment.Rmd` | Mitochondrial subcompartment trajectories | S9 Fig plots |
 | `proteome_crossstudy.Rmd` | Proteome cross-dataset overlap | `analyses/output/proteome_coverage.csv` |
 | `combined_pca.Rmd` | Combined proteome + phosphoproteome PCA | `analyses/output/combined_pca.pdf` |
-| `mito_volume.Rmd` | Mito volume normalization (**BLOCKED**) | Fig 5B, S6 Fig |
-| `gem_diffusion.Rmd` | GEM monomer-gated diffusion (**BLOCKED**) | Fig 6B–D |
+| `mito_volume.Rmd` | Mitochondrial volume normalization to cell volume | Supplementary analysis for Fig 5B, S6 Fig |
+| `gem_diffusion.Rmd` | GEM nanoparticle monomer-gated diffusion analysis | Supplementary analysis for Fig 6B–D |
 
 ## Figure–script mapping
 
@@ -159,14 +166,14 @@ are marked **BLOCKED** in the respective Rmd files. Once the data is received:
 | Fig 2   | `figure2/Figure2.Rmd`               | A (quiescence protein heatmap), B (mito trajectories) | Sources: `04_protein_de_go_analysis.Rmd`, `01_data_preparation_qc.Rmd` |
 | Fig 3   | `figure3/Figure3.Rmd`               | B (WPM eigengene heatmap), C (WPM × variable correlation), D (GO/KEGG), E (per-WPM distributions) | Panel A = Illustrator diagram |
 | Fig 4   | `figure4/Figure4.Rmd`               | A, B, C, D, E, F, G                           | Sources: `05_psites_analysis.Rmd`; Panel G network layout in Cytoscape |
-| Fig 5   | `figure5/Figure5.Rmd`               | B (mito volume; **BLOCKED**)                  | Panel A = microscopy images; Panel B awaiting data from Ying Xie |
-| Fig 6   | `figure6/Figure6.Rmd`               | B, C, D (GEM; **BLOCKED**)                    | Panel A = microscopy images; B–D awaiting data from Ying Xie |
+| Fig 5   | `figure5/Figure5.Rmd`               | source-data validation only                   | Panels generated in Fiji with Cellpose + MitoGraph; see `Macro Script for imageJ/` |
+| Fig 6   | `figure6/Figure6.Rmd`               | source-data validation only                   | Panels generated in Fiji with GemSpa; see `Macro Script for imageJ/` |
 | S1 Fig  | `sfig/SFig_1_2.Rmd`                 | A (label incorporation), B (scan counts)      | |
 | S2 Fig  | `sfig/SFig_1_2.Rmd`                 | A (replicate scatter), B (PCA)               | |
 | S3 Fig  | `sfig/SFig_3.Rmd`                   | A (ANCOVA volcano), B (DE counts)             | |
 | S4 Fig  | `sfig/SFig_4.Rmd`                   | A (phospho vs protein FC), B (target protein levels) | |
 | S5 Fig  | `sfig/SFig_5.Rmd`                   | A (diagram), B (PEM heatmap), C (GO), D (dynamics) | Panel A = Illustrator |
-| S6 Fig  | `sfig/SFig_6.Rmd` (**BLOCKED**)     | —                                             | Awaiting per-cell segmentation data from Ying Xie |
+| S6 Fig  | `sfig/SFig_6.Rmd`                   | source-data validation only                   | Panels generated in Fiji with Cellpose + MitoGraph; data in `figure6/source_data/` |
 | S7 Fig  | `sfig/SFig_7_8.Rmd`                 | DNA ridge plots (WT + rim15Δ, C/N/P)         | Requires `analyses/flow_cytometry_gating.Rmd` run first |
 | S8 Fig  | `sfig/SFig_7_8.Rmd`                 | FSC ridge plots (WT + rim15Δ, C/N/P)         | Requires `analyses/flow_cytometry_gating.Rmd` run first |
 | S9 Fig  | `sfig/SFig_9.Rmd`                   | Mito subcompartment trajectories              | Requires `data/mitochondrial proteome/mmc4.xlsx` |

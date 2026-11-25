@@ -12,7 +12,7 @@ root** as working directory.
 | `mito_subcompartment.Rmd` | Mitochondrial subcompartment trajectory analysis | `sfig/plots/SFig9_*.pdf` |
 | `proteome_crossstudy.Rmd` | Cross-dataset proteome overlap | `analyses/output/proteome_coverage.csv`, `analyses/output/go_*_overlap.csv` |
 | `combined_pca.Rmd` | Combined proteome + phosphoproteome PCA | `analyses/output/combined_pca.pdf` |
-| `mito_volume.Rmd` | Mitochondrial volume normalization to cell volume (**BLOCKED**) | Fig 5B, S6 Fig — awaiting per-cell segmentation data from Ying Xie |
-| `gem_diffusion.Rmd` | GEM nanoparticle monomer-gated diffusion analysis (**BLOCKED**) | Fig 6B–D — awaiting GEM trajectory data from Ying Xie |
+| `mito_volume.Rmd` | Mitochondrial volume normalization to cell volume | Supplementary analysis for Fig 5B, S6 Fig |
+| `gem_diffusion.Rmd` | GEM nanoparticle monomer-gated diffusion analysis | Supplementary analysis for Fig 6B–D |
 
 Outputs are written to `analyses/output/`.

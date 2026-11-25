@@ -4,29 +4,79 @@ author: "Sun et al."
 output: html_document
 ---
 
-**Purpose:** Supplemental Figure 6.
-Analysis code will be in `analyses/mito_volume.Rmd` once data is available.
+**Purpose:** Documentation and source-data validation for S6 Fig panels.
 
-**BLOCKED — awaiting per-cell segmentation data from Ying Xie (Cellpose masks /
-MitoGraph output).**
+**Inputs:**
+- `figure6/source_data/Figure 6-source data.xlsx` — per-cell volume measurements
+  - Sheet `Figure S6A`: per-cell cell volume (µm³)
+  - Sheet `Figure S6B`: per-cell mitochondrial/cell volume ratio (%)
+- `Macro Script for imageJ/` — Fiji macro scripts used for image preprocessing
 
-**Run from repo root (once data is available):** `rmarkdown::render("sfig/SFig_6.Rmd")`
+**Run from repo root:** `rmarkdown::render("sfig/SFig_6.Rmd")`
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 knitr::opts_knit$set(root.dir = normalizePath(".."))
 ```
 
-```{r placeholder}
-message(
-  "S6 Fig is BLOCKED pending per-cell volume data from Ying Xie.\n",
-  "Analysis code is in analyses/mito_volume.Rmd.\n",
-  "Once data is received, adapt that script to generate the panels:\n",
-  "  - S6A: Cell volume (FSC-proxy or geometric estimate) WT vs rim15Δ\n",
-  "  - S6B: Mito volume / cell volume ratio WT vs rim15Δ"
-)
+```{r libraries, include=FALSE}
+library(tidyverse)
+library(readxl)
 
-# --- Uncomment and adapt once data arrives ---
-# source("analyses/mito_volume.Rmd", local = TRUE)
-# (or copy relevant chunks here and save output to sfig/plots/ and sfig/source_data/)
+src_file <- "figure6/source_data/Figure 6-source data.xlsx"
+```
+
+---
+
+## S6 Fig — Cell volume and mitochondrial/cell volume ratio
+
+Per-cell measurements were obtained from fluorescence microscopy images using
+the following image analysis pipeline:
+
+1. **Image preprocessing** — Fiji macro scripts in `Macro Script for imageJ/`.
+2. **Cell segmentation** — Cell boundaries segmented using
+   [Cellpose](https://cellpose.readthedocs.io/en/latest/).
+3. **Mitochondrial volume** — Mitochondrial network volume per cell quantified
+   using [MitoGraph](https://github.com/vianamp/MitoGraph).
+
+The figure was assembled in Fiji. Source data are in
+`figure6/source_data/Figure 6-source data.xlsx` (sheets: Figure S6A, Figure S6B).
+
+**Panel A:** Per-cell cell volume (µm³) for WT vs rim15\u0394 across three conditions
+(Proliferation, Carbon starvation, Phosphorus starvation).
+
+**Panel B:** Per-cell mitochondrial/cell volume ratio (%) for WT vs rim15\u0394
+across three conditions.
+
+```{r s6-source-data}
+# Helper: parse wide-format sheet (row1=title, row2=condition, row3=genotype, rows4+=values)
+parse_wide_sheet <- function(sheet, value_col) {
+  raw <- read_excel(src_file, sheet = sheet, col_names = FALSE)
+  conditions <- as.character(raw[2, ])
+  for (i in seq_along(conditions))
+    if (is.na(conditions[i]) && i > 1) conditions[i] <- conditions[i - 1]
+  genotypes <- as.character(raw[3, ])
+  map2_dfr(seq_len(ncol(raw)), conditions, function(col_i, cond) {
+    vals <- suppressWarnings(as.numeric(raw[[col_i]][4:nrow(raw)]))
+    tibble(condition = cond, genotype = genotypes[col_i],
+           !!value_col := vals[!is.na(vals)])
+  }) %>%
+    mutate(
+      condition = recode(condition,
+        "phosphorus starvation" = "Phosphorus starvation",
+        "Phosphorus starvation" = "Phosphorus starvation"),
+      condition = factor(condition,
+        levels = c("Proliferation", "Carbon starvation", "Phosphorus starvation")),
+      genotype = factor(genotype, levels = c("WT", "rim15\u0394"))
+    )
+}
+
+cell_vol  <- parse_wide_sheet("Figure S6A", "cell_volume_um3")
+mito_frac <- parse_wide_sheet("Figure S6B", "mito_cell_pct")
+
+stopifnot(nrow(cell_vol) > 0, nrow(mito_frac) > 0)
+message("S6A cell volume: ",    nrow(cell_vol),  " per-cell measurements")
+message("S6B mito/cell ratio: ", nrow(mito_frac), " per-cell measurements")
+cell_vol  %>% count(condition, genotype)
+mito_frac %>% count(condition, genotype)
 ```
