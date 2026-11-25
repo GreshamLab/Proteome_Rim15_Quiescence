@@ -290,7 +290,7 @@ change (WT/rim15Δ).
 Binary membership table indicating which Rim15-regulated phosphosites from this
 study are also present in four published datasets. Phosphosites are harmonized
 to SGD systematic ORF names and absolute residue positions. Source data for
-the revision cross-dataset comparison figure (Reviewer points R1.3/R2.5).
+the cross-dataset phosphosite comparison (Figs S10–S11).
 Columns: *key* — site identifier (ORF_residueLetter+position, e.g.,
 YNL157W_S64); *orf* — SGD systematic ORF name; *gene* — standard gene name;
 *aa* — phosphorylated amino acid (S, T, or Y); *position* — position of the
@@ -322,8 +322,7 @@ datasets in which the protein's phosphorylation is reported. 735 rows.
 **Table S23. Mitochondrial proteome coverage by subcompartment.**
 Coverage of the curated yeast mitochondrial proteome reference (Morgenstern
 et al. 2017) by the proteome detected in this study, broken down by
-mitochondrial subcompartment. Source data for the revision mitochondrial
-reconciliation figure (Reviewer point R2.7). Columns: *subloc* —
+mitochondrial subcompartment. Source data for Fig S9. Columns: *subloc* —
 mitochondrial subcompartment (IMS/IM = inner membrane space / inner membrane,
 Matrix/IM = matrix / inner membrane, OM = outer membrane, Unassigned = no
 subcompartment annotation); *n_reference* — number of proteins in the
@@ -338,7 +337,7 @@ subcompartment.**
 Mean log2 fold change in protein abundance over the quiescence time course
 (WT starved/mid-log reference), averaged across proteins within each
 functional class and mitochondrial subcompartment, at each timepoint. Source
-data for the revision mitochondrial proteome figure (Reviewer point R2.7).
+data for Fig S9.
 Columns: *func_class* — functional classification of mitochondrial proteins
 (e.g., Carriers, Ribosome, OXPHOS Complex I–V, TCA cycle); *subloc* —
 mitochondrial subcompartment (IMS/IM, Matrix/IM, OM, Unassigned);

@@ -27,14 +27,14 @@
 # S18  WGCNA module eigengenes                                   Fig 3B–C
 # S19  Differentially expressed phosphosites by genotype         Fig 4A–F, S4
 # S20  Phosphorylation motif enrichment (q < 0.01)              Fig 4C
-# S21  Cross-dataset phosphosite overlap membership             Revision Fig R1.3/R2.5
-# S22  Cross-dataset phosphoprotein overlap membership          Revision Fig R1.3/R2.5
-# S23  Mitochondrial proteome coverage vs reference             Revision Fig R2.7
-# S24  Mitochondrial protein log2FC by class                    Revision Fig R2.7
-# S25  Cross-dataset proteome coverage (3 studies)             Revision Fig R2.3
-# S26  Quiescence-regulation overlap (this study vs Paulo 2015) Revision Fig R2.3
-# S27  Proteome overlap detailed: our log2FC vs Paulo 2015 metrics  Revision R2.3
-# S28  Phosphosite overlap quantitative: our FC vs published FCs    Revision R2.5
+# S21  Cross-dataset phosphosite overlap membership             Fig S10
+# S22  Cross-dataset phosphoprotein overlap membership          Fig S11
+# S23  Mitochondrial proteome coverage vs reference             Fig S9
+# S24  Mitochondrial protein log2FC by class                    Fig S9
+# S25  Cross-dataset proteome coverage (3 studies)             Fig S10–S11
+# S26  Quiescence-regulation overlap (this study vs Paulo 2015) Fig S10–S11
+# S27  Proteome overlap detailed: our log2FC vs Paulo 2015 metrics  Fig S10–S11
+# S28  Phosphosite overlap quantitative: our FC vs published FCs    Fig S10–S11
 
 library(tidyverse)
 
