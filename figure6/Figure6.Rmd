@@ -38,7 +38,7 @@ src_file <- file.path(data_dir, "Figure 6-source data.xlsx")
 Panel A contains representative fluorescence microscopy images of genetically encoded
 multimeric nanoparticles (GEMs) in WT vs rim15\u0394 cells. Images are not R-generated.
 
-Raw images are available on Mendeley Data (doi: [INSERT DOI]).
+Raw images are available on Mendeley Data (https://data.mendeley.com/datasets/xdrdyd9mk8/1 and https://data.mendeley.com/datasets/r45w82vcbk/1).
 
 ---
 

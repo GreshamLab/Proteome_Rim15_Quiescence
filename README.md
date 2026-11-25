@@ -26,7 +26,7 @@ imaging, and GEM nanoparticle single-particle tracking.
   original publication and place at that path before running
   `analyses/mito_subcompartment.Rmd` or `sfig/SFig_9.Rmd`.
 - Mitochondrial imaging and GEM tracking raw data: Mendeley Data
-  (doi: [INSERT DOI — Figs 5–6]).
+  (https://data.mendeley.com/datasets/xdrdyd9mk8/1 and https://data.mendeley.com/datasets/r45w82vcbk/1).
 - **Source data:** Per-panel numerical data files are in `figureN/source_data/`
   and `sfig/source_data/`, provided per PLOS Genetics data deposition policy.
 
@@ -127,7 +127,7 @@ and the following open-source tools:
 
 The figure Rmds (`figure5/Figure5.Rmd`, `figure6/Figure6.Rmd`, `sfig/SFig_6.Rmd`)
 load and validate the per-cell source data; they do not regenerate the figures.
-Raw images are on Mendeley Data (doi: [INSERT DOI]).
+Raw images are on Mendeley Data (https://data.mendeley.com/datasets/xdrdyd9mk8/1 and https://data.mendeley.com/datasets/r45w82vcbk/1).
 
 ## Analysis pipeline (numbered scripts)
 

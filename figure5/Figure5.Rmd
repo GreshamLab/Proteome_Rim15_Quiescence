@@ -32,7 +32,7 @@ data_dir <- "figure5/source_data"
 Panel A contains representative fluorescence microscopy images (mito-GFP in WT vs
 rim15\u0394 quiescent cells). Images are not R-generated.
 
-Raw images are available on Mendeley Data (doi: [INSERT DOI]).
+Raw images are available on Mendeley Data (https://data.mendeley.com/datasets/xdrdyd9mk8/1 and https://data.mendeley.com/datasets/r45w82vcbk/1).
 
 ---
 
