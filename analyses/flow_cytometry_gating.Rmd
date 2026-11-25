@@ -3,10 +3,10 @@ title: "Flow cytometry: DNA content and cell size — gating, histograms, 1N-fra
 output: html_document
 ---
 
-Reviewers R1 and R2 both questioned the "no significant difference in DNA content"
-claim. The reanalysis strategy (from `Sun_et_al_response_plan.docx`) is to concede
-on kinetics while defending the terminal phenotype: both WT and rim15Δ ultimately
-arrest as unbudded 1N cells, but rim15Δ delays and desynchronizes G1 arrest.
+Processes raw FCS files from SYTOX-Green (DNA content) and FSC-A (cell size)
+measurements. Applies CytoExploreR polygon gates, exports per-cell channel data
+for ridge plots (SFig_7_8), and computes the 1N-fraction time course with
+two-way ANOVA (time × genotype) for each starvation condition.
 
 Runs from the repo root (`knit_root_dir = getwd()`).
 
@@ -237,10 +237,10 @@ for (sample_type in c("Size_control", "DNA_content")) {
 }
 ```
 
-# Representative histograms (reviewer requirement R1.2 / R2.1)
+# Representative histograms
 
 One SYTOX-Green density plot per genotype × condition × timepoint (T0/6/16/30 h),
-with vertical lines at the 1N and 2N gate boundaries taken from the gating template.
+with vertical lines at the 1N gate boundary taken from the gating template.
 Three pages (one per condition), 8 panels per page (2 genotypes × 4 timepoints).
 
 ```{r representative-histograms}
@@ -589,14 +589,12 @@ print(panel_dna)
 print(panel_size)
 ```
 
-# Two-way ANOVA: time × genotype on 1N-fraction (reviewer requirement R1.2 / R2.1)
+# Two-way ANOVA: time × genotype on 1N-fraction
 
 For each starvation condition (C, N, P): `lm(pct_1n ~ time_factor * genotype)` on
 the per-replicate values (T0/6/16/30 h, to match proteomics timepoints). We report
 the genotype term (main effect, averaged over time) and the time × genotype
-interaction. Per the response-plan strategy, results are framed as a kinetic
-difference — delayed and less-synchronous G1 arrest in rim15Δ — not a terminal
-phenotype.
+interaction.
 
 ```{r anova}
 # T0 samples have Media="Control" in the gating set; replicate as C/N/P

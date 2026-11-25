@@ -3,9 +3,11 @@ title: "Intensity-gated GEM diffusion analysis"
 output: html_document
 ---
 
-**BLOCKED: awaiting GEM trajectory data with per-particle intensities from Ying Xie.**
+Supplementary analysis script for Fig 6B–D. Performs intensity-gated GEM diffusion
+analysis using per-trajectory data from
+[GemSpa (napari-gemspa)](https://github.com/liamholtlab/napari-gemspa).
 
-Analysis plan:
+Analysis steps:
 
 1. From proliferating-cell GEM data, define the intensity window consistent
    with monomeric 40 nm-GEMs (single-particle intensity distribution).

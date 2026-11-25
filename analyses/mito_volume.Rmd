@@ -3,14 +3,16 @@ title: "Mitochondrial volume normalized to cell volume"
 output: html_document
 ---
 
-**BLOCKED: awaiting Cellpose segmentation masks and MitoGraph per-cell output from Ying Xie.**
+Supplementary analysis script for Fig 5B and S6 Fig. Computes per-cell mitochondrial
+volume normalized to cell volume from [Cellpose](https://cellpose.readthedocs.io/en/latest/)
+segmentation masks and [MitoGraph](https://github.com/vianamp/MitoGraph) output.
 
-Analysis plan:
+Analysis steps:
 
 1. From each Cellpose mask, extract area and major/minor axis lengths.
-2. Estimate cell volume assuming a prolate ellipsoid geometry (state assumption in Methods).
-3. Compute MitoGraph mitochondrial volume / cell volume per cell; replot Fig 5B-style
-   panels and re-run the same paired test → `analyses/output/mito_volume_per_cellvol.pdf`.
+2. Estimate cell volume assuming a prolate ellipsoid geometry.
+3. Compute MitoGraph mitochondrial volume / cell volume per cell →
+   `analyses/output/mito_volume_per_cellvol.pdf`.
 
 ```{r session}
 sessionInfo()

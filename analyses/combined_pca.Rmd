@@ -71,9 +71,6 @@ scores %>%
 # is unchanged.
 scores %>% filter(genotype == "WT", nutrient == "C") %>%
   select(sample, PC1, PC2) %>% arrange(PC2)
-
-# TODO once the outlier sample is identified from the table above:
-# drop it, re-run prcomp, and compare loadings/score structure.
 ```
 
 ```{r session}
