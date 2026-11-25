@@ -1,0 +1,154 @@
+---
+title: "S10 Fig and S11 Fig — Cross-dataset phosphosite and phosphoprotein overlap"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figures 10 and 11.
+
+**S10 Fig:** UpSet plot comparing Rim15-dependent phosphosites (this study) with
+4 published datasets at exact-site resolution (ORF + residue + position).
+
+**S11 Fig:** Same comparison at the phosphoprotein level.
+
+**Inputs:**
+- `tables/DE_pSites_byGenotype.csv`
+- `data/Phospho (STY)Sites.csv`
+- `tables/normed_pSite_ratio_perseus.csv`
+- Published dataset files in `data/Publications for comparative analysis/`
+- UniProt reference proteome `data/Publications for comparative analysis/UP000002311_559292.fasta`
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_10_11.Rmd")`
+
+This script is a thin wrapper around `analyses/phosphosite_crossstudy.Rmd`, which
+performs the full analysis. Run that script first to generate the membership CSVs,
+then this script reads them and produces the final formatted figures.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(UpSetR)
+library(cowplot)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+
+out_r02 <- "./analyses/output"
+```
+
+```{r check-inputs}
+site_path    <- file.path(out_r02, "phosphosite_membership.csv")
+protein_path <- file.path(out_r02, "phosphoprotein_membership.csv")
+
+if (!file.exists(site_path) || !file.exists(protein_path)) {
+  stop("Membership tables not found.\n",
+       "Run analyses/phosphosite_crossstudy.Rmd first to generate:\n",
+       "  ", site_path, "\n  ", protein_path)
+}
+
+site_membership    <- read_csv(site_path,    show_col_types = FALSE)
+protein_membership <- read_csv(protein_path, show_col_types = FALSE)
+```
+
+---
+
+# S10 Fig — Phosphosite-level UpSet plot
+
+Comparison of Rim15-dependent phosphosites from this study with four published
+phosphoproteomic datasets (Li et al. 2019, Dokladal et al. 2021, Baro et al. 2018,
+Plank et al. 2020) at exact-site resolution (ORF + residue + position).
+
+```{r s10-upset}
+set_names_ordered <- c("ThisStudy", "Li2019", "Dokladal2021",
+                       "Baro2018", "Plank_Cdc55AID")
+
+pdf(file.path(out_dir, "SFig10_phosphosite_upset.pdf"), width = 9, height = 5.5)
+upset(as.data.frame(site_membership),
+      sets            = set_names_ordered,
+      keep.order      = TRUE,
+      order.by        = "freq",
+      mainbar.y.label = "Exact phosphosites (ORF + residue)",
+      sets.x.label    = "Sites per dataset",
+      text.scale      = c(1.4, 1.2, 1.2, 1.0, 1.4, 1.0))
+dev.off()
+
+upset(as.data.frame(site_membership),
+      sets            = set_names_ordered,
+      keep.order      = TRUE,
+      order.by        = "freq",
+      mainbar.y.label = "Exact phosphosites (ORF + residue)",
+      sets.x.label    = "Sites per dataset")
+
+# Source data = the full membership table
+write_csv(site_membership %>%
+            dplyr::select(key, orf, gene, aa, position,
+                          all_of(set_names_ordered), n_published, category),
+          file.path(data_dir, "SFig10_source_data.csv"))
+message("SFig10: ", nrow(site_membership), " sites exported")
+```
+
+---
+
+# S11 Fig — Phosphoprotein-level UpSet plot
+
+Same comparison resolved at the protein level.
+
+```{r s11-upset}
+pdf(file.path(out_dir, "SFig11_phosphoprotein_upset.pdf"), width = 9, height = 5.5)
+upset(as.data.frame(protein_membership),
+      sets            = set_names_ordered,
+      keep.order      = TRUE,
+      order.by        = "freq",
+      mainbar.y.label = "Phosphoproteins (ORF)",
+      sets.x.label    = "Proteins per dataset",
+      text.scale      = c(1.4, 1.2, 1.2, 1.0, 1.4, 1.0))
+dev.off()
+
+upset(as.data.frame(protein_membership),
+      sets            = set_names_ordered,
+      keep.order      = TRUE,
+      order.by        = "freq",
+      mainbar.y.label = "Phosphoproteins (ORF)",
+      sets.x.label    = "Proteins per dataset")
+
+write_csv(protein_membership %>%
+            dplyr::select(orf, gene,
+                          all_of(set_names_ordered), n_published),
+          file.path(data_dir, "SFig11_source_data.csv"))
+message("SFig11: ", nrow(protein_membership), " proteins exported")
+```
+
+---
+
+## Summary statistics
+
+```{r summary}
+cat("=== Phosphosite-level ===\n")
+cat("ThisStudy total:                  ", sum(site_membership$ThisStudy), "\n")
+cat("Shared with >=1 published dataset:", sum(site_membership$ThisStudy == 1 &
+                                               site_membership$n_published >= 1), "\n")
+cat("Shared with >=2 published datasets:",sum(site_membership$ThisStudy == 1 &
+                                               site_membership$n_published >= 2), "\n")
+cat("Novel (not in any published):     ", sum(site_membership$ThisStudy == 1 &
+                                               site_membership$n_published == 0), "\n\n")
+
+cat("=== Phosphoprotein-level ===\n")
+cat("ThisStudy total:                  ", sum(protein_membership$ThisStudy), "\n")
+cat("Shared with >=1 published dataset:", sum(protein_membership$ThisStudy == 1 &
+                                               protein_membership$n_published >= 1), "\n")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

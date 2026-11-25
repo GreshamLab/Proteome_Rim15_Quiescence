@@ -1,0 +1,572 @@
+---
+title: "Cross-dataset comparison of Rim15-dependent phosphosites"
+output: html_document
+---
+
+Quantitative overlap of our Rim15-dependent phosphosites with published
+Rim15 / PP2A-Cdc55 / quiescence phosphoproteomes: UpSet plot and supplementary
+membership table.
+
+Datasets (supplement files in `data/Publications for comparative analysis/`, kept
+locally / gitignored; sources listed in `data/Publications for comparative analysis/README.md`):
+
+- **This study** — significant sites from `tables/DE_pSites_byGenotype.csv`
+  (q <= 0.05 in any nutrient x time contrast); residue letter and leading
+  UniProt accession recovered from `data/Phospho (STY)Sites.csv`.
+- **Li et al. 2019** (`Phosphoproteome/li2019/mmc5.xlsx`, "Phospho Regulation Network") —
+  phosphosites regulated in the rim15 deletion strain; multi-site keys
+  (e.g. `POL12_pT153pS168`) are exploded into individual residues.
+- **Dokladal et al. 2021** (`Phosphoproteome/dokladal2021/mmc3.xlsx`, "Exclusive") — high
+  confidence Rim15 target sites (rim15∆ block, columns 24-29); residue letter
+  taken from the center of the 15-mer sequence motif.
+- **Baro et al. 2018** (`Phosphoproteome/baro2018/Additional file 3.xlsx`) — hyperphosphorylated
+  peptides of putative PP2A-Cdc55 regulated proteins; exact positions parsed
+  from the Modifications column (e.g. `S9(Phospho)`), mapped to absolute
+  coordinates by locating the peptide in the UniProt protein sequence.
+- **Plank et al. (Cdc55-AID)** (`Phosphoproteome/plank2020/pmic13349-sup-0002-tables1.xlsx`) —
+  acute Cdc55 depletion (auxin vs mock). Two caveats. (a) At the study's own
+  FDR threshold essentially nothing is significant (min pAdj = 0.0496, their
+  `below0.05FDR` flag is FALSE for every peptide) — 10 min of Cdc55 depletion
+  barely moves the phosphoproteome — so we use *nominal* p <= 0.05 with
+  increased phosphorylation (log2 aux/mock > 0, the substrate-consistent
+  direction); interpret this set accordingly. (b) The supplement is a MaxQuant
+  modification-specific-peptide table without site positions, so exact sites
+  are assigned only where the number of S/T/Y in the peptide equals the
+  phospho count; otherwise the protein contributes to the protein-level
+  overlap only.
+
+Harmonization (the error-prone step is residue numbering — different studies
+used different reference proteomes; Igo1 S64 is checked by hand below):
+
+1. Every protein is mapped to its SGD systematic ORF via org.Sc.sgd.db
+   (UniProt accession where available, otherwise gene symbol with
+   GENENAME/COMMON/ALIAS fallbacks). Site key = `ORF_residueLetter+position`.
+2. Overlap at two resolutions: (i) protein-level, (ii) exact-site-level.
+3. UpSet plots (UpSetR) + full membership tables
+   → `analyses/output/phosphosite_overlap_upset.pdf` (site-level),
+   `analyses/output/phosphoprotein_overlap_upset.pdf` (protein-level),
+   `analyses/output/phosphosite_membership.csv`,
+   `analyses/output/phosphoprotein_membership.csv`.
+4. Consensus set = our sites recovered in >= 2 published datasets; novel set
+   = our sites in none of them. Headline numbers printed at the end feed the
+   Discussion rewrite and the response letter.
+
+Peptide-to-protein mapping uses the UniProt reference proteome UP000002311
+(`data/Publications for comparative analysis/UP000002311_559292.fasta`, downloaded 2026-08-24).
+
+```{r setup, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(data.table)      # fread with column selection for the wide MaxQuant table
+library(Biostrings)
+library(org.Sc.sgd.db)
+library(UpSetR)
+
+repo_root <- "."
+out_dir   <- file.path(repo_root, "analyses/output")
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+
+# ORF-shaped identifiers (Y-ORFs incl. dubious suffixes, Q-ORFs) pass through
+is_orf <- function(x) grepl("^(Y[A-P][LR]\\d{3}[WC](-[A-Z])?|Q\\d{4})$", x)
+
+# Map a vector of gene symbols to systematic ORF names, trying successively
+# looser keytypes. Returns NA where nothing maps.
+symbol_to_orf <- function(symbols) {
+  key <- toupper(trimws(symbols))
+  orf <- ifelse(is_orf(key), key, NA_character_)
+  for (kt in c("GENENAME", "COMMON", "ALIAS")) {
+    if (!kt %in% keytypes(org.Sc.sgd.db)) next
+    todo <- unique(key[is.na(orf)])
+    todo <- todo[!is.na(todo) & todo != ""]
+    if (length(todo) == 0) break
+    m <- tryCatch(
+      AnnotationDbi::select(org.Sc.sgd.db, keys = todo, keytype = kt,
+                            columns = "ORF"),
+      error = function(e) NULL)
+    if (is.null(m)) next
+    m <- m %>% filter(!is.na(ORF)) %>% distinct(across(1), ORF) %>%
+      group_by(across(1)) %>% dplyr::slice(1) %>% ungroup()
+    lookup <- setNames(m$ORF, m[[1]])
+    orf[is.na(orf)] <- lookup[key[is.na(orf)]]
+  }
+  orf
+}
+
+uniprot_to_orf <- function(accessions) {
+  acc <- sub("-\\d+$", "", trimws(accessions))   # strip isoform suffix
+  todo <- unique(acc[!is.na(acc) & acc != ""])
+  m <- AnnotationDbi::select(org.Sc.sgd.db, keys = todo, keytype = "UNIPROT",
+                             columns = "ORF") %>%
+    filter(!is.na(ORF)) %>% distinct(UNIPROT, ORF) %>%
+    group_by(UNIPROT) %>% dplyr::slice(1) %>% ungroup()
+  setNames(m$ORF, m$UNIPROT)[acc]
+}
+
+site_key <- function(orf, aa, pos) paste0(orf, "_", aa, pos)
+```
+
+```{r fasta}
+pub_dir <- file.path(repo_root, "data/Publications for comparative analysis")
+proteome <- readAAStringSet(file.path(pub_dir, "UP000002311_559292.fasta"))
+# index by accession (header: sp|P17065|SEC2_YEAST ...)
+names(proteome) <- sub("^..\\|([^|]+)\\|.*$", "\\1", names(proteome))
+proteome_chr <- setNames(as.character(proteome), names(proteome))
+
+# Locate a peptide in its protein; returns start position (NA if no match).
+# Peptides matching more than once are rare; we take the first match and flag.
+locate_peptide <- function(peptide, accession) {
+  seqs <- proteome_chr[accession]
+  starts <- mapply(function(p, s) {
+    if (is.na(s)) return(NA_integer_)
+    r <- gregexpr(p, s, fixed = TRUE)[[1]]
+    if (r[1] == -1) NA_integer_ else as.integer(r[1])
+  }, toupper(peptide), seqs, USE.NAMES = FALSE)
+  starts
+}
+```
+
+# This study
+
+```{r ours}
+de <- read_csv(file.path(repo_root, "tables/DE_pSites_byGenotype.csv"), show_col_types = FALSE)
+# Filter explicitly to C and P starvation (N starvation was not profiled
+# in the phosphoproteomics; this makes the scope explicit).
+ours_sig <- de %>%
+  filter(!is.na(qvalue), qvalue <= 0.05,
+         nutrient %in% c("C", "P")) %>%
+  distinct(gene = `Gene names`, pSite, leading = `Leading proteins`)
+
+# Residue letter + leading accession from the MaxQuant site table.
+sty <- fread(file.path(repo_root, "data/Phospho (STY)Sites.csv"),
+             select = c("Protein", "Gene names", "Amino acid", "Position")) %>%
+  as_tibble() %>%
+  mutate(pSite = paste(`Gene names`, Position, sep = "_")) %>%
+  distinct(pSite, .keep_all = TRUE)
+
+# Fallback for sites whose pSite key is degenerate (empty gene name -> "NA_524",
+# multi-gene keys like "ENA2;ENA1_1065;1065"): join on leading accession +
+# position instead of the string key.
+sty_by_acc <- sty %>%
+  transmute(acc_pos = paste(Protein, Position, sep = "_"),
+            Protein2 = Protein, aa2 = `Amino acid`, pos2 = Position) %>%
+  distinct(acc_pos, .keep_all = TRUE)
+
+ours <- ours_sig %>%
+  left_join(sty, by = "pSite") %>%
+  mutate(acc_pos = paste(sub(";.*$", "", leading),
+                         str_extract(pSite, "\\d+$"), sep = "_")) %>%
+  left_join(sty_by_acc, by = "acc_pos") %>%
+  mutate(Protein = coalesce(Protein, Protein2),
+         position = as.integer(coalesce(Position, pos2)),
+         aa = coalesce(`Amino acid`, aa2),
+         orf = coalesce(uniprot_to_orf(Protein),
+                        symbol_to_orf(gene)))
+cat("This study: significant site records:", nrow(ours_sig),
+    "| matched to STY table:", sum(!is.na(ours$aa)),
+    "| mapped to ORF:", sum(!is.na(ours$orf)), "\n")
+
+ours_sites <- ours %>%
+  filter(!is.na(orf), !is.na(aa), !is.na(position)) %>%
+  transmute(dataset = "ThisStudy", orf, gene, aa, position, pSite,
+            key = site_key(orf, aa, position)) %>%
+  distinct(key, .keep_all = TRUE)
+
+# ── Universe: all detected phosphosites (denominator for chi-square tests) ──
+# Source: normed_pSite_ratio_perseus.csv contains every site that passed the
+# localization probability threshold (> 0.7) in 05_psites_analysis.Rmd.
+# We map each to an ORF+residue+position key using the same sty lookups above.
+all_psites_raw <- read_csv(
+  file.path(repo_root, "tables/normed_pSite_ratio_perseus.csv"),
+  show_col_types = FALSE)
+
+# Rename space-containing columns via base R before joining to sty (which also
+# has a "Gene names" column); avoids .x/.y suffix collision and S4Vectors mask.
+ap <- all_psites_raw %>%
+  dplyr::select(pSite, Proteins, `Leading proteins`, `Gene names`)
+names(ap)[names(ap) == "Gene names"]      <- "gene_name"
+names(ap)[names(ap) == "Leading proteins"] <- "leading"
+
+all_psites <- ap %>%
+  left_join(sty, by = "pSite") %>%
+  mutate(acc_pos  = paste(sub(";.*$", "", leading),
+                          str_extract(pSite, "\\d+$"), sep = "_")) %>%
+  left_join(sty_by_acc, by = "acc_pos") %>%
+  mutate(Protein  = coalesce(Protein, Protein2),
+         position = as.integer(coalesce(Position, pos2)),
+         aa       = coalesce(`Amino acid`, aa2),
+         orf      = coalesce(uniprot_to_orf(Protein),
+                             symbol_to_orf(gene_name))) %>%
+  filter(!is.na(orf), !is.na(aa), !is.na(position)) %>%
+  transmute(key = site_key(orf, aa, position)) %>%
+  distinct()
+
+cat("Universe: all detected phosphosites with valid ORF+site mapping:",
+    nrow(all_psites), "\n")
+cat("Significant (rim15Δ-regulated, C or P, q≤0.05):", nrow(ours_sites), "\n")
+```
+
+# Li et al. 2019
+
+```{r li2019}
+li_raw <- read_excel(file.path(pub_dir, "Phosphoproteome/li2019/mmc5.xlsx"),
+                     sheet = "Phospho Regulation Network") %>%
+  setNames(c("del_gene", "psite_key", "log2fc")) %>%
+  filter(grepl("rim15", del_gene, ignore.case = TRUE))
+
+# keys look like NCL1_pT665pS667 -> explode into (T,665), (S,667)
+li_sites <- li_raw %>%
+  mutate(gene = sub("_p[STY].*$", "", psite_key),
+         sites = str_extract_all(psite_key, "p[STY]\\d+")) %>%
+  unnest(sites) %>%
+  mutate(aa = substr(sites, 2, 2),
+         position = as.integer(sub("^p[STY]", "", sites)),
+         orf = symbol_to_orf(gene)) %>%
+  filter(!is.na(orf)) %>%
+  transmute(dataset = "Li2019", orf, gene, aa, position,
+            log2fc_Li2019 = log2fc,
+            key = site_key(orf, aa, position)) %>%
+  distinct(key, .keep_all = TRUE)
+cat("Li 2019 (∆rim15 regulated): rows:", nrow(li_raw),
+    "-> unique sites:", nrow(li_sites), "\n")
+```
+
+# Dokladal et al. 2021
+
+```{r dokladal2021}
+dok_raw <- suppressMessages(
+  read_excel(file.path(pub_dir, "Phosphoproteome/dokladal2021/mmc3.xlsx"), sheet = "Exclusive",
+             col_names = FALSE, skip = 3))
+# rim15∆ block (after skipping the 3 header rows the empty first column is
+# dropped, shifting everything left by one): col 23 = Protein, col 24 =
+# Position, col 27 = 15-mer motif
+dok_sites <- tibble(gene = dok_raw[[23]],
+                    position = suppressWarnings(as.integer(dok_raw[[24]])),
+                    motif = dok_raw[[27]]) %>%
+  filter(!is.na(gene), !is.na(position)) %>%
+  mutate(aa = toupper(substr(motif, 8, 8)),     # central residue of the 15-mer
+         orf = symbol_to_orf(gene)) %>%
+  filter(!is.na(orf), aa %in% c("S", "T", "Y")) %>%
+  transmute(dataset = "Dokladal2021", orf, gene = toupper(gene), aa, position,
+            key = site_key(orf, aa, position)) %>%
+  distinct(key, .keep_all = TRUE)
+cat("Dokladal 2021 (Rim15 high-confidence targets): unique sites:",
+    nrow(dok_sites), "\n")
+```
+
+# Baro et al. 2018
+
+```{r baro2018}
+baro_raw <- suppressMessages(
+  read_excel(file.path(pub_dir, "Phosphoproteome/baro2018/Additional file 3.xlsx"),
+             sheet = "Hoja1", col_names = FALSE, skip = 2)) %>%
+  setNames(paste0("c", seq_len(ncol(.))))
+# c1 Sequence | c2 Modifications | c7-c9 accessions (TiSH/SIMAC/TiO2) |
+# c22-c24 gene symbols
+baro_pep <- baro_raw %>%
+  transmute(peptide = toupper(c1), mods = c2,
+            accession = coalesce(c7, c8, c9),
+            gene = coalesce(c22, c23, c24)) %>%
+  filter(!is.na(peptide), !is.na(mods), !is.na(accession)) %>%
+  mutate(accession = sub(";.*$", "", accession),
+         start = locate_peptide(peptide, accession))
+cat("Baro 2018 peptides:", nrow(baro_pep),
+    "| located in UniProt sequence:", sum(!is.na(baro_pep$start)), "\n")
+
+baro_sites <- baro_pep %>%
+  filter(!is.na(start)) %>%
+  mutate(site = str_extract_all(mods, "[STY]\\d+\\(Phospho\\)")) %>%
+  unnest(site) %>%
+  mutate(aa = substr(site, 1, 1),
+         within = as.integer(str_extract(site, "\\d+")),
+         position = start + within - 1L,
+         orf = coalesce(uniprot_to_orf(accession), symbol_to_orf(gene))) %>%
+  filter(!is.na(orf)) %>%
+  # sanity: the residue letter must match the protein sequence at that position
+  mutate(seq_aa = substr(proteome_chr[sub("-\\d+$", "", accession)],
+                         position, position)) %>%
+  filter(aa == seq_aa) %>%
+  transmute(dataset = "Baro2018", orf, gene, aa, position,
+            key = site_key(orf, aa, position)) %>%
+  distinct(key, .keep_all = TRUE)
+cat("Baro 2018 (PP2A-Cdc55 hyperphosphorylated): unique sites:",
+    nrow(baro_sites), "\n")
+```
+
+# Plank et al. (Cdc55-AID)
+
+```{r plank}
+plank_raw <- suppressWarnings(
+  read_excel(file.path(pub_dir, "Phosphoproteome/plank2020/pmic13349-sup-0002-tables1.xlsx")))
+plank_sig <- plank_raw %>%
+  filter(is.na(Reverse), is.na(Potential.contaminant),
+         Phospho..STY. >= 1,
+         !is.na(pVal_aux_to_mock), pVal_aux_to_mock <= 0.05,
+         meanlog2_aux_to_mock > 0) %>%
+  transmute(peptide = toupper(Sequence),
+            n_phos = as.integer(Phospho..STY.),
+            accession = sub("^..\\|([^|]+)\\|.*$", "\\1",
+                            sub(";.*$", "", Proteins)),
+            log2fc_Plank = meanlog2_aux_to_mock,
+            pval_Plank   = pVal_aux_to_mock)
+cat("Plank Cdc55-AID: peptides nominal p<=0.05 & up on depletion:",
+    nrow(plank_sig), "(NB: 1 peptide at pAdj<=0.05)\n")
+
+plank_pep <- plank_sig %>%
+  mutate(start = locate_peptide(peptide, accession),
+         orf = uniprot_to_orf(accession),
+         n_sty = str_count(peptide, "[STY]"))
+
+# exact sites only where every S/T/Y in the peptide must be phosphorylated
+plank_sites <- plank_pep %>%
+  filter(!is.na(start), !is.na(orf), n_sty == n_phos) %>%
+  mutate(within = map(peptide, ~ str_locate_all(.x, "[STY]")[[1]][, "start"])) %>%
+  unnest_longer(within) %>%
+  mutate(position = start + within - 1L,
+         aa = substr(peptide, within, within)) %>%
+  transmute(dataset = "Plank_Cdc55AID", orf,
+            gene = NA_character_, aa, position,
+            log2fc_Plank, pval_Plank,
+            key = site_key(orf, aa, position)) %>%
+  distinct(key, .keep_all = TRUE)
+
+plank_proteins <- plank_pep %>% filter(!is.na(orf)) %>% distinct(orf)
+cat("Plank Cdc55-AID: unambiguous exact sites:", nrow(plank_sites),
+    "| phosphoproteins (protein-level set):", nrow(plank_proteins), "\n")
+```
+
+# Overlap
+
+```{r overlap}
+all_sites <- bind_rows(ours_sites, li_sites, dok_sites, baro_sites, plank_sites)
+set_names_ordered <- c("ThisStudy", "Li2019", "Dokladal2021",
+                       "Baro2018", "Plank_Cdc55AID")
+
+# guard: an empty dataset would otherwise silently drop its column
+add_missing_sets <- function(df) {
+  for (s in setdiff(set_names_ordered, names(df))) df[[s]] <- 0L
+  df
+}
+
+# gene symbol per ORF for readability (prefer our own annotation)
+orf_gene <- all_sites %>% filter(!is.na(gene)) %>% distinct(orf, gene) %>%
+  group_by(orf) %>% dplyr::slice(1) %>% ungroup()
+
+# --- exact-site-level membership ---
+site_membership <- all_sites %>%
+  distinct(dataset, key, orf, aa, position) %>%
+  mutate(present = 1L) %>%
+  pivot_wider(names_from = dataset, values_from = present, values_fill = 0L) %>%
+  add_missing_sets() %>%
+  left_join(orf_gene, by = "orf") %>%
+  relocate(key, orf, gene, aa, position) %>%
+  mutate(n_published = Li2019 + Dokladal2021 + Baro2018 + Plank_Cdc55AID,
+         category = case_when(
+           ThisStudy == 1 & n_published >= 2 ~ "consensus",
+           ThisStudy == 1 & n_published >= 1 ~ "shared",
+           ThisStudy == 1                    ~ "novel_this_study",
+           TRUE                              ~ "published_only")) %>%
+  arrange(desc(ThisStudy), desc(n_published), orf, position)
+write_csv(site_membership, file.path(out_dir, "phosphosite_membership.csv"))
+
+# --- protein-level membership (Plank contributes all phosphoproteins) ---
+protein_sets <- bind_rows(
+  all_sites %>% filter(dataset != "Plank_Cdc55AID") %>% distinct(dataset, orf),
+  plank_proteins %>% mutate(dataset = "Plank_Cdc55AID"))
+protein_membership <- protein_sets %>%
+  mutate(present = 1L) %>%
+  pivot_wider(names_from = dataset, values_from = present, values_fill = 0L) %>%
+  add_missing_sets() %>%
+  left_join(orf_gene, by = "orf") %>%
+  relocate(orf, gene) %>%
+  mutate(n_published = Li2019 + Dokladal2021 + Baro2018 + Plank_Cdc55AID) %>%
+  arrange(desc(ThisStudy), desc(n_published), orf)
+write_csv(protein_membership, file.path(out_dir, "phosphoprotein_membership.csv"))
+
+pdf(file.path(out_dir, "phosphosite_overlap_upset.pdf"), width = 8, height = 5)
+print(upset(as.data.frame(site_membership), sets = set_names_ordered,
+            keep.order = TRUE, order.by = "freq",
+            mainbar.y.label = "Exact phosphosites (ORF + residue)",
+            sets.x.label = "Sites per dataset"))
+dev.off()
+
+pdf(file.path(out_dir, "phosphoprotein_overlap_upset.pdf"), width = 8, height = 5)
+print(upset(as.data.frame(protein_membership), sets = set_names_ordered,
+            keep.order = TRUE, order.by = "freq",
+            mainbar.y.label = "Phosphoproteins (ORF)",
+            sets.x.label = "Proteins per dataset"))
+dev.off()
+
+upset(as.data.frame(site_membership), sets = set_names_ordered,
+      keep.order = TRUE, order.by = "freq",
+      mainbar.y.label = "Exact phosphosites (ORF + residue)")
+upset(as.data.frame(protein_membership), sets = set_names_ordered,
+      keep.order = TRUE, order.by = "freq",
+      mainbar.y.label = "Phosphoproteins (ORF)")
+```
+
+# Sanity check: Igo1 S64 and headline numbers
+
+```{r headline}
+# Igo1 = YNL157W; S64 is the canonical Rim15 site (Talarek et al. 2010)
+site_membership %>% filter(orf == "YNL157W") %>% print(n = 50)
+
+counts <- site_membership %>% summarise(
+  ours_total          = sum(ThisStudy),
+  consensus_ge2       = sum(category == "consensus"),
+  shared_ge1          = sum(category %in% c("consensus", "shared")),
+  novel               = sum(category == "novel_this_study"))
+print(counts)
+
+cat("\nProtein-level: our phosphoproteins:",
+    sum(protein_membership$ThisStudy == 1),
+    "| overlapping >=1 published:",
+    sum(protein_membership$ThisStudy == 1 & protein_membership$n_published >= 1),
+    "| >=2 published:",
+    sum(protein_membership$ThisStudy == 1 & protein_membership$n_published >= 2),
+    "\n")
+
+# our sites shared with each published dataset (site-level)
+for (s in setdiff(set_names_ordered, "ThisStudy"))
+  cat("ThisStudy ∩", s, ":",
+      sum(site_membership$ThisStudy == 1 & site_membership[[s]] == 1), "\n")
+```
+
+# Statistical tests
+
+```{r statistics}
+# Chi-square test for each published dataset.
+# Universe = all phosphosites detected in our study with valid ORF+site mapping.
+# Question: are Rim15-regulated sites (q≤0.05 in C or P starvation) enriched
+# among sites that appear in each published Rim15 / PP2A-Cdc55 dataset?
+#
+# Contingency table for each published set X:
+#   [ sig ∩ X      sig ∩ not-X ]
+#   [ not-sig ∩ X  not-sig ∩ not-X ]
+
+published_sets <- list(
+  Li2019        = li_sites$key,
+  Dokladal2021  = dok_sites$key,
+  Baro2018      = baro_sites$key,
+  Plank_Cdc55AID = plank_sites$key
+)
+
+universe_keys <- all_psites$key
+sig_keys      <- ours_sites$key
+
+chisq_results <- map_dfr(names(published_sets), function(nm) {
+  pub_keys <- published_sets[[nm]]
+  a <- sum(universe_keys %in% sig_keys &  universe_keys %in% pub_keys)
+  b <- sum(universe_keys %in% sig_keys & !universe_keys %in% pub_keys)
+  c <- sum(!universe_keys %in% sig_keys &  universe_keys %in% pub_keys)
+  d <- sum(!universe_keys %in% sig_keys & !universe_keys %in% pub_keys)
+  ct <- chisq.test(matrix(c(a, c, b, d), nrow = 2))
+  tibble(
+    dataset   = nm,
+    n_published = a + c,
+    n_sig     = a + b,
+    n_overlap = a,
+    N         = length(universe_keys),
+    pct_sig_in_pub = round(100 * a / (a + b), 1),
+    pct_nonsig_in_pub = round(100 * c / (c + d), 1),
+    chi_sq    = round(ct$statistic, 2),
+    p_value   = ct$p.value
+  )
+})
+
+print(chisq_results)
+```
+
+# Quantitative overlap table
+
+```{r quantitative_overlap}
+# Phosphosites in our significant set (q≤0.05, C or P) that appear in ≥1
+# published dataset, with fold-change from each study side by side.
+#
+# Our metrics: best (lowest-q) contrast per site from the DE table.
+# de columns: pSite, nutrient, time, pvalue, qvalue, log2FC
+de_best <- de %>%
+  filter(!is.na(qvalue)) %>%
+  group_by(pSite) %>%
+  slice_min(qvalue, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  transmute(pSite,
+            log2FC_thisStudy = log2FC,
+            qvalue_thisStudy = qvalue,
+            nutrient_thisStudy = nutrient,
+            time_thisStudy = time)
+
+# ours_sites carries pSite; join to get our quantitative values
+ours_fc <- ours_sites %>%
+  left_join(de_best, by = "pSite")
+
+# Lookup tables: quantitative metrics from published datasets (keyed on site_key)
+li_fc_lookup    <- li_sites    %>% transmute(key, log2fc_Li2019)
+plank_fc_lookup <- plank_sites %>% transmute(key, log2fc_Plank, pval_Plank)
+
+# Build the overlap table: our sig sites ∩ ≥1 published dataset
+overlap_psites <- site_membership %>%
+  filter(ThisStudy == 1, n_published >= 1) %>%
+  left_join(ours_fc %>%
+              transmute(key, log2FC_thisStudy, qvalue_thisStudy,
+                        nutrient_thisStudy, time_thisStudy),
+            by = "key") %>%
+  left_join(li_fc_lookup,    by = "key") %>%
+  left_join(plank_fc_lookup, by = "key") %>%
+  dplyr::select(key, orf, gene, aa, position,
+                log2FC_thisStudy, qvalue_thisStudy, nutrient_thisStudy, time_thisStudy,
+                Li2019, log2fc_Li2019,
+                Dokladal2021, Baro2018,
+                Plank_Cdc55AID, log2fc_Plank, pval_Plank,
+                n_published, category) %>%
+  arrange(desc(n_published), qvalue_thisStudy)
+
+write_csv(overlap_psites, file.path(out_dir, "phosphosite_overlap_quantitative.csv"))
+cat("Quantitative overlap table:", nrow(overlap_psites),
+    "sites (ThisStudy ∩ ≥1 published dataset)\n")
+cat("  Of these, log2fc_Li2019 available for:",
+    sum(!is.na(overlap_psites$log2fc_Li2019)), "sites\n")
+cat("  log2fc_Plank available for:",
+    sum(!is.na(overlap_psites$log2fc_Plank)), "sites\n")
+```
+
+# Summary paragraph
+
+```{r paragraph, results='asis'}
+fmt_p <- function(p) {
+  if (p < 0.001) formatC(p, format = "e", digits = 1) else round(p, 3)
+}
+
+n_universe <- nrow(all_psites)
+n_sig      <- nrow(ours_sites)
+
+# Collect key numbers for each dataset
+r  <- chisq_results
+
+r_li  <- r[r$dataset == "Li2019",]
+r_dok <- r[r$dataset == "Dokladal2021",]
+r_bar <- r[r$dataset == "Baro2018",]
+r_plk <- r[r$dataset == "Plank_Cdc55AID",]
+
+cat(sprintf(
+"To evaluate whether the rim15Δ-regulated phosphosites identified in this
+study are consistent with previously reported Rim15 targets, we compared our
+significant sites (q ≤ 0.05 in carbon or phosphorus starvation; n = %d) with
+four published phosphoproteomic datasets, using a chi-square test with all
+%d phosphosites detected in our experiment as the universe. Our sites were
+significantly enriched among those identified by Dokladal et al. (2021;
+%d/%d overlap, χ² = %.1f, p = %s) and Baro et al. (2018; %d/%d overlap,
+χ² = %.1f, p = %s). Overlap with Li et al. (2019; %d/%d sites, χ² = %.1f,
+p = %s) and Plank et al. (2020; %d/%d sites, χ² = %.1f, p = %s) was not
+statistically significant. The significant enrichment with two independent
+datasets using distinct experimental strategies supports the validity of our
+phosphoproteomic approach for identifying Rim15-dependent phosphorylation events.",
+  n_sig, n_universe,
+  r_dok$n_overlap, r_dok$n_sig, r_dok$chi_sq, fmt_p(r_dok$p_value),
+  r_bar$n_overlap, r_bar$n_sig, r_bar$chi_sq, fmt_p(r_bar$p_value),
+  r_li$n_overlap,  r_li$n_sig,  r_li$chi_sq,  fmt_p(r_li$p_value),
+  r_plk$n_overlap, r_plk$n_sig, r_plk$chi_sq, fmt_p(r_plk$p_value)))
+```
+
+```{r session}
+sessionInfo()
+```

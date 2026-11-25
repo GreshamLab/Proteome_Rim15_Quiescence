@@ -1,0 +1,339 @@
+---
+title: "Figure 3 — WGCNA proteome co-expression modules"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Self-contained reproduction of Figure 3 panels.
+
+The combined Whole Proteome Module (WPM) analysis was run on ANOVA-significant proteins
+across all conditions (C×WT, C×rim15KO, P×WT, P×rim15KO) using imputed expression data.
+The resulting WGCNA object is stored in `output/wgcna/all_ratio_networkConstruction-auto.RData`.
+
+**Panel A** is a workflow diagram created in Adobe Illustrator; no R code.
+
+**Inputs:**
+- `output/wgcna/all_ratio_networkConstruction-auto.RData` — combined WPM analysis
+- `tables/master_tidy_protein.csv` — normalized protein expression
+- `tables/wgcna_GO_simplified_imputed.csv` — simplified GO enrichment per WPM (q < 0.01, BP)
+
+**Run from repo root:** `rmarkdown::render("figure3/Figure3.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(pheatmap)
+library(RColorBrewer)
+library(cowplot)
+
+out_dir  <- "figure3/plots"
+data_dir <- "figure3/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+
+# Remove PDFs from the previous per-condition version so only current outputs remain
+old_pdfs <- c("Fig3B_ME_C_rim15KO.pdf", "Fig3B_ME_C_WT.pdf",
+              "Fig3B_ME_P_rim15KO.pdf", "Fig3B_ME_P_WT.pdf",
+              "Fig3C_ME_variable_correlation.pdf",
+              "Fig3D_GO_enrichment.pdf", "Fig3E_module_trajectories.pdf")
+invisible(lapply(file.path(out_dir, old_pdfs), function(f) if (file.exists(f)) file.remove(f)))
+```
+
+```{r load-data}
+# Combined WPM analysis across all conditions
+# Objects: MEs (48 × 7), moduleLabels (named int), moduleColors (named chr), geneTree
+load("./output/wgcna/all_ratio_networkConstruction-auto.RData")
+
+# Module number → WPM label (module 0 = grey/unassigned)
+wpm_map <- c("0" = "unassigned",
+             "1" = "WPM1", "2" = "WPM2", "3" = "WPM3",
+             "4" = "WPM4", "5" = "WPM5", "6" = "WPM6")
+
+# Per-protein module assignments (exclude unassigned)
+module_df <- tibble(
+  protein_id = names(moduleLabels),
+  module_num = as.integer(moduleLabels),
+  wpm        = wpm_map[as.character(moduleLabels)]
+) %>%
+  filter(module_num != 0)
+
+module_sizes <- module_df %>%
+  count(wpm, name = "n_proteins") %>%
+  arrange(wpm)
+
+# Master protein expression (pivot to long)
+master <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE) %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity, ratio, intensity),
+               names_to = "data_type", values_to = "value") %>%
+  mutate(data_type = recode(data_type,
+    "normalized_ratio"     = "normed_ratio",
+    "normalized_intensity" = "normed_intensity"))
+
+# Simplified GO enrichment (q < 0.01, Biological Process)
+go_data <- read_csv("./tables/wgcna_GO_simplified_imputed.csv",
+                    show_col_types = FALSE) %>%
+  filter(!is.na(module), module != 0) %>%
+  mutate(wpm = paste0("WPM", module))
+
+message("WPM sizes: ", paste(module_sizes$wpm, module_sizes$n_proteins, sep = "=", collapse = ", "))
+```
+
+---
+
+## Panel A — Workflow diagram
+
+Panel A is a diagram of the WGCNA analysis workflow created in Adobe Illustrator.
+No R-generated output.
+
+---
+
+## Panel B — Module eigengene heatmap
+
+Rows = all 48 samples (2 nutrients × 2 genotypes × 4 timepoints × 3 replicates),
+annotated by nutrient, genotype, timepoint, and replicate.
+Columns = WPM1–WPM6 module eigengenes.
+
+```{r panel-B}
+# Build ME matrix: rows = samples, cols = WPM1–WPM6 (drop ME0 = grey)
+me_mat <- as.data.frame(MEs) %>%
+  dplyr::select(ME1, ME2, ME3, ME4, ME5, ME6) %>%
+  dplyr::rename(WPM1 = ME1, WPM2 = ME2, WPM3 = ME3,
+                WPM4 = ME4, WPM5 = ME5, WPM6 = ME6)
+
+# Order rows: C before P, WT before rim15KO, T00→T30, R1→R3
+row_order <- rownames(me_mat)[order(
+  sub("_.*", "", rownames(me_mat)),                            # nutrient
+  sub("^[^_]+_([^_]+)_.*", "\\1", rownames(me_mat)),          # genotype
+  as.integer(sub(".*_T(\\d+)_.*", "\\1", rownames(me_mat))),  # time
+  sub(".*_R(\\d+)$", "\\1", rownames(me_mat))                 # replicate
+)]
+me_mat <- me_mat[row_order, ]
+
+# Row annotation
+ann_row <- data.frame(
+  nutrient  = sub("_.*", "", rownames(me_mat)),
+  genotype  = sub("^[^_]+_([^_]+)_.*", "\\1", rownames(me_mat)),
+  time      = sub("^.*_(T\\d+)_.*", "\\1", rownames(me_mat)),
+  replicate = sub(".*_(R\\d+)$", "\\1", rownames(me_mat)),
+  row.names = rownames(me_mat))
+ann_row$time <- factor(ann_row$time, levels = c("T00", "T06", "T16", "T30"))
+
+ann_colors <- list(
+  genotype  = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+  nutrient  = c("C"  = "#ff9500", "P"       = "#8300ab"),
+  time      = c("T00" = "#fee8d0", "T06" = "#fdad60",
+                "T16" = "#e85d04", "T30" = "#7f1900"),
+  replicate = c("R1" = "#bae6c8",  "R2" = "#44c76d", "R3" = "#016320"))
+
+breaksList <- seq(-0.07, 0.07, by = 0.0001)
+
+ph_B <- pheatmap(
+  me_mat,
+  color             = colorRampPalette(rev(brewer.pal(n = 10, name = "RdBu")))(length(breaksList)),
+  breaks            = breaksList,
+  cluster_rows      = FALSE,
+  cluster_cols      = FALSE,
+  annotation_row    = ann_row,
+  annotation_colors = ann_colors,
+  main              = "Whole-proteome module eigengenes",
+  fontsize          = 8,
+  silent            = TRUE)
+
+pdf(file.path(out_dir, "Fig3B_ME_heatmap.pdf"), width = 5, height = 8)
+grid::grid.draw(ph_B$gtable)
+dev.off()
+grid::grid.draw(ph_B$gtable)
+
+write_csv(
+  as.data.frame(me_mat) %>% rownames_to_column("sample"),
+  file.path(data_dir, "Fig3B_source_data.csv"))
+message("Fig3B: ", nrow(me_mat), " samples × ", ncol(me_mat), " WPMs saved")
+```
+
+---
+
+## Panel C — WPM eigengene × trait Pearson correlation
+
+Rows = traits (time, starvation type, genotype); columns = WPM1–WPM6.
+Cell text shows Pearson r (p-value).
+
+```{r panel-C}
+# Trait variables encoded numerically from sample names
+meta_df <- data.frame(
+  time_num   = as.integer(sub(".*_T(\\d+)_.*", "\\1", rownames(me_mat))),
+  carbon     = as.integer(sub("_.*", "", rownames(me_mat)) == "C"),
+  phosphorus = as.integer(sub("_.*", "", rownames(me_mat)) == "P"),
+  wt         = as.integer(sub("^[^_]+_([^_]+)_.*", "\\1", rownames(me_mat)) == "WT"),
+  rim15      = as.integer(sub("^[^_]+_([^_]+)_.*", "\\1", rownames(me_mat)) == "rim15KO"),
+  row.names  = rownames(me_mat))
+
+# Pearson r and p  (cor_mat: rows = WPM, cols = traits)
+cor_mat  <- cor(me_mat, meta_df, use = "pairwise.complete.obs")
+pval_mat <- matrix(NA_real_, nrow(cor_mat), ncol(cor_mat),
+                   dimnames = dimnames(cor_mat))
+for (i in seq_len(nrow(cor_mat)))
+  for (j in seq_len(ncol(cor_mat)))
+    pval_mat[i, j] <- cor.test(me_mat[, i], meta_df[, j])$p.value
+
+# Rename trait columns before transposing
+colnames(cor_mat)  <- c("Time", "Carbon starvation", "Phosphorus starvation",
+                         "WT", "rim15\u0394")
+colnames(pval_mat) <- colnames(cor_mat)
+
+# Display text: r on first line, p on second
+display_txt <- matrix(
+  paste0(sprintf("%.2f", cor_mat), "\n(", sprintf("%.1e", pval_mat), ")"),
+  nrow = nrow(cor_mat), dimnames = dimnames(cor_mat))
+
+# Transpose: WPMs become columns (x-axis), traits become rows (y-axis)
+ph_C <- pheatmap(
+  t(cor_mat),
+  color           = colorRampPalette(rev(brewer.pal(n = 7, name = "RdBu")))(100),
+  breaks          = seq(-1, 1, length.out = 101),
+  cluster_rows    = FALSE,
+  cluster_cols    = FALSE,
+  display_numbers = t(display_txt),
+  number_color    = "black",
+  fontsize        = 9,
+  fontsize_number = 6,
+  main            = "WPM eigengene \u00d7 trait Pearson correlation",
+  silent          = TRUE)
+
+pdf(file.path(out_dir, "Fig3C_ME_trait_correlation.pdf"), width = 6, height = 4)
+grid::grid.draw(ph_C$gtable)
+dev.off()
+grid::grid.draw(ph_C$gtable)
+
+write_csv(
+  as.data.frame(cor_mat) %>% rownames_to_column("WPM"),
+  file.path(data_dir, "Fig3C_source_data.csv"))
+message("Fig3C: correlation matrix saved")
+```
+
+---
+
+## Panel D — GO Biological Process enrichment per WPM
+
+Rows = GO terms (q < 0.01, simplified); columns = WPM. Cell color = −log10(adj. p-value).
+
+```{r panel-D}
+if (nrow(go_data) > 0) {
+
+  go_wide <- go_data %>%
+    mutate(neg_log_p = -log10(p.adjust)) %>%
+    dplyr::select(Description, wpm, neg_log_p) %>%
+    pivot_wider(names_from = wpm, values_from = neg_log_p, values_fill = 0) %>%
+    column_to_rownames("Description")
+
+  # Ensure all 6 WPM columns present
+  for (w in paste0("WPM", 1:6)) {
+    if (!w %in% colnames(go_wide))
+      go_wide[[w]] <- 0
+  }
+  go_mat <- as.matrix(go_wide[, paste0("WPM", 1:6)])
+
+  ph_D <- pheatmap(
+    go_mat,
+    color        = colorRampPalette(c("white", "#FF3333"))(50),
+    cluster_rows = TRUE,
+    cluster_cols = FALSE,
+    main         = "GO Biological Process enrichment per WPM\n(\u2212log\u2081\u2080 adj. p-value, q < 0.01)",
+    fontsize_row = 7,
+    fontsize     = 9,
+    silent       = TRUE)
+
+  pdf(file.path(out_dir, "Fig3D_GO_heatmap.pdf"), width = 7, height = 8)
+  grid::grid.draw(ph_D$gtable)
+  dev.off()
+  grid::grid.draw(ph_D$gtable)
+
+  write_csv(
+    as.data.frame(go_mat) %>% rownames_to_column("GO_term"),
+    file.path(data_dir, "Fig3D_source_data.csv"))
+  message("Fig3D: ", nrow(go_mat), " GO terms plotted")
+}
+```
+
+---
+
+## Panel E — Per-WPM expression trajectories
+
+Mean normalized ratio (± SEM) over time. Layout: 6 WPM columns × 2 genotype rows.
+Carbon (orange) and phosphorus (purple) starvation overlaid within each panel.
+
+```{r panel-E}
+module_traj <- master %>%
+  dplyr::filter(genotype != "spike-in", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(data_type == "normed_ratio") %>%
+  dplyr::filter(!is.na(value), is.finite(value)) %>%
+  inner_join(module_df %>% dplyr::select(protein_id, wpm),
+             by = c("Protein IDs" = "protein_id"))
+
+# Per-WPM protein count in this dataset
+mod_n <- module_traj %>%
+  group_by(wpm) %>%
+  summarise(n = n_distinct(`Protein IDs`), .groups = "drop")
+
+module_summary <- module_traj %>%
+  mutate(samplingTime = as.integer(sub("T", "", samplingTime)),
+         genotype     = factor(genotype, levels = c("WT", "rim15KO")),
+         nutrient     = factor(nutrient, levels = c("C", "P"))) %>%
+  group_by(wpm, genotype, nutrient, samplingTime) %>%
+  summarise(mean_val = mean(value, na.rm = TRUE),
+            sem_val  = sd(value,   na.rm = TRUE) / sqrt(n()),
+            .groups  = "drop") %>%
+  left_join(mod_n, by = "wpm") %>%
+  mutate(wpm_label = paste0(wpm, "\n(n=", n, ")"),
+         wpm_label = factor(wpm_label,
+                            levels = paste0(paste0("WPM", 1:6), "\n(n=",
+                                            mod_n$n[order(mod_n$wpm)], ")")))
+
+p_E <- ggplot(module_summary,
+              aes(x = samplingTime, y = mean_val,
+                  group = nutrient, color = nutrient)) +
+  geom_ribbon(aes(ymin = mean_val - sem_val,
+                  ymax = mean_val + sem_val,
+                  fill = nutrient),
+              alpha = 0.15, color = NA) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey70") +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.5) +
+  facet_grid(genotype ~ wpm_label,
+             labeller = labeller(
+               genotype = c("WT" = "WT", "rim15KO" = "rim15\u0394")),
+             scales = "free_y") +
+  scale_color_manual(values = c("C" = "#ff9500", "P" = "#8300ab"),
+                     labels = c("C" = "Carbon starvation",
+                                "P" = "Phosphorus starvation")) +
+  scale_fill_manual(values  = c("C" = "#ff9500", "P" = "#8300ab"),
+                    labels  = c("C" = "Carbon starvation",
+                                "P" = "Phosphorus starvation")) +
+  scale_x_continuous(breaks = c(0, 6, 16, 30)) +
+  xlab("Hours post nutrient depletion") +
+  ylab("Mean normalized ratio (\u00b1 SEM)") +
+  theme_cowplot(font_size = 8) +
+  theme(legend.position  = "bottom",
+        legend.title     = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(size = 7))
+
+ggsave(file.path(out_dir, "Fig3E_WPM_trajectories.pdf"),
+       p_E, width = 14, height = 5, useDingbats = FALSE)
+print(p_E)
+
+write_csv(module_summary, file.path(data_dir, "Fig3E_source_data.csv"))
+message("Fig3E: WPM trajectory data saved")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

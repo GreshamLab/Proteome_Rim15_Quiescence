@@ -1,0 +1,186 @@
+---
+title: "S4 Fig — Phosphorylation vs protein expression fold changes"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figure 4.
+Extracted and reorganized from `06_pro_phospho_combined.Rmd`.
+
+**S4 Fig:**
+- **Panel A:** Scatter plot of protein-level vs phosphosite-level log2(WT/rim15Δ).
+  Red = phosphosites that change more than the parent protein (phosphorylation-specific);
+  blue = sites where phosphorylation decreases more than protein level.
+- **Panel B:** Protein expression trajectories for Rim15-dependent phosphotargets.
+
+**Inputs:**
+- `tables/DE_proteins_byGenotype.csv`
+- `tables/DE_pSites_byGenotype.csv`
+- `tables/master_tidy_protein.csv`
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_4.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(ggrepel)
+library(cowplot)
+library(ggpubr)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+logFC_pG <- read_csv("./tables/DE_proteins_byGenotype.csv",
+                     show_col_types = FALSE)
+logFC_pS <- read_csv("./tables/DE_pSites_byGenotype.csv",
+                     show_col_types = FALSE)
+master   <- read_csv("./tables/master_tidy_protein.csv",
+                     show_col_types = FALSE) %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity, ratio, intensity),
+               names_to = "data", values_to = "value") %>%
+  mutate(data = recode(data,
+    "normalized_ratio"     = "normed_ratio",
+    "normalized_intensity" = "normed_intensity"))
+```
+
+---
+
+## S4A — Phosphosite vs protein log2FC scatter
+
+```{r s4a-scatter}
+logFC_joined <- left_join(
+  logFC_pS,
+  logFC_pG,
+  by     = c("Protein names", "Gene names", "Fasta headers", "nutrient",
+             "time" = "samplingTime"),
+  suffix = c(".phospho", ".protein"))
+
+p_S4A <- ggplot(logFC_joined,
+                aes(x = log2FC.protein, y = log2FC.phospho)) +
+  geom_point(size = 0.8, alpha = 0.4, color = "#a3a3a3") +
+  geom_point(data = dplyr::filter(logFC_joined,
+                                   log2FC.phospho > 0,
+                                   qvalue.phospho < 0.05,
+                                   log2FC.phospho > log2FC.protein),
+             color = "#FF3333", size = 1, alpha = 0.8) +
+  geom_point(data = dplyr::filter(logFC_joined,
+                                   log2FC.phospho < 0,
+                                   qvalue.phospho < 0.05,
+                                   log2FC.phospho < log2FC.protein),
+             color = "#3399FF", size = 1, alpha = 0.8) +
+  geom_text_repel(
+    data  = dplyr::filter(logFC_joined,
+                          log2FC.phospho > 0, qvalue.phospho < 0.05,
+                          log2FC.phospho > log2FC.protein),
+    aes(label = pSite), size = 2, max.overlaps = 10) +
+  geom_vline(xintercept = 0, color = "#cccccc", linetype = "dashed") +
+  geom_hline(yintercept = 0, color = "#cccccc", linetype = "dashed") +
+  geom_abline(slope = 1, intercept = 0, color = "#888888", linetype = "dotted") +
+  xlab(expression(log[2] * " (WT / rim15Δ) — protein")) +
+  ylab(expression(log[2] * " (WT / rim15Δ) — phosphorylation site")) +
+  facet_grid(nutrient ~ time,
+             labeller = labeller(
+               nutrient = c("C" = "Carbon", "P" = "Phosphorus"))) +
+  theme_classic(base_size = 10) +
+  theme(legend.position  = "none",
+        strip.background = element_blank())
+
+p_S4A
+ggsave(file.path(out_dir, "SFig4A_phospho_vs_protein_logFC.pdf"),
+       p_S4A, width = 10, height = 7, useDingbats = FALSE)
+
+write_csv(logFC_joined %>%
+            dplyr::select(pSite, `Gene names`, `Protein names`,
+                          nutrient, time,
+                          log2FC.phospho, qvalue.phospho,
+                          log2FC.protein, qvalue.protein),
+          file.path(data_dir, "SFig4A_source_data.csv"))
+message("SFig4A: ", nrow(logFC_joined), " paired records exported")
+```
+
+## S4B — Protein expression levels of Rim15-dependent phosphotargets
+
+```{r s4b-protein-levels}
+# Proteins with at least one significant phosphosite (q < 0.05)
+rim15_phosphotargets <- logFC_pS %>%
+  dplyr::filter(qvalue < 0.05) %>%
+  pull(`Gene names`) %>%
+  unique() %>%
+  na.omit()
+
+# Subset to top candidates by minimum q-value (avoid overplotting)
+top_targets <- logFC_pS %>%
+  dplyr::filter(qvalue < 0.05) %>%
+  group_by(`Gene names`) %>%
+  summarise(min_q = min(qvalue, na.rm = TRUE), .groups = "drop") %>%
+  arrange(min_q) %>%
+  dplyr::slice(1:20) %>%
+  pull(`Gene names`)
+
+protein_traj <- master %>%
+  dplyr::filter(`Gene names` %in% top_targets) %>%
+  dplyr::filter(genotype != "spike-in", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(data == "normed_ratio") %>%
+  dplyr::filter(!is.na(value), is.finite(value)) %>%
+  mutate(samplingTime = as.integer(sub("T", "", samplingTime)),
+         genotype = factor(genotype, levels = c("WT", "rim15KO")))
+
+protein_summary <- protein_traj %>%
+  group_by(`Gene names`, genotype, nutrient, samplingTime) %>%
+  summarise(mean_val = mean(value, na.rm = TRUE),
+            sd_val   = sd(value,   na.rm = TRUE),
+            .groups  = "drop")
+
+genotype_colors <- c("WT" = "#E7B800", "rim15KO" = "#00AFBB")
+
+p_S4B <- ggplot(protein_summary,
+                aes(x = samplingTime, y = mean_val,
+                    group = genotype, color = genotype)) +
+  geom_ribbon(aes(ymin = mean_val - sd_val,
+                  ymax = mean_val + sd_val,
+                  fill = genotype),
+              alpha = 0.15, color = NA) +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 1.5) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  facet_grid(`Gene names` ~ nutrient,
+             labeller = labeller(
+               nutrient = c("C" = "Carbon", "P" = "Phosphorus")),
+             scales = "free_y") +
+  scale_color_manual(values = genotype_colors,
+                     labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+  scale_fill_manual(values  = genotype_colors,
+                    labels  = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+  scale_x_continuous(breaks = c(0, 6, 16, 30)) +
+  xlab("Hours post nutrient depletion") +
+  ylab("Mean normalized ratio") +
+  theme_cowplot(font_size = 8) +
+  theme(legend.position  = "bottom",
+        legend.title     = element_blank(),
+        strip.background = element_blank(),
+        strip.text.y     = element_text(face = "italic", size = 7))
+
+ggsave(file.path(out_dir, "SFig4B_phosphotarget_protein_levels.pdf"),
+       p_S4B, width = 8, height = max(6, length(top_targets) * 1.2),
+       useDingbats = FALSE)
+
+write_csv(protein_summary, file.path(data_dir, "SFig4B_source_data.csv"))
+message("SFig4B: ", length(top_targets), " phosphotargets plotted")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

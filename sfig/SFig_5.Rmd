@@ -1,0 +1,249 @@
+---
+title: "S5 Fig — Phosphoproteome modules (PEMs)"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figure 5.
+Extracted and reorganized from `05_psites_analysis.Rmd`.
+
+**S5 Fig:** Phosphoproteome expression modules (PEMs):
+- **Panel A:** Computational overview / workflow diagram (Illustrator — not R).
+- **Panel B:** PEM eigengene heatmap.
+- **Panel C:** GO/KEGG enrichment per PEM.
+- **Panel D:** Per-PEM phosphorylation dynamics.
+
+**Inputs:**
+- `tables/normed_pSite_ratio_perseus.csv`
+- `tables/DE_pSites_byGenotype.csv`
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_5.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(reshape2)
+library(pheatmap)
+library(RColorBrewer)
+library(cowplot)
+library(clusterProfiler)
+library(org.Sc.sgd.db)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+pSite <- read_csv("./tables/normed_pSite_ratio_perseus.csv",
+                  show_col_types = FALSE) %>%
+  dplyr::select(-c("id")) %>%
+  drop_na(Proteins)
+pSite[is.na(pSite)] <- 0
+
+logFC_ttest_pS <- read_csv("./tables/DE_pSites_byGenotype.csv",
+                           show_col_types = FALSE)
+```
+
+---
+
+## S5A — Workflow diagram
+
+Panel A is a diagram of the PEM analysis workflow created in Adobe Illustrator.
+No R-generated output.
+
+---
+
+## S5B — PEM eigengene heatmap
+
+Heatmap of phosphosite ratio profiles across all samples, clustered by row (pSite)
+to reveal co-regulated phosphorylation modules (PEMs).
+
+```{r s5b-heatmap}
+# Build wide matrix: pSite × sample
+pSite_tidy <- melt(pSite) %>%
+  separate(variable, c("genotype", "nutrient", "samplingTime", "replicate"),
+           sep = "_") %>%
+  dplyr::filter(genotype %in% c("rim15KO", "WT"))
+
+pSite_wide <- pSite_tidy %>%
+  dplyr::filter(!is.na(value)) %>%
+  unite(col_key, genotype, nutrient, samplingTime, replicate) %>%
+  pivot_wider(names_from = col_key, values_from = value,
+              id_cols = pSite)
+
+# Keep only pSites with q < 0.05 in at least one contrast
+sig_psites <- logFC_ttest_pS %>%
+  dplyr::filter(qvalue < 0.05) %>%
+  pull(pSite) %>%
+  unique()
+
+hm_df <- pSite_wide %>%
+  dplyr::filter(pSite %in% sig_psites) %>%
+  column_to_rownames("pSite")
+
+# Remove columns/rows with excessive NAs
+hm_df <- hm_df[, colSums(is.na(hm_df)) < nrow(hm_df) * 0.5]
+hm_df <- hm_df[rowSums(is.na(hm_df)) < ncol(hm_df) * 0.5, ]
+
+ann_col <- data.frame(
+  genotype  = sub("_.*", "", colnames(hm_df)),
+  nutrient  = sub("^[^_]+_([^_]+)_.*", "\\1", colnames(hm_df)),
+  time      = sub("^([^_]+_){2}([^_]+)_.*", "\\2", colnames(hm_df)),
+  replicate = sub(".*_", "", colnames(hm_df)),
+  row.names = colnames(hm_df))
+
+ann_colors <- list(
+  genotype  = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+  nutrient  = c("C" = "#ff9500", "P" = "#8300ab"),
+  time      = c("T00" = "#fee8d0", "T06" = "#fdad60",
+                "T16" = "#e85d04", "T30" = "#7f1900"),
+  replicate = c("R1" = "#bae6c8", "R2" = "#44c76d", "R3" = "#016320"))
+
+p_S5B <- pheatmap(
+  hm_df,
+  colorRampPalette(rev(brewer.pal(n = 10, name = "RdBu")))(100),
+  cluster_rows    = TRUE,
+  cluster_cols    = FALSE,
+  scale           = "row",
+  annotation_col  = ann_col,
+  annotation_colors = ann_colors,
+  na_col          = "lightgrey",
+  show_rownames   = FALSE,
+  main            = paste0("Rim15-dependent phosphosites (n = ", nrow(hm_df),
+                            ")\nnormalized SILAC ratio, row-scaled"),
+  fontsize        = 8,
+  fontsize_col    = 7,
+  silent          = TRUE)
+
+pdf(file.path(out_dir, "SFig5B_PEM_heatmap.pdf"), width = 12, height = 10)
+grid::grid.draw(p_S5B$gtable)
+dev.off()
+grid::grid.draw(p_S5B$gtable)
+
+write_csv(pSite_wide %>% dplyr::filter(pSite %in% sig_psites),
+          file.path(data_dir, "SFig5B_source_data.csv"))
+message("SFig5B: heatmap of ", nrow(hm_df), " significant phosphosites")
+```
+
+## S5C — GO enrichment per PEM cluster
+
+```{r s5c-go, cache=TRUE}
+# Assign PEM cluster membership from heatmap row clustering
+if (nrow(hm_df) > 0) {
+  hclust_row   <- hclust(dist(hm_df, method = "euclidean"), method = "complete")
+  n_clusters   <- 4L  # adjust to match published figure
+  cluster_assignments <- data.frame(
+    pSite   = rownames(hm_df),
+    cluster = cutree(hclust_row, k = n_clusters))
+
+  # Join gene names for GO enrichment
+  cluster_genes <- cluster_assignments %>%
+    mutate(gene = sub("_\\d+$", "", pSite)) %>%
+    group_by(cluster, gene) %>%
+    summarise(n_sites = n(), .groups = "drop")
+
+  enrich_list <- list()
+  for (cl in unique(cluster_genes$cluster)) {
+    genes_cl <- cluster_genes %>%
+      dplyr::filter(cluster == cl) %>%
+      pull(gene) %>%
+      unique()
+
+    ego <- tryCatch(
+      clusterProfiler::enrichGO(
+        gene          = genes_cl,
+        universe      = sub("_\\d+$", "", sig_psites),
+        ont           = "BP",
+        keyType       = "GENENAME",
+        OrgDb         = "org.Sc.sgd.db",
+        pAdjustMethod = "BH",
+        qvalueCutoff  = 0.1),
+      error = function(e) NULL)
+
+    if (!is.null(ego) && nrow(ego@result) > 0)
+      enrich_list[[cl]] <- ego@result %>% mutate(cluster = cl)
+  }
+
+  if (length(enrich_list) > 0) {
+    enrich_df <- bind_rows(enrich_list)
+    write_csv(enrich_df, file.path(data_dir, "SFig5C_source_data.csv"))
+
+    p_S5C <- enrich_df %>%
+      dplyr::filter(p.adjust < 0.1, Count > 1) %>%
+      ggplot(aes(x = factor(cluster), y = Description,
+                 color = p.adjust, size = Count)) +
+      geom_point() +
+      scale_color_gradient(low = "#FF3333", high = "#3399FF", name = "p.adjust") +
+      xlab("PEM cluster") + ylab("GO Biological Process") +
+      theme_cowplot(font_size = 9) +
+      theme(axis.text.y = element_text(size = 7))
+
+    ggsave(file.path(out_dir, "SFig5C_GO_enrichment.pdf"),
+           p_S5C, width = 8, height = 8, useDingbats = FALSE)
+    print(p_S5C)
+  }
+}
+```
+
+## S5D — Per-PEM phosphorylation dynamics
+
+```{r s5d-dynamics}
+if (exists("cluster_assignments") && nrow(cluster_assignments) > 0) {
+  pSite_clust <- pSite_tidy %>%
+    inner_join(cluster_assignments, by = "pSite") %>%
+    dplyr::filter(!is.na(value), samplingTime %in% c("T00", "T06", "T16", "T30"))
+
+  pSite_clust_summary <- pSite_clust %>%
+    group_by(cluster, genotype, nutrient, samplingTime) %>%
+    summarise(mean_val = mean(log2(value + 1e-6), na.rm = TRUE),
+              sem_val  = sd(log2(value + 1e-6), na.rm = TRUE) / sqrt(n()),
+              .groups  = "drop") %>%
+    mutate(samplingTime = factor(samplingTime,
+                                  levels = c("T00", "T06", "T16", "T30")),
+           genotype = factor(genotype, levels = c("WT", "rim15KO")))
+
+  p_S5D <- ggplot(pSite_clust_summary,
+                  aes(x = samplingTime, y = mean_val,
+                      group = genotype, color = genotype)) +
+    geom_ribbon(aes(ymin = mean_val - sem_val,
+                    ymax = mean_val + sem_val,
+                    fill = genotype),
+                alpha = 0.15, color = NA) +
+    geom_line(linewidth = 0.8) +
+    geom_point(size = 2) +
+    facet_grid(cluster ~ nutrient,
+               labeller = labeller(
+                 nutrient = c("C" = "Carbon", "P" = "Phosphorus"))) +
+    scale_color_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+                       labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+    scale_fill_manual(values  = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
+                      labels  = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
+    xlab("Hours post nutrient depletion") +
+    ylab("Mean log2 phosphorylation (± SEM)") +
+    theme_cowplot(font_size = 10) +
+    theme(legend.position  = "bottom",
+          legend.title     = element_blank(),
+          strip.background = element_blank())
+
+  ggsave(file.path(out_dir, "SFig5D_PEM_dynamics.pdf"),
+         p_S5D, width = 8, height = 6, useDingbats = FALSE)
+  print(p_S5D)
+
+  write_csv(pSite_clust_summary, file.path(data_dir, "SFig5D_source_data.csv"))
+}
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

@@ -1,0 +1,581 @@
+---
+title: "04 — Differential protein abundance and GO/KEGG enrichment"
+output:
+  html_document:
+    keep_md: true
+---
+
+**Purpose:** ANCOVA-based differential expression by genotype and nutrient;
+GO and KEGG enrichment of significant proteins; visualization (volcano plots,
+heatmaps, enrichment bar charts).
+
+**Inputs:** `tables/master_tidy_protein.csv`, `tables/normed_ratio_perseus.csv`
+
+**Outputs:** `tables/DE_proteins_byGenotype.csv`, `tables/DE_proteins_byNutrient.csv`,
+`tables/anova_genotype.csv`, `tables/anova_nutrient.csv`,
+`tables/anova_genotype_nutrient.csv`, figures in `plots/`.
+
+## Chrunks
+
+  * [Load libraries]
+  * [Read in pre-processed protein table]
+* [Two-way ANCOVA]
+  * [Genotype wise]
+    * [Modeling]
+    * [Summary of model fitting]
+    * [DE visualization]
+    * [Kegg analysis visualization]
+  * [Nutrient wise]
+    * [Modeling]
+    * [Summary of model fitting]
+    * [DE visualization]
+    * [Kegg analysis visualization]
+* [Three way ANCOVA]
+  * [Modeling]
+  * [Summary of model fitting]
+  * [DE visualization]
+  * [Kegg analysis visualization]
+* [Single protein check]
+
+## Load libraries
+```{r, include = FALSE}
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(tidyverse)
+library(GGally)
+library(ggpubr)
+library(ggrepel)
+library(gridExtra)
+library(devtools)
+library(ggfortify)
+library(limma)
+library(plotly)
+library(broom)
+library(qvalue)
+library(pheatmap)
+library(RColorBrewer)
+#libraries need for GO term analysis
+if (!requireNamespace("BiocManager", quietly = TRUE))
+#install.packages("BiocManager")
+#BiocManager::install("org.Sc.sgd.db")
+#BiocManager::install("clusterProfiler")
+#library(AnnotationDbi)
+library(org.Sc.sgd.db)
+library(UpSetR)
+library(clusterProfiler)
+```
+ 
+## Read in pre-processed protein table
+```{r , include = FALSE}
+#read in protein groups 
+master <- read_csv("./tables/master_protein.csv")
+```
+
+# Two-way ANCOVA
+## Genotype wise
+### Modeling
+```{r, echo = FALSE, cache=TRUE, eval = FALSE}
+#keep the table with descent measurements
+all_matched <- master %>%
+  filter(genotype != "spike-in") %>%
+  filter(nutrient != "N") %>%
+  melt() %>%
+  dplyr::select(-variable) %>%
+  #remove na values
+  dplyr::filter(!is.na(value)) %>% 
+  #remove infinite values
+  dplyr::filter(is.finite(value)) %>% 
+  #remove 0 values, wich will be a problem for later log based transformation
+  dplyr::filter(value > 0) %>%
+  group_by(`Protein IDs`,`Gene names`, samplingTime, replicate, genotype, data) %>%
+  mutate(nutrient_number = n()) %>%
+  filter(nutrient_number == 2) %>%
+  group_by(`Protein IDs`,`Gene names`, nutrient, samplingTime, replicate, data) %>%
+  mutate(genotype_number = n()) %>%
+  filter(genotype_number == 2) %>%
+  group_by(`Protein IDs`,`Gene names`, nutrient, samplingTime, genotype, data) %>%
+  mutate(rep_numner = n()) %>%
+  filter(rep_numner == 3) %>%
+  group_by(`Protein IDs`,`Gene names`, nutrient, replicate, genotype, data) %>%
+  mutate(time_number = n()) %>%
+  filter(time_number == 4) 
+
+ancova_genotype <- all_matched %>% 
+  #convert samplingTime to numerics
+  mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>%
+  mutate(samplingTime = as.numeric(samplingTime)) %>%
+  dplyr::group_by(nutrient, `Gene names`,`Protein IDs`, data) %>%
+  do(tidy(lm(value ~ samplingTime * genotype, .))) %>% 
+  dplyr::filter(!is.na(p.value)) 
+
+#add q-value
+ancova_genotype$qvalue <- qvalue(ancova_genotype$p.value, fdr.level=0.05, pi0.method="bootstrap")$qvalues
+
+write_csv(ancova_genotype, "./tables/anova_genotype.csv")
+```
+
+### Summary of model fitting
+```{r, echo=FALSE}
+ancova_genotype <- read_csv("./tables/anova_genotype.csv")
+#check the distribution of statistics
+ancova_genotype %>% 
+  ggplot(aes(x=p.value, col = nutrient, fill = nutrient, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+#,"#225fc9"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369"))+#,"#225fc9")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("pvalue")
+
+#check the distribution of coefficient
+ancova_genotype %>% 
+  ggplot(aes(x=estimate, col = nutrient, fill = nutrient, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+#,"#225fc9"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369"))+#,"#225fc9")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("Coefficient")
+
+#check the distribution of qvalue
+ancova_genotype %>% 
+  ggplot(aes(x=qvalue, col = nutrient, fill = nutrient, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+#,"#225fc9"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369"))+#,"#225fc9")) +
+  theme_classic2() +
+  theme(legend.position = "bottom")+
+  ggtitle("p.adj (FDR = 0.05)")
+
+#two-way ANOVA - genotype wise - look at the significantly differently expressed proteins
+sig_genotype <- ancova_genotype %>% filter(term == "samplingTime:genotypeWT" & qvalue < 0.05) %>%
+  mutate(type = case_when(estimate > 0 ~ "upregulated in wt", 
+     estimate < 0 ~ "upregulated in rim15")) 
+dim(sig_genotype)
+write_csv(sig_genotype, "./tables/anova_genotype_sig.csv")
+```
+
+### DE visualization
+```{r}
+summary <- sig_genotype %>% 
+  filter(data %in% c("normed_intensity","normed_ratio")) %>%
+  group_by(nutrient, data, type) %>%
+  summarize(DE = n())
+print(summary)
+
+listInput <- list(
+  `upregulated in wt (-C)` = sig_genotype %>% filter(nutrient == "C" & data == "normed_ratio" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(), 
+  `upregulated in wt (-P)` = sig_genotype %>% filter(nutrient == "P" & data == "normed_ratio" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in rim15 (-C)` = sig_genotype %>% filter(nutrient == "C" & data == "normed_ratio" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in rim15 (-P)` = sig_genotype %>% filter(nutrient == "P" & data == "normed_ratio" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector())
+
+library("SuperExactTest")
+set.seed(1234)
+n=1074
+
+sig_geno = supertest(listInput, n=n)
+
+summary <- summary(sig_geno)$Table 
+
+ol_genes <- summary %>% filter(P.value < 0.05) %>% dplyr::select(Elements)
+  
+plot(sig_geno, Layout="landscape", sort.by="size", keep=FALSE,
+	bar.split=c(70,180), elements.cex=0.7, #show.elements=TRUE, 
+	elements.list=subset(summary(sig_geno)$Table, Observed.Overlap <= 200),
+	show.expected.overlap=TRUE, expected.overlap.style="hatchedBox",	color.expected.overlap='#a6beff')
+
+upset(fromList(listInput), order.by = "freq")
+
+###normalized intensity
+listInput <- list(
+  `upregulated in wt (-C)` = sig_genotype %>% filter(nutrient == "C" & data == "normed_intensity" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(), 
+  `upregulated in wt (-P)` = sig_genotype %>% filter(nutrient == "P" & data == "normed_intensity" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in rim15 (-C)` = sig_genotype %>% filter(nutrient == "C" & data == "normed_intensity" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in rim15 (-P)` = sig_genotype %>% filter(nutrient == "P" & data == "normed_intensity" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector())
+
+sig_geno = supertest(listInput, n=n)
+
+summary <- summary(sig_geno)$Table 
+
+ol_genes <- summary %>% filter(P.value < 0.05) %>% dplyr::select(Elements)
+  
+plot(sig_geno, Layout="landscape", sort.by="size", keep=FALSE,
+	bar.split=c(70,180), elements.cex=0.7, #show.elements=TRUE, 
+	elements.list=subset(summary(sig_geno)$Table, Observed.Overlap <= 200),
+	show.expected.overlap=TRUE, expected.overlap.style="hatchedBox",	color.expected.overlap='#a6beff')
+
+upset(fromList(listInput), order.by = "freq")
+```
+
+### Kegg analysis visualization
+```{r}
+sig_genotype <- read_csv("./tables/anova_genotype_sig.csv")
+#convert protein IDs column into ENSEMBL, which is readable for kegg annotation
+tmp<-bitr(sig_genotype$`Protein IDs`, "UNIPROT", "ENSEMBL", "org.Sc.sgd.db", drop = TRUE)
+sig <- left_join (tmp, sig_genotype %>% dplyr::rename(UNIPROT = `Protein IDs`), by = "UNIPROT")
+
+sig_C_upWT <- sig %>% 
+  filter(data == "normed_ratio" & estimate > 0) %>% 
+  dplyr::select(nutrient, ENSEMBL, UNIPROT)
+
+upWT <- compareCluster(ENSEMBL ~ nutrient, 
+                           data=sig_C_upWT, 
+                           organism = "sce",
+                           fun="enrichKEGG",
+                           pAdjustMethod = "BH",
+                           qvalueCutoff=0.05)
+
+if (!is.null(upWT)) {
+  print(dotplot(upWT) +
+    ggplot2::theme(axis.text.x=element_text(angle=90),legend.position="bottom"))
+} else {
+  message("upWT: no KEGG enrichment results (compareCluster returned NULL)")
+}
+#ggsave("./plots/go_up_C_kegg.pdf", width=10,height=8)
+
+sig_upRim15 <- sig %>% 
+  filter(data == "normed_ratio" & estimate < 0) %>% 
+  dplyr::select(nutrient, ENSEMBL, UNIPROT)
+
+upRim15 <- compareCluster(ENSEMBL ~ nutrient, 
+                           data=sig_upRim15,
+                           organism = "sce",
+                           #OrgDb=org.Sc.sgd.db::org.Sc.sgd.db,
+                           #ont="BP", 
+                           fun="enrichKEGG", 
+                           #keyType = "UNIPROT", 
+                           pAdjustMethod = "BH",
+                           qvalueCutoff=0.05)
+
+if (!is.null(upRim15)) {
+  print(dotplot(upRim15) +
+    ggplot2::theme(axis.text.x=element_text(angle=90),legend.position="bottom"))
+} else {
+  message("upRim15: no KEGG enrichment results (compareCluster returned NULL)")
+}
+#ggsave("./plots/go_up_P.pdf", width=10,height=8)
+```
+
+## Nutrient wise
+### Modeling
+```{r , echo = FALSE, eval = FALSE, cache=TRUE}
+ancova_nutrient <- all_matched %>% 
+  mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>%
+  mutate(samplingTime = as.numeric(samplingTime)) %>%
+  dplyr::group_by(genotype, `Gene names`,`Protein IDs`, data) %>%
+  do(tidy(lm(value ~ samplingTime * nutrient, .))) %>% 
+  dplyr::filter(!is.na(p.value)) #%>%
+
+#add q-value
+ancova_nutrient$qvalue <- qvalue(ancova_nutrient$p.value, fdr.level=0.05, pi0.method="bootstrap")$qvalues
+
+write_csv(ancova_nutrient, "./tables/anova_nutrient.csv")
+```
+
+### Summary of model fitting
+```{r, echo = FALSE}
+ancova_nutrient <- read_csv("./tables/anova_nutrient.csv")
+#check the distribution of statistics
+ancova_nutrient %>% 
+  ggplot(aes(x=p.value, col = genotype, fill = genotype, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid(data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("pvalue")
+
+#check the distribution of coefficient
+ancova_nutrient %>% 
+  ggplot(aes(x=estimate, col = genotype, fill = genotype, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("Coefficient")
+
+#check the distribution of q-value
+ancova_nutrient %>% 
+  ggplot(aes(x=qvalue, col = genotype, fill = genotype, alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..),  position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  scale_color_manual(values=c("#a6beff", "#ff7369"))+
+  scale_fill_manual(values=c("#a6beff",  "#ff7369")) +
+  theme_classic2() +
+  theme(legend.position = "bottom")+
+  ggtitle("p.adj (FDR = 0.05)")
+
+#look at the significantly differently expressed proteins
+sig_nutrient <- ancova_nutrient %>% filter(term == "samplingTime:nutrientP" & qvalue < 0.05) %>%
+  mutate(type = case_when(estimate > 0 ~ "upregulated in C", 
+     estimate < 0 ~ "upregulated in P"))
+dim(sig_nutrient)
+head(sig_nutrient)
+write_csv(sig_nutrient, "./tables/ancova_nutrient_sig.csv")
+```
+
+### DE visualization
+#### normalized ratio
+```{r}
+summary <- sig_nutrient %>% 
+  filter(data %in% c("normed_intensity","normed_ratio")) %>%
+  group_by(genotype, data, type) %>%
+  summarize(DE = n())
+print(summary)
+
+listInput <- list(
+  `upregulated in C (wt)` = sig_nutrient %>% filter(genotype == "WT" & data == "normed_ratio" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(), 
+  `upregulated in P (wt)` = sig_nutrient %>% filter(genotype == "WT" & data == "normed_ratio" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in C (rim15)` = sig_nutrient %>% filter(genotype == "rim15KO" & data == "normed_ratio" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in P (rim15)` = sig_nutrient %>% filter(genotype == "rim15KO" & data == "normed_ratio" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector())
+
+library("SuperExactTest")
+set.seed(1234)
+n=1074
+
+sig = supertest(listInput, n=n)
+
+summary <- summary(sig)$Table 
+
+ol_genes <- summary %>% filter(P.value < 0.05)
+#%>% select(Elements)
+  
+plot(sig, Layout="landscape", sort.by="size", keep=FALSE,	#bar.split=c(70,180), 
+     elements.cex=0.7, #show.elements=TRUE, 
+	elements.list=subset(summary(sig)$Table, Observed.Overlap <= 200),
+	show.expected.overlap=TRUE, expected.overlap.style="hatchedBox",	color.expected.overlap='#a6beff')
+upset(fromList(listInput), order.by = "freq")
+```
+
+#### normalized intensity
+```{r}
+listInput <- list(
+  `upregulated in C (wt)` = sig_nutrient %>% filter(genotype == "WT" & data == "normed_intensity" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(), 
+  `upregulated in P (wt)` = sig_nutrient %>% filter(genotype == "WT" & data == "normed_intensity" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in C (rim15)` = sig_nutrient %>% filter(genotype == "rim15KO" & data == "normed_intensity" & estimate > 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector(),
+  `upregulated in P (rim15)` = sig_nutrient %>% filter(genotype == "rim15KO" & data == "normed_intensity" & estimate < 0) %>% dplyr::select(`Protein IDs`) %>% unlist() %>% as.vector())
+
+sig = supertest(listInput, n=n)
+
+summary <- summary(sig)$Table 
+
+ol_genes <- summary %>% filter(P.value < 0.05)
+#%>% select(Elements)
+  
+plot(sig, Layout="landscape", sort.by="size", keep=FALSE,	#bar.split=c(70,180), 
+     elements.cex=0.7, #show.elements=TRUE, 
+	elements.list=subset(summary(sig)$Table, Observed.Overlap <= 200),
+	show.expected.overlap=TRUE, expected.overlap.style="hatchedBox",	color.expected.overlap='#a6beff')
+
+upset(fromList(listInput), order.by = "freq")
+```
+
+### Kegg analysis & visualization
+```{r}
+sig_nutrient <- read_csv("./tables/ancova_nutrient_sig.csv")
+#convert protein IDs column into ENSEMBL, which is readable for kegg annotation
+tmp<-bitr(sig_nutrient$`Protein IDs`, "UNIPROT", "ENSEMBL", "org.Sc.sgd.db", drop = TRUE)
+sig <- left_join (tmp, sig_nutrient %>% dplyr::rename(UNIPROT = `Protein IDs`), by = "UNIPROT")
+
+sig_nutrient_genelist_upC <- sig %>% 
+  filter(data == "normed_ratio" & estimate > 0) %>% 
+  dplyr::select(genotype, ENSEMBL, UNIPROT)
+
+wt_rim15_upC <- compareCluster(ENSEMBL ~ genotype, 
+                           data=sig_nutrient_genelist_upC, 
+                           organism = "sce",
+                           fun="enrichKEGG",
+                           pAdjustMethod = "BH",
+                           qvalueCutoff=0.05)
+
+if (!is.null(wt_rim15_upC)) {
+  print(dotplot(wt_rim15_upC) +
+    ggplot2::theme(axis.text.x=element_text(angle=90),legend.position="bottom"))
+} else {
+  message("wt_rim15_upC: no KEGG enrichment results (compareCluster returned NULL)")
+}
+#ggsave("./plots/go_up_C_kegg.pdf", width=10,height=8)
+
+sig_nutrient_genelist_upP <- sig %>% 
+  filter(data == "normed_ratio" & estimate < 0) %>% 
+  dplyr::select(genotype, ENSEMBL, UNIPROT)
+
+wt_rim15_upP <- compareCluster(ENSEMBL ~ genotype, 
+                           data=sig_nutrient_genelist_upP,
+                           organism = "sce",
+                           #OrgDb=org.Sc.sgd.db::org.Sc.sgd.db,
+                           #ont="BP", 
+                           fun="enrichKEGG", 
+                           #keyType = "UNIPROT", 
+                           pAdjustMethod = "BH",
+                           qvalueCutoff=0.05)
+
+if (!is.null(wt_rim15_upP)) {
+  print(dotplot(wt_rim15_upP) +
+    ggplot2::theme(axis.text.x=element_text(angle=90),legend.position="bottom"))
+} else {
+  message("wt_rim15_upP: no KEGG enrichment results (compareCluster returned NULL)")
+}
+#ggsave("./plots/go_up_P.pdf", width=10,height=8)
+```
+
+
+## Three way ANCOVA
+### Modeling
+```{r, eval = FALSE, echo = FALSE,cache = TRUE}
+#three way anova using samplingTime, genotype and replicate as variables 
+ancova_geno_nutrient <- all_matched %>% 
+  mutate(samplingTime = substr(samplingTime, 2, nchar(samplingTime))) %>%
+  mutate(samplingTime = as.numeric(samplingTime)) %>%
+  dplyr::group_by(`Protein IDs`,`Gene names`, data) %>%
+  do(tidy(aov(value ~ samplingTime * genotype * nutrient, .))) %>% 
+  dplyr::filter(!is.na(p.value))
+
+#add q-value
+ancova_geno_nutrient$qvalue <- qvalue(ancova_geno_nutrient$p.value, fdr.level=0.05, pi0.method="bootstrap")$qvalues 
+
+write_csv(ancova_geno_nutrient, "./tables/anova_genotype_nutrient.csv")
+```
+
+### Summary of model fitting
+```{r, echo = FALSE}
+ancova_geno_nutrient <- read_csv("./tables/anova_genotype_nutrient.csv")
+#check the distribution of statistics
+ancova_geno_nutrient %>% 
+  ggplot(aes(x=p.value, col = "#ff7369", alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..), col = "#ff7369", position="identity", alpha=0.1)+
+  facet_grid(data ~ term) +
+   theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("pvalue")
+
+#check the distribution of coefficient
+ancova_geno_nutrient %>% 
+  ggplot(aes(x=sumsq, col = "#ff7369", alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..), col = "#ff7369", position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  theme_classic2() +
+  theme(legend.position = "bottom") +
+  ggtitle("sum of square root")
+
+#check the distribution of qvalue
+ancova_geno_nutrient %>% 
+  ggplot(aes(x=qvalue, col = "#ff7369", alpha = 0.2)) + 
+  geom_histogram(aes(y=..density..), col = "#ff7369", position="identity", alpha=0.1)+
+  facet_grid( data ~ term) +
+  theme_classic2() +
+  theme(legend.position = "bottom")+
+  ggtitle("p.adj (FDR = 0.05)")
+
+#look at the significantly differently expressed proteins
+sig_3way <- ancova_geno_nutrient %>% filter(term == "samplingTime:genotype:nutrient" & qvalue < 0.05)
+dim(sig_3way)
+head(sig_3way)
+write_csv(sig_3way, "./tables/anova_genotype_nutrient_sig.csv")
+```
+
+### DE expression visualization
+```{r}
+sig_3way <- read_csv("./tables/ancova_nutrient_sig.csv")
+sig_3way_proteins <- sig_3way %>% filter(data == "normed_ratio")
+gene_list <- sig_3way_proteins$`Gene names`
+
+nr_df <- master %>% 
+    #remove spike-in in the data frame
+    filter(genotype != "spike-in") %>%
+    #remove samples from nitrogen starved condition
+    filter(nutrient != "N") %>%
+    #filter(replicate != "R2") %>%
+    filter(data == "normed_ratio") %>%
+    dplyr::select(`Protein IDs`, `Gene names`, genotype, nutrient, replicate, samplingTime, value) %>%
+    filter(!is.na(value)) %>%
+    filter(is.finite(value)) %>%
+  filter(`Gene names` %in% sig_3way_proteins$`Gene names`) %>%
+    #filter(value > 0 ) %>%
+    unite(cond, nutrient, genotype, samplingTime, replicate) %>%
+    spread(key = cond, value = value) 
+
+annotation_col <- names(nr_df)[-c(1:2)] %>% as.tibble() %>%
+    separate(value, c("nutrient","genotype","samplingTime","rep"), sep = "_", remove = FALSE) %>%
+    column_to_rownames(var = "value")
+  
+  breaksList = seq(-0.07, 0.07, by = 0.0001)
+#make heatmaps
+  pheatmap(nr_df[,-c(1:2)] %>% drop_na(), 
+           colorRampPalette(rev(brewer.pal(n =10, name = "RdYlBu")))(length(breaksList)),
+           cluster_cols = T, scale = "row", 
+           annotation_col = annotation_col)
+```
+
+### Kegg analysis visualization
+```{r}
+#GO term analysis
+ego_3way <- clusterProfiler::enrichGO(gene = sig_3way_proteins$`Protein IDs`, 
+             ont ="ALL", 
+             universe = unique(master$`Protein IDs`),
+             keyType = "UNIPROT", 
+             OrgDb = "org.Sc.sgd.db", 
+             pAdjustMethod = "BH", 
+             qvalueCutoff = 0.05)
+ 
+if (!is.null(ego_3way)) {
+  print(dotplot(ego_3way, ~ONTOLOGY))
+  dir.create("./tables/GOterm", showWarnings = FALSE, recursive = TRUE)
+  write_csv(as.data.frame(ego_3way),"./tables/GOterm/ego_3way_ANCOVA.csv")
+} else {
+  message("ego_3way: no GO enrichment results (enrichGO returned NULL)")
+}
+```
+# Single protein check 
+## For DE proteins from three-way ancova
+```{r, include = FALSE, cache = TRUE}
+proteome <- master %>% 
+  filter(data == "normed_ratio") %>%
+  filter(genotype != "spike-in") %>%
+    #remove samples from nitrogen starved condition
+    filter(nutrient != "N") %>%
+  filter(`Gene names` %in% sig_3way_proteins$`Gene names`) %>%
+  melt() %>%
+  group_by(`Gene names`,`Protein IDs`, genotype, nutrient, samplingTime, variable) %>%
+  #count the number of na values
+  mutate(ind = sum(is.na(value))) %>% 
+  #remove the proteins who has NA value in all conditions and samples
+  dplyr::filter(!any(ind > 1)) %>%
+    #remove infinite values
+  #filter(!is.infinite(value)) %>%
+  dplyr::select(-ind) %>% 
+  spread(key = variable, value = value)
+
+#make a delet.na function to remove na values for each row with a certain number  
+delete.na <- function(DF, n=0) {DF[rowSums(is.na(DF)) <= n,]}
+proteome <- delete.na(proteome)
+
+protein_list <- unique(proteome$`Protein IDs`)
+plot_list = list()
+for (i in 1:length(protein_list)) {
+  protein <- proteome %>% filter(`Protein IDs` == protein_list[i]) %>%
+  transform(genotype=factor(genotype,levels=c("WT","rim15KO")))
+
+  p <- ggplot(protein, aes(x=samplingTime)) +
+  geom_smooth(aes(y=value, group = genotype), method="lm") +
+  geom_point(aes(y=value))+
+  facet_grid(nutrient~genotype, scale = "free")+
+  theme()+
+  ggtitle(unique(protein$Gene.names))
+
+  plot_list[[i]] = p
+}
+
+#check for the 
+#plot_list[sapply(plot_list, Negate(anyNA))]
+
+ggsave(filename = "./Figure 3/individual_plots_protein_sig.pdf", plot = marrangeGrob(plot_list, nrow=4, ncol=3), width = 15, height = 10)
+```
+

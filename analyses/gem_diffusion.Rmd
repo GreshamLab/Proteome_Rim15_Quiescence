@@ -1,0 +1,18 @@
+---
+title: "Intensity-gated GEM diffusion analysis"
+output: html_document
+---
+
+**BLOCKED: awaiting GEM trajectory data with per-particle intensities from Ying Xie.**
+
+Analysis plan:
+
+1. From proliferating-cell GEM data, define the intensity window consistent
+   with monomeric 40 nm-GEMs (single-particle intensity distribution).
+2. Restrict MSD / Deff analysis to trajectories within the monomer window.
+3. Recompute Deff(100 ms) and anomalous exponent alpha for WT vs rim15KO in
+   the monomer population → `analyses/output/gem_monomer_deff.pdf`.
+
+```{r session}
+sessionInfo()
+```

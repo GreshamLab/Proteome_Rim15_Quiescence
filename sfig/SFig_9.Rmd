@@ -1,0 +1,133 @@
+---
+title: "S9 Fig — Mitochondrial proteins by subcompartment during carbon starvation"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Supplemental Figure 9.
+Script: `analyses/mito_subcompartment.Rmd`.
+
+**S9 Fig:** Mean log2(SILAC ratio) of mitochondrial proteins during carbon starvation,
+separated by subcompartment (Matrix/IM, IMS/IM, OM) using the Morgenstern 2017
+high-confidence mitochondrial proteome as reference.
+
+**Inputs:**
+- `tables/master_tidy_protein.csv`
+- `data/mitochondrial proteome/mmc4.xlsx` (Morgenstern 2017 — local only)
+
+**Run from repo root:** `rmarkdown::render("sfig/SFig_9.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+library(cowplot)
+library(org.Sc.sgd.db)
+
+out_dir  <- "sfig/plots"
+data_dir <- "sfig/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+prot     <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE)
+mito_dir <- "./data/mitochondrial proteome/"
+
+mito_ref_path <- file.path(mito_dir, "mmc4.xlsx")
+if (!file.exists(mito_ref_path)) {
+  stop("Morgenstern 2017 reference file not found: ", mito_ref_path,
+       "\nThis file is stored locally (not tracked in git).")
+}
+```
+
+```{r mito-reference}
+mito_ref <- read_excel(mito_ref_path,
+                       sheet = "High-confidence mito. proteome") %>%
+  transmute(
+    orf         = `Gene Systematic Name`,
+    uniprot     = `UniProt ID`,
+    gene        = `Gene Standard Name1`,
+    description = `Gene Description`,
+    subloc_raw  = `Submitochondrial Localization2`,
+    subloc = case_when(
+      grepl("Matrix", subloc_raw, ignore.case = TRUE) ~ "Matrix/IM",
+      grepl("IMS",    subloc_raw, ignore.case = TRUE) ~ "IMS/IM",
+      grepl("OM",     subloc_raw, ignore.case = TRUE) ~ "OM",
+      TRUE ~ "Unassigned"
+    )
+  )
+```
+
+```{r join-proteins}
+id_col   <- grep("Protein", names(prot), value = TRUE)[1]
+prot_mito <- prot %>%
+  mutate(leading_acc = sub(";.*$", "", .data[[id_col]])) %>%
+  inner_join(mito_ref %>% dplyr::select(uniprot, gene, subloc),
+             by = c("leading_acc" = "uniprot"))
+```
+
+---
+
+## S9 — Mean log2(rim15Δ/WT) by subcompartment during carbon starvation
+
+```{r s9-plot}
+subloc_traj <- prot_mito %>%
+  dplyr::filter(!is.na(normalized_ratio),
+                nutrient == "C",
+                genotype != "spike-in") %>%
+  group_by(leading_acc, gene, subloc, samplingTime) %>%
+  summarise(mean_ratio = mean(normalized_ratio, na.rm = TRUE), .groups = "drop") %>%
+  group_by(subloc, samplingTime) %>%
+  summarise(
+    mean_log2fc = mean(mean_ratio, na.rm = TRUE),
+    sem_log2fc  = sd(mean_ratio,   na.rm = TRUE) / sqrt(sum(!is.na(mean_ratio))),
+    n_proteins  = sum(!is.na(mean_ratio)),
+    .groups = "drop") %>%
+  mutate(time_h = as.integer(sub("T", "", samplingTime)),
+         subloc = factor(subloc,
+                         levels = c("Matrix/IM", "IMS/IM", "OM", "Unassigned")))
+
+subloc_colors <- c("Matrix/IM"  = "#4C96D7",
+                   "IMS/IM"     = "#82C341",
+                   "OM"         = "#F5A623",
+                   "Unassigned" = "#9B9B9B")
+
+p_S9 <- ggplot(subloc_traj,
+               aes(x = time_h, y = mean_log2fc,
+                   color = subloc, group = subloc)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  geom_errorbar(aes(ymin = mean_log2fc - sem_log2fc,
+                    ymax = mean_log2fc + sem_log2fc),
+                width = 1, linewidth = 0.6, alpha = 0.8) +
+  scale_color_manual(values = subloc_colors, name = "Subcompartment") +
+  scale_x_continuous(breaks = c(0, 6, 16, 30)) +
+  labs(x     = "Time (h)",
+       y     = expression(log[2](rim15*Delta/WT) * " (mean ± SEM across proteins)"),
+       title = "Mitochondrial proteins by subcompartment — carbon starvation") +
+  theme_cowplot() +
+  theme(strip.background = element_blank(),
+        legend.position  = "right")
+
+p_S9
+ggsave(file.path(out_dir, "SFig9_mito_subcompartment_carbon.pdf"),
+       p_S9, width = 7, height = 4, useDingbats = FALSE)
+
+write_csv(subloc_traj, file.path(data_dir, "SFig9_source_data.csv"))
+message("SFig9: ", nrow(subloc_traj), " rows exported")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

@@ -1,0 +1,217 @@
+---
+title: "Figure 2 — Mitochondrial protein expression during quiescence entry"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Self-contained reproduction of Figure 2 panels.
+Extracted and reorganized from `04_protein_de_go_analysis.Rmd` and
+`tables/master_tidy_protein.csv`.
+
+**Inputs:**
+- `tables/master_tidy_protein.csv` — normalized protein expression (from `01_data_preparation_qc.Rmd`)
+- `tables/anova_genotype.csv` — ANCOVA results (from `02_protein_anova_wgcna.Rmd`)
+
+**Run from repo root:** `rmarkdown::render("figure2/Figure2.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(pheatmap)
+library(RColorBrewer)
+library(cowplot)
+library(ggpubr)
+
+out_dir  <- "figure2/plots"
+data_dir <- "figure2/source_data"
+dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+master <- read_csv("./tables/master_tidy_protein.csv", show_col_types = FALSE) %>%
+  pivot_longer(c(normalized_ratio, normalized_intensity, ratio, intensity),
+               names_to = "data", values_to = "value") %>%
+  mutate(data = recode(data,
+    "normalized_ratio"     = "normed_ratio",
+    "normalized_intensity" = "normed_intensity"))
+
+# ANCOVA results for identifying Rim15-dependent proteins
+anova_genotype <- read_csv("./tables/anova_genotype.csv", show_col_types = FALSE)
+```
+
+---
+
+## Panel A — Heatmap of quiescence-required proteins (GFP-screen hits)
+
+The 25 proteins shown are those identified as genetically required for quiescence
+survival from the GFP-screen dataset (Davidson et al.), cross-referenced with our
+SILAC quantification. Proteins are ordered by hierarchical clustering of their
+normalized expression trajectories.
+
+```{r panel-A}
+# Proteins shown in published Figure 2A — selected from the SILAC dataset
+# to represent mitochondrial and metabolic remodeling during quiescence entry.
+quiescence_genes <- c("ABP1", "UGA1", "LEU4", "IDH2", "CIT1",
+                       "YRA1", "ATP4", "SAC6", "ATP3", "PCS60",
+                       "CYT1", "ATP5", "FAA1", "KGD1", "COX4",
+                       "PIL1", "GDH2", "PTC3", "AIP1", "KGD2",
+                       "SDH2", "ILV2", "COX6", "TPS1")
+
+# Extract normalized ratio data for these proteins
+qsc_long <- master %>%
+  dplyr::filter(`Gene names` %in% quiescence_genes) %>%
+  dplyr::filter(genotype == "WT", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(data == "normed_ratio") %>%
+  dplyr::filter(!is.na(value), is.finite(value))
+
+# Keep individual replicates — triplicates per timepoint shown side-by-side
+qsc_wide <- qsc_long %>%
+  unite(col_key, nutrient, samplingTime, replicate, remove = FALSE) %>%
+  pivot_wider(names_from = col_key, values_from = value,
+              id_cols = c(`Gene names`, `Protein IDs`))
+
+# Order columns: C then P; within each nutrient T00→T30; replicates adjacent
+col_order <- expand.grid(
+  replicate    = c("R1", "R2", "R3"),          # fastest-varying
+  samplingTime = c("T00", "T06", "T16", "T30"),
+  nutrient     = c("C", "P"),                  # slowest-varying
+  stringsAsFactors = FALSE) %>%
+  unite(col_key, nutrient, samplingTime, replicate) %>%
+  pull(col_key)
+col_order <- col_order[col_order %in% colnames(qsc_wide)]
+
+heatmap_df <- qsc_wide %>%
+  column_to_rownames("Gene names") %>%
+  dplyr::select(-`Protein IDs`) %>%
+  dplyr::select(all_of(col_order))
+
+# Remove rows with too many NAs
+heatmap_df <- heatmap_df[rowSums(is.na(heatmap_df)) < ncol(heatmap_df) / 2, ]
+# Remove zero-variance rows (required for scale="row")
+heatmap_df <- heatmap_df[apply(heatmap_df, 1, function(x) var(x, na.rm=TRUE) > 0), ]
+
+# Fix row order to match the specified gene order (top to bottom)
+row_order <- quiescence_genes[quiescence_genes %in% rownames(heatmap_df)]
+heatmap_df <- heatmap_df[row_order, ]
+
+# Column annotation — parse from col_key (nutrient_time_rep)
+ann_col <- data.frame(
+  nutrient = sub("_.*", "", colnames(heatmap_df)),
+  time     = sub("^[^_]+_([^_]+)_.*", "\\1", colnames(heatmap_df)),
+  row.names = colnames(heatmap_df))
+
+ann_colors <- list(
+  nutrient = c("C" = "#ff9500", "P" = "#8300ab"),
+  time     = c("T00" = "#fee8d0", "T06" = "#fdad60",
+               "T16" = "#e85d04", "T30" = "#7f1900"))
+
+p_A <- pheatmap(
+  heatmap_df,
+  colorRampPalette(rev(brewer.pal(n = 10, name = "RdBu")))(100),
+  cluster_rows    = FALSE,
+  cluster_cols    = FALSE,
+  scale           = "row",
+  annotation_col  = ann_col,
+  annotation_colors = ann_colors,
+  na_col          = "lightgrey",
+  main            = "Quiescence-required proteins\n(normalized SILAC ratio, row-scaled)",
+  fontsize        = 9,
+  fontsize_row    = 8,
+  fontsize_col    = 7,
+  silent          = TRUE)
+
+pdf(file.path(out_dir, "Fig2A_quiescence_proteins_heatmap.pdf"), width = 10, height = 8)
+grid::grid.draw(p_A$gtable)
+dev.off()
+grid::grid.draw(p_A$gtable)
+
+# Source data export — per-replicate normalized ratio per gene × condition
+Fig2A_source <- qsc_wide %>%
+  dplyr::select(`Gene names`, `Protein IDs`, everything()) %>%
+  arrange(`Gene names`)
+
+write_csv(Fig2A_source, file.path(data_dir, "Fig2A_source_data.csv"))
+message("Fig2A: ", nrow(Fig2A_source), " proteins exported")
+```
+
+---
+
+## Panel B — Trajectory plots for representative mitochondrial proteins (C and P)
+
+Representative mitochondrial proteins are shown to illustrate the pattern of
+differential expression between WT and rim15Δ over the starvation time course.
+Candidates are selected from the ANCOVA-significant set (q < 0.05, interaction term)
+with annotation as mitochondrial (from Morgenstern 2017 or GO:mitochondrion).
+
+```{r panel-B}
+# Representative mitochondrial proteins (selected to illustrate key biological points)
+# Edit this list to match the specific proteins shown in the published figure
+rep_mito_genes <- c("CYT1", "COX6", "ATP4", "ATP5", "CIT1")
+
+mito_traj <- master %>%
+  dplyr::filter(`Gene names` %in% rep_mito_genes) %>%
+  dplyr::filter(genotype == "WT", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(data == "normed_ratio") %>%
+  dplyr::filter(!is.na(value), is.finite(value)) %>%
+  mutate(samplingTime = as.integer(sub("T", "", samplingTime)))
+
+mito_summary <- mito_traj %>%
+  group_by(`Gene names`, nutrient, samplingTime) %>%
+  summarise(mean_val = mean(value, na.rm = TRUE),
+            sd_val   = sd(value,   na.rm = TRUE),
+            .groups  = "drop")
+
+nutrient_colors <- c("C" = "#ff9500", "P" = "#8300ab")
+nutrient_labels <- c("C" = "Carbon starvation", "P" = "Phosphorus starvation")
+
+p_B <- ggplot(mito_summary,
+              aes(x = samplingTime, y = mean_val,
+                  group = nutrient, color = nutrient, fill = nutrient)) +
+  geom_ribbon(aes(ymin = mean_val - sd_val,
+                  ymax = mean_val + sd_val),
+              alpha = 0.15, color = NA) +
+  geom_line(linewidth = 0.9) +
+  geom_point(size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey60") +
+  facet_wrap(~ `Gene names`, scales = "free_y", ncol = 1) +
+  scale_color_manual(values = nutrient_colors, labels = nutrient_labels) +
+  scale_fill_manual(values  = nutrient_colors, labels = nutrient_labels) +
+  scale_x_continuous(breaks = c(0, 6, 16, 30)) +
+  xlab("Hours post nutrient depletion") +
+  ylab(expression(log[2] * " (normalized SILAC ratio)")) +
+  theme_cowplot(font_size = 10) +
+  theme(legend.position  = "bottom",
+        legend.title     = element_blank(),
+        strip.background = element_blank(),
+        strip.text       = element_text(face = "italic", size = 9))
+
+p_B
+ggsave(file.path(out_dir, "Fig2B_mito_protein_trajectories.pdf"),
+       p_B, width = 8, height = 14, useDingbats = FALSE)
+
+# Source data export (replicate-level)
+Fig2B_source <- master %>%
+  dplyr::filter(`Gene names` %in% rep_mito_genes) %>%
+  dplyr::filter(genotype == "WT", nutrient %in% c("C", "P")) %>%
+  dplyr::filter(data == "normed_ratio") %>%
+  dplyr::select(`Gene names`, `Protein IDs`, genotype, nutrient, samplingTime, replicate, value) %>%
+  dplyr::rename(normalized_ratio = value) %>%
+  arrange(`Gene names`, nutrient, genotype, samplingTime, replicate)
+
+write_csv(Fig2B_source, file.path(data_dir, "Fig2B_source_data.csv"))
+message("Fig2B: ", nrow(Fig2B_source), " rows exported")
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```

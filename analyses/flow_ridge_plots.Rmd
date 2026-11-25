@@ -1,0 +1,164 @@
+---
+title: "Flow cytometry ridge plots — DNA content and cell size (SFig)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.width = 10, fig.height = 8)
+```
+
+```{r libraries}
+library(tidyverse)
+library(ggridges)
+library(cowplot)
+```
+
+```{r constants}
+# Strain display labels and colours
+STRAIN_LABELS <- c("WT"      = "WT",
+                   "RIM15Δ0" = "rim15Δ0",
+                   "DGY1"    = "WT (haploid ctrl)",
+                   "DGY3"    = "Diploid ctrl")
+
+COND_LABELS <- c("C" = "Carbon starvation",
+                 "N" = "Nitrogen starvation",
+                 "P" = "Phosphorus starvation")
+
+GENO_COLORS <- c("WT"      = "#E69F00",
+                 "rim15Δ0" = "#56B4E9",
+                 "DGY1"    = "#999999",
+                 "DGY3"    = "#cccccc")
+
+out_dir <- "./analyses/output"
+```
+
+```{r load-dna}
+b2a_raw <- read_csv(file.path(out_dir, "dna_b2a_raw.csv"),
+                    show_col_types = FALSE) %>%
+  mutate(
+    Strain  = recode(Strain, "RIM15Δ0" = "rim15Δ0"),
+    ridge = case_when(
+      Strain == "DGY3"                ~ "Diploid control",
+      Strain == "DGY1"                ~ "Haploid control",
+      Time %in% c(0, 6, 16, 30, 46)  ~ paste0(Time, " h"),
+      TRUE                            ~ NA_character_
+    ),
+    ridge = factor(ridge,
+                   levels = rev(c("Diploid control", "Haploid control",
+                                  "0 h", "6 h", "16 h", "30 h", "46 h")))
+  ) %>%
+  dplyr::filter(!is.na(ridge),
+                Strain %in% c("WT", "rim15Δ0") |
+                  ridge %in% c("Diploid control", "Haploid control"))
+```
+
+```{r load-fsc}
+fsc_raw <- read_csv(file.path(out_dir, "fsc_raw.csv"),
+                    show_col_types = FALSE) %>%
+  mutate(
+    Strain = recode(Strain, "RIM15Δ0" = "rim15Δ0"),
+    ridge  = case_when(
+      Strain == "DGY3"                ~ "Diploid control",
+      Strain == "DGY1"                ~ "Haploid control",
+      Time %in% c(0, 6, 16, 30, 46)  ~ paste0(Time, " h"),
+      TRUE                            ~ NA_character_
+    ),
+    ridge  = factor(ridge,
+                    levels = rev(c("Diploid control", "Haploid control",
+                                   "0 h", "6 h", "16 h", "30 h", "46 h")))
+  ) %>%
+  dplyr::filter(!is.na(ridge),
+                Strain %in% c("WT", "rim15Δ0") |
+                  ridge %in% c("Diploid control", "Haploid control"))
+```
+
+## DNA content ridge plots
+
+One panel per genotype × condition. Controls (diploid DGY3 and haploid DGY1) appear at
+the top as landmarks for the 1N and 2N peak positions. Timepoints run top to bottom.
+
+```{r dna-ridge-plots, fig.height=10}
+make_dna_ridge <- function(genotype, condition) {
+  ctrl <- b2a_raw %>%
+    dplyr::filter(ridge %in% c("Diploid control", "Haploid control"))
+
+  expt <- b2a_raw %>%
+    dplyr::filter(Strain == genotype, Media == condition)
+
+  df <- bind_rows(ctrl, expt)
+
+  ggplot(df, aes(x = value, y = ridge, fill = Strain, color = Strain)) +
+    geom_density_ridges(alpha = 0.7, scale = 1.5,
+                        bandwidth = 500,
+                        rel_min_height = 0.005) +
+    scale_x_continuous(limits = c(0, 1e5),
+                       labels = scales::label_number(scale = 1e-3, suffix = "k")) +
+    scale_fill_manual(values  = GENO_COLORS, guide = "none") +
+    scale_color_manual(values = GENO_COLORS, guide = "none") +
+    geom_vline(xintercept = 37500, color = "steelblue",
+               linetype = "dashed", linewidth = 0.4) +
+    labs(x     = "SYTOX Green fluorescence (B2-A)",
+         y     = NULL,
+         title = paste0(genotype, " — ", COND_LABELS[condition])) +
+    theme_cowplot(font_size = 11) +
+    theme(plot.title = element_text(size = 11, face = "bold"))
+}
+
+conditions <- c("C", "N", "P")
+genotypes  <- c("WT", "rim15Δ0")
+
+dna_plots <- map(genotypes, function(gt) {
+  map(conditions, function(cond) make_dna_ridge(gt, cond))
+}) %>% unlist(recursive = FALSE)
+
+dna_page <- plot_grid(plotlist = dna_plots, ncol = 3, nrow = 2)
+dna_page
+
+quartz(type = "pdf", file = file.path(out_dir, "sfig_dna_ridges.pdf"),
+       width = 12, height = 9)
+print(dna_page)
+dev.off()
+message("Saved sfig_dna_ridges.pdf")
+```
+
+## Cell size ridge plots
+
+```{r fsc-ridge-plots, fig.height=9}
+make_fsc_ridge <- function(genotype, condition) {
+  ctrl <- fsc_raw %>%
+    dplyr::filter(ridge %in% c("Diploid control", "Haploid control"))
+
+  expt <- fsc_raw %>%
+    dplyr::filter(Strain == genotype, Media == condition)
+
+  df <- bind_rows(ctrl, expt)
+
+  ggplot(df, aes(x = value, y = ridge, fill = Strain, color = Strain)) +
+    geom_density_ridges(alpha = 0.7, scale = 1.5,
+                        rel_min_height = 0.005) +
+    scale_x_continuous(limits   = c(0, 2e6),
+                       labels   = scales::label_number(scale = 1e-3, suffix = "k")) +
+    scale_fill_manual(values  = GENO_COLORS, guide = "none") +
+    scale_color_manual(values = GENO_COLORS, guide = "none") +
+    labs(x     = "FSC-A (cell size)",
+         y     = NULL,
+         title = paste0(genotype, " — ", COND_LABELS[condition])) +
+    theme_cowplot(font_size = 11) +
+    theme(plot.title = element_text(size = 11, face = "bold"))
+}
+
+fsc_plots <- map(genotypes, function(gt) {
+  map(conditions, function(cond) make_fsc_ridge(gt, cond))
+}) %>% unlist(recursive = FALSE)
+
+fsc_page <- plot_grid(plotlist = fsc_plots, ncol = 3, nrow = 2)
+fsc_page
+
+quartz(type = "pdf", file = file.path(out_dir, "sfig_fsc_ridges.pdf"),
+       width = 12, height = 8)
+print(fsc_page)
+dev.off()
+message("Saved sfig_fsc_ridges.pdf")
+```

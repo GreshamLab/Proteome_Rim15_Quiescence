@@ -1,0 +1,123 @@
+---
+title: "Figure 6 — Cytoplasmic biophysics: GEM nanoparticle tracking"
+author: "Sun et al."
+output: html_document
+---
+
+**Purpose:** Documentation and source-data validation for Figure 6 panels.
+
+**Inputs:**
+- `figure6/source_data/Figure 6-source data.xlsx` — GEM tracking and diffusion data
+  - Sheet `Figure 6B`: mean squared displacement (MSD) vs lag time
+  - Sheet `Figure 6C`: per-particle Deff(100 ms) and GEM fluorescence intensity
+  - Sheet `Figure 6D`: per-particle Deff(100 ms) by condition and timepoint
+  - Sheet `Figure S6A`: per-cell cell volume (used in S Fig 6)
+  - Sheet `Figure S6B`: per-cell mitochondrial/cell volume % (used in S Fig 6)
+- `Macro Script for imageJ/` — Fiji macro scripts used for image preprocessing and particle tracking
+
+**Run from repo root:** `rmarkdown::render("figure6/Figure6.Rmd")`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.retina = 2)
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r libraries}
+library(tidyverse)
+library(readxl)
+
+data_dir <- "figure6/source_data"
+src_file <- file.path(data_dir, "Figure 6-source data.xlsx")
+```
+
+---
+
+## Panel A — Representative fluorescence images of GEMs
+
+Panel A contains representative fluorescence microscopy images of genetically encoded
+multimeric nanoparticles (GEMs) in WT vs rim15\u0394 cells. Images are not R-generated.
+
+Raw images are available on Mendeley Data (doi: [INSERT DOI]).
+
+---
+
+## Panels B, C, D — GEM diffusion analysis
+
+GEM particle tracking and diffusion analysis were performed using the following tools:
+
+- **Image preprocessing and particle tracking** — Fiji macro scripts in
+  `Macro Script for imageJ/` (including `Mosaic Tracking - updated.ijm`).
+- **Particle tracking and Deff calculation** —
+  [GemSpa (napari-gemspa)](https://github.com/liamholtlab/napari-gemspa).
+
+The figure was assembled in Fiji. Per-particle measurements are in
+`figure6/source_data/Figure 6-source data.xlsx`.
+
+**Panel B:** Mean squared displacement (MSD) vs lag time \u03c4 for WT vs rim15\u0394
+across three conditions (proliferating, carbon starvation, phosphorus starvation).
+
+**Panel C:** Per-particle Deff(100 ms) vs GEM fluorescence intensity — illustrates
+the monomer-gating strategy used to exclude aggregated particles.
+
+**Panel D:** Per-particle Deff(100 ms) over the time course for WT vs rim15\u0394
+in carbon and phosphorus starvation.
+
+```{r panels-BCD-source-data}
+# Panel B — MSD vs lag time
+raw_B <- read_excel(src_file, sheet = "Figure 6B", col_names = FALSE)
+msd <- raw_B[3:nrow(raw_B), ] %>%
+  setNames(as.character(raw_B[2, ])) %>%
+  mutate(across(everything(), as.numeric))
+stopifnot(nrow(msd) > 0, "t (sec)" %in% colnames(msd))
+message("Figure 6B: ", nrow(msd), " lag-time points, ",
+        ncol(msd) - 1, " conditions")
+
+# Panel C — per-particle Deff-100ms and GEM intensity
+raw_C <- read_excel(src_file, sheet = "Figure 6C", col_names = FALSE)
+# 6 conditions × 2 columns (Deff-100ms, intensity), every 3rd column is blank
+cond_names <- as.character(raw_C[1, ])
+var_names   <- as.character(raw_C[2, ])
+gem_scatter <- map_dfr(seq(1, 16, by = 3), function(col_i) {
+  cond <- cond_names[col_i]
+  vals_deff <- suppressWarnings(as.numeric(raw_C[[col_i    ]][3:nrow(raw_C)]))
+  vals_int  <- suppressWarnings(as.numeric(raw_C[[col_i + 1]][3:nrow(raw_C)]))
+  tibble(condition = cond,
+         deff_100ms = vals_deff[!is.na(vals_deff) & !is.na(vals_int)],
+         intensity  = vals_int[ !is.na(vals_deff) & !is.na(vals_int)])
+})
+stopifnot(nrow(gem_scatter) > 0)
+message("Figure 6C: ", nrow(gem_scatter), " per-particle measurements across ",
+        n_distinct(gem_scatter$condition), " conditions")
+
+# Panel D — Deff-100ms by condition and timepoint
+raw_D <- read_excel(src_file, sheet = "Figure 6D", col_names = FALSE)
+# Row 1: starvation type (Carbon / Phosphorus); row 2: genotype-timepoint; rows 3+: values
+starv_type <- as.character(raw_D[1, ])
+for (i in seq_along(starv_type))
+  if (is.na(starv_type[i]) && i > 1) starv_type[i] <- starv_type[i - 1]
+col_labels <- as.character(raw_D[2, ])
+gem_deff <- map_dfr(seq_len(ncol(raw_D)), function(col_i) {
+  if (is.na(col_labels[col_i])) return(tibble())
+  vals <- suppressWarnings(as.numeric(raw_D[[col_i]][3:nrow(raw_D)]))
+  vals <- vals[!is.na(vals)]
+  tibble(starvation = starv_type[col_i],
+         label      = col_labels[col_i],
+         deff_100ms = vals)
+}) %>%
+  mutate(
+    genotype = if_else(startsWith(label, "WT"), "WT", "rim15\u0394"),
+    timepoint = sub("^(WT|rim15\u0394)-", "", label)
+  )
+stopifnot(nrow(gem_deff) > 0)
+message("Figure 6D: ", nrow(gem_deff), " per-particle measurements")
+gem_deff %>% count(starvation, genotype, timepoint)
+```
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```
