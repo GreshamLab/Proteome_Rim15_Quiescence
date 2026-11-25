@@ -4,7 +4,16 @@ author: "Sun et al."
 output: html_document
 ---
 
-**Purpose:** Self-contained reproduction of Figure 6 panels.
+**Purpose:** Documentation and source-data validation for Figure 6 panels.
+
+**Inputs:**
+- `figure6/source_data/Figure 6-source data.xlsx` — GEM tracking and diffusion data
+  - Sheet `Figure 6B`: mean squared displacement (MSD) vs lag time
+  - Sheet `Figure 6C`: per-particle Deff(100 ms) and GEM fluorescence intensity
+  - Sheet `Figure 6D`: per-particle Deff(100 ms) by condition and timepoint
+  - Sheet `Figure S6A`: per-cell cell volume (used in S Fig 6)
+  - Sheet `Figure S6B`: per-cell mitochondrial/cell volume % (used in S Fig 6)
+- `Macro Script for imageJ/` — Fiji macro scripts used for image preprocessing and particle tracking
 
 **Run from repo root:** `rmarkdown::render("figure6/Figure6.Rmd")`
 
@@ -16,13 +25,10 @@ knitr::opts_knit$set(root.dir = normalizePath(".."))
 
 ```{r libraries}
 library(tidyverse)
-library(cowplot)
-library(ggpubr)
+library(readxl)
 
-out_dir  <- "figure6/plots"
 data_dir <- "figure6/source_data"
-dir.create(out_dir,  showWarnings = FALSE, recursive = TRUE)
-dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+src_file <- file.path(data_dir, "Figure 6-source data.xlsx")
 ```
 
 ---
@@ -30,7 +36,7 @@ dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
 ## Panel A — Representative fluorescence images of GEMs
 
 Panel A contains representative fluorescence microscopy images of genetically encoded
-multimeric nanoparticles (GEMs) in WT vs rim15Δ cells. Not R-generated.
+multimeric nanoparticles (GEMs) in WT vs rim15\u0394 cells. Images are not R-generated.
 
 Raw images are available on Mendeley Data (doi: [INSERT DOI]).
 
@@ -38,73 +44,74 @@ Raw images are available on Mendeley Data (doi: [INSERT DOI]).
 
 ## Panels B, C, D — GEM diffusion analysis
 
-**BLOCKED — awaiting per-trajectory GEM tracking data from Ying Xie.**
+GEM particle tracking and diffusion analysis were performed using the following tools:
 
-Analysis code for Panels B–D is in `analyses/gem_diffusion.Rmd`.
-The reanalysis gates on monomeric GEM particles (single-particle intensity window
-from proliferating-cell data) to ensure larger aggregated particles do not bias
-the diffusion estimates.
+- **Image preprocessing and particle tracking** — Fiji macro scripts in
+  `Macro Script for imageJ/` (including `Mosaic Tracking - updated.ijm`).
+- **Particle tracking and Deff calculation** —
+  [GemSpa (napari-gemspa)](https://github.com/liamholtlab/napari-gemspa).
 
-Once the data is received, run `analyses/gem_diffusion.Rmd` from the
-repo root to generate figures in `analyses/output/`, then update this section.
+The figure was assembled in Fiji. Per-particle measurements are in
+`figure6/source_data/Figure 6-source data.xlsx`.
 
-**Panel B:** Mean squared displacement (MSD) vs lag time τ for WT vs rim15Δ
-(monomer-gated GEMs).
+**Panel B:** Mean squared displacement (MSD) vs lag time \u03c4 for WT vs rim15\u0394
+across three conditions (proliferating, carbon starvation, phosphorus starvation).
 
-**Panel C:** Mean GEM intensity vs effective diffusion coefficient (Deff) scatter
-plot — illustrates the monomer-gating strategy.
+**Panel C:** Per-particle Deff(100 ms) vs GEM fluorescence intensity — illustrates
+the monomer-gating strategy used to exclude aggregated particles.
 
-**Panel D:** Deff(100 ms) boxplots for WT vs rim15Δ in proliferating (T=0) and
-quiescent (T=16) cells.
+**Panel D:** Per-particle Deff(100 ms) over the time course for WT vs rim15\u0394
+in carbon and phosphorus starvation.
 
-```{r panels-BCD-placeholder}
-# BLOCKED: GEM trajectory data with per-particle intensities not yet available.
-# Remove this message and adapt the code below once data arrives.
+```{r panels-BCD-source-data}
+# Panel B — MSD vs lag time
+raw_B <- read_excel(src_file, sheet = "Figure 6B", col_names = FALSE)
+msd <- raw_B[3:nrow(raw_B), ] %>%
+  setNames(as.character(raw_B[2, ])) %>%
+  mutate(across(everything(), as.numeric))
+stopifnot(nrow(msd) > 0, "t (sec)" %in% colnames(msd))
+message("Figure 6B: ", nrow(msd), " lag-time points, ",
+        ncol(msd) - 1, " conditions")
 
-message(
-  "Panels B–D are BLOCKED pending GEM tracking data from Ying Xie.\n",
-  "See analyses/gem_diffusion.Rmd for the analysis code."
-)
+# Panel C — per-particle Deff-100ms and GEM intensity
+raw_C <- read_excel(src_file, sheet = "Figure 6C", col_names = FALSE)
+# 6 conditions × 2 columns (Deff-100ms, intensity), every 3rd column is blank
+cond_names <- as.character(raw_C[1, ])
+var_names   <- as.character(raw_C[2, ])
+gem_scatter <- map_dfr(seq(1, 16, by = 3), function(col_i) {
+  cond <- cond_names[col_i]
+  vals_deff <- suppressWarnings(as.numeric(raw_C[[col_i    ]][3:nrow(raw_C)]))
+  vals_int  <- suppressWarnings(as.numeric(raw_C[[col_i + 1]][3:nrow(raw_C)]))
+  tibble(condition = cond,
+         deff_100ms = vals_deff[!is.na(vals_deff) & !is.na(vals_int)],
+         intensity  = vals_int[ !is.na(vals_deff) & !is.na(vals_int)])
+})
+stopifnot(nrow(gem_scatter) > 0)
+message("Figure 6C: ", nrow(gem_scatter), " per-particle measurements across ",
+        n_distinct(gem_scatter$condition), " conditions")
 
-# --- Uncomment and adapt once data arrives ---
-# gem_traj <- read_csv("analyses/output/gem_monomer_deff.csv",
-#                      show_col_types = FALSE)
-#
-# # Panel B — MSD vs tau
-# p_B <- ggplot(gem_traj, aes(x = lag_s, y = msd_um2, color = genotype,
-#                              group = interaction(genotype, replicate))) +
-#   geom_line(alpha = 0.5, linewidth = 0.5) +
-#   stat_summary(aes(group = genotype), fun = mean,
-#                geom = "line", linewidth = 1.5) +
-#   scale_x_log10() + scale_y_log10() +
-#   scale_color_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
-#                      labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
-#   xlab("Lag time τ (s)") +
-#   ylab(expression("MSD (μm"^2 * ")")) +
-#   theme_cowplot(font_size = 12) +
-#   theme(legend.position = "bottom", legend.title = element_blank())
-#
-# # Panel D — Deff(100ms) boxplots
-# p_D <- gem_traj %>%
-#   dplyr::filter(near(lag_s, 0.1)) %>%
-#   mutate(genotype = factor(genotype, levels = c("WT", "rim15KO"))) %>%
-#   ggplot(aes(x = genotype, y = deff_um2_s, fill = genotype)) +
-#   geom_boxplot(outlier.shape = NA, width = 0.5) +
-#   geom_jitter(width = 0.1, size = 0.5, alpha = 0.3) +
-#   stat_compare_means(comparisons = list(c("WT", "rim15KO")),
-#                      method = "wilcox.test", label = "p.format") +
-#   facet_wrap(~ timepoint) +
-#   scale_fill_manual(values = c("WT" = "#E7B800", "rim15KO" = "#00AFBB"),
-#                     labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
-#   xlab(NULL) +
-#   ylab(expression(D[eff] * "(100 ms) (μm"^2 * "/s)")) +
-#   theme_cowplot(font_size = 12) +
-#   theme(legend.position = "none")
-#
-# ggsave(file.path(out_dir, "Fig6B_MSD_vs_tau.pdf"),    p_B, width=6, height=4)
-# ggsave(file.path(out_dir, "Fig6D_Deff_boxplots.pdf"), p_D, width=6, height=4)
-#
-# write_csv(gem_traj, file.path(data_dir, "Fig6BD_source_data.csv"))
+# Panel D — Deff-100ms by condition and timepoint
+raw_D <- read_excel(src_file, sheet = "Figure 6D", col_names = FALSE)
+# Row 1: starvation type (Carbon / Phosphorus); row 2: genotype-timepoint; rows 3+: values
+starv_type <- as.character(raw_D[1, ])
+for (i in seq_along(starv_type))
+  if (is.na(starv_type[i]) && i > 1) starv_type[i] <- starv_type[i - 1]
+col_labels <- as.character(raw_D[2, ])
+gem_deff <- map_dfr(seq_len(ncol(raw_D)), function(col_i) {
+  if (is.na(col_labels[col_i])) return(tibble())
+  vals <- suppressWarnings(as.numeric(raw_D[[col_i]][3:nrow(raw_D)]))
+  vals <- vals[!is.na(vals)]
+  tibble(starvation = starv_type[col_i],
+         label      = col_labels[col_i],
+         deff_100ms = vals)
+}) %>%
+  mutate(
+    genotype = if_else(startsWith(label, "WT"), "WT", "rim15\u0394"),
+    timepoint = sub("^(WT|rim15\u0394)-", "", label)
+  )
+stopifnot(nrow(gem_deff) > 0)
+message("Figure 6D: ", nrow(gem_deff), " per-particle measurements")
+gem_deff %>% count(starvation, genotype, timepoint)
 ```
 
 ---
