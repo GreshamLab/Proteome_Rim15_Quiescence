@@ -177,33 +177,45 @@ igo1_64 <- pSite_tidy %>%
                 samplingTime %in% c("T00", "T06", "T16", "T30"),
                 genotype %in% c("WT", "rim15KO"),
                 !(nutrient == "C" & replicate == "R2")) %>%
-  dplyr::rename(time = samplingTime)
+  dplyr::rename(time = samplingTime) %>%
+  dplyr::mutate(time = factor(time, levels = c("T00", "T06", "T16", "T30")),
+                genotype = factor(genotype, levels = c("WT", "rim15KO")))
 
-# Summarise mean ± SD per genotype × nutrient × time
+# Summarise mean ± SEM per genotype × nutrient × time
 igo1_summary <- igo1_64 %>%
   group_by(genotype, nutrient, time) %>%
-  summarise(mean_rel = mean(value, na.rm = TRUE),
-            sd_rel   = sd(value,   na.rm = TRUE),
+  summarise(mean_val = mean(value, na.rm = TRUE),
+            sem_val  = sd(value, na.rm = TRUE) / sqrt(sum(!is.na(value))),
             .groups  = "drop") %>%
-  mutate(time = factor(time, levels = c("T00", "T06", "T16", "T30")),
-         genotype = factor(genotype, levels = c("WT", "rim15KO")))
+  mutate(ymin = pmax(mean_val - sem_val, .Machine$double.eps),
+         ymax = mean_val + sem_val)
 
 nutrient_labels <- c("C" = "Carbon starvation", "P" = "Phosphorus starvation")
 genotype_colors <- c("WT" = "#E7B800", "rim15KO" = "#00AFBB")
 
-p_B <- ggplot(igo1_summary,
-              aes(x = time, y = mean_rel,
-                  group = genotype, color = genotype, fill = genotype)) +
-  geom_ribbon(aes(ymin = mean_rel - sd_rel,
-                  ymax = mean_rel + sd_rel), alpha = 0.2, color = NA) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 3) +
+p_B <- ggplot() +
+  geom_ribbon(data = igo1_summary,
+              aes(x = time, ymin = ymin, ymax = ymax,
+                  fill = genotype, group = genotype),
+              alpha = 0.25) +
+  geom_line(data = igo1_summary,
+            aes(x = time, y = mean_val,
+                color = genotype, group = genotype),
+            linewidth = 1.0) +
+  geom_point(data = igo1_64,
+             aes(x = time, y = value, color = genotype),
+             position = position_jitter(width = 0.08),
+             size = 1.5, alpha = 0.6) +
+  geom_point(data = igo1_summary,
+             aes(x = time, y = mean_val, color = genotype),
+             size = 2.5) +
+  scale_y_log10() +
   facet_wrap(~ nutrient, labeller = as_labeller(nutrient_labels)) +
   scale_color_manual(values = genotype_colors,
                      labels = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
   scale_fill_manual(values  = genotype_colors,
                     labels  = c("WT" = "WT", "rim15KO" = "rim15Δ")) +
-  xlab("Hours post nutrient depletion") +
+  xlab("Time post nutrient depletion") +
   ylab("Normalized phosphorylation\n(phospho/protein)") +
   theme_classic(base_size = 14) +
   theme(legend.position  = "bottom",
