@@ -519,8 +519,8 @@ write_csv(master, "./tables/master_protein.csv")
 # Tidy (wide) version: one row per protein × sample, four measurement columns.
 # Only proteins with at least one valid SILAC ratio are kept — intensity-only
 # detections (no H/L or M/L ratio) are excluded because downstream analyses
-# (ANCOVA, WGCNA, Shiny) require normalized_ratio as the primary measurement.
-# Read by: 03_ancova_analysis.Rmd, R03_mito_reconciliation.Rmd, shiny/prep_data.R
+# (ANCOVA, WGCNA) require normalized_ratio as the primary measurement.
+# Read by: 04_protein_de_go_analysis.Rmd, analyses/mito_subcompartment.Rmd
 has_ratio <- master %>%
   filter(data == "normed_ratio", !is.na(value), is.finite(value), value > 0) %>%
   distinct(`Protein IDs`) %>%
